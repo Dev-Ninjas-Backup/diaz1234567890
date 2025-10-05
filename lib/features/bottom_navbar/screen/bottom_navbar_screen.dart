@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/utils/constants/iconpath.dart';
 import 'package:diaz1234567890/features/bottom_navbar/controller/bottom_navbar_controller.dart';
+import 'package:diaz1234567890/features/homepage/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,12 +10,7 @@ class BottomNavbarScreen extends StatelessWidget {
   final BottomNavbarController controller = Get.put(BottomNavbarController());
 
   final List<Widget> screens = [
-    Center(
-      child: Text(
-        'Home Screen',
-        style: TextStyle(color: Colors.white, fontSize: 24),
-      ),
-    ),
+    YachtHomePage(),
     Center(
       child: Text(
         'Search Screen',
