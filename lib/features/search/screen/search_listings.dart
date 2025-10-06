@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controller/home_controller.dart';
-import '../model/home_model.dart';
+import '../controller/yacht_controller.dart';
+import '../model/yacht_model.dart';
 
-class YachtListingPage extends StatelessWidget {
-  final YachtListingController controller = Get.put(YachtListingController());
+class YachtSearchListingPage extends StatelessWidget {
+  final YachtSearchListingController controller = Get.put(
+    YachtSearchListingController(),
+  );
 
-  YachtListingPage({super.key});
+  YachtSearchListingPage({super.key});
 
   Widget buildSection(String title, List<Yacht> yachts) {
     return Column(
@@ -219,9 +221,7 @@ class YachtListingPage extends StatelessWidget {
       () => SingleChildScrollView(
         child: Column(
           children: [
-            buildSection("Featured Yacht", controller.featuredYachts),
-            SizedBox(height: 20),
-            buildSection("Premium Deals", controller.premiumDeals),
+            buildSection("120 Similar Listings", controller.similarYachts),
             SizedBox(height: 20),
           ],
         ),
