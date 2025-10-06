@@ -29,6 +29,15 @@ class YachtSearchListingController extends GetxController {
         price: "\$1,195,000",
         image: Imagepath.singleBoat,
       ),
+      Yacht(
+        title: "2024 SeaVee 370z",
+        location: "Florida",
+        make: "Mercury",
+        model: "Volvo",
+        year: "2008",
+        price: "\$1,195,000",
+        image: Imagepath.singleBoat,
+      ),
     ];
   }
 }

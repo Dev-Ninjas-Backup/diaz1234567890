@@ -27,10 +27,10 @@ class YachtFilterBar extends StatelessWidget {
         children: filters.entries.map((entry) {
           return Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
                       entry.key,

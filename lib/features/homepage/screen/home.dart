@@ -37,7 +37,7 @@ class YachtHomePage extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [
@@ -123,7 +123,9 @@ class YachtHomePage extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.black : Colors.white,
+                            color: isSelected
+                                ? Colors.black
+                                : Color(0xFFF5FEFF),
                             border: Border.all(
                               color: Colors.black,
                             ), // 👈 always black border
