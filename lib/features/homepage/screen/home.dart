@@ -1,9 +1,11 @@
+import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/imagepath.dart';
+import 'package:diaz1234567890/features/homepage/screen/listing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/iconpath.dart';
 
-import '../controller/home_controller.dart'; // 👈 import IconPath
+import '../controller/home_controller.dart';
 
 class YachtHomePage extends StatelessWidget {
   final YachtController controller = Get.put(YachtController());
@@ -11,7 +13,7 @@ class YachtHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF5FEFF),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -86,7 +88,7 @@ class YachtHomePage extends StatelessWidget {
                                   ),
                                   child: Text(
                                     "Ask AI",
-                                    style: TextStyle(
+                                    style: getTextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -121,7 +123,7 @@ class YachtHomePage extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.black : Colors.grey[100],
+                            color: isSelected ? Colors.black : Colors.white,
                             border: Border.all(
                               color: Colors.black,
                             ), // 👈 always black border
@@ -129,7 +131,7 @@ class YachtHomePage extends StatelessWidget {
                           ),
                           child: Text(
                             controller.tabs[index],
-                            style: TextStyle(
+                            style: getTextStyle(
                               color: isSelected ? Colors.white : Colors.black,
                               fontWeight: FontWeight.w500,
                             ),
@@ -140,6 +142,7 @@ class YachtHomePage extends StatelessWidget {
                   ),
                 ),
               ),
+              YachtListingPage(),
             ],
           ),
         ),
