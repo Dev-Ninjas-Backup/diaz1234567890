@@ -57,7 +57,7 @@ class YachtListingPage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Discover the best yachts available right now. These are handpicked deals.",
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
         ),
 

@@ -36,7 +36,7 @@ class YachtSearchPage extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         children: [

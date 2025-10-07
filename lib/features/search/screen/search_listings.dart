@@ -59,7 +59,7 @@ class YachtSearchListingPage extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Discover the best yachts available right now. These are handpicked deals.",
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
         ),
 
@@ -175,7 +175,7 @@ class YachtSearchListingPage extends StatelessWidget {
       () => SingleChildScrollView(
         child: Column(
           children: [
-            buildSection("Featured Yacht", controller.similarYachts),
+            buildSection("120 Similar Listings", controller.similarYachts),
             SizedBox(height: 20),
           ],
         ),
