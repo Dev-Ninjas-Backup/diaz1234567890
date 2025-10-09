@@ -10,4 +10,6 @@ class Iconpath {
   static const String inactiveProfile = 'assets/icons/inactiveProfile.png';
   static const String askAi = 'assets/icons/askai_icon.png';
   static const String customTune = 'assets/icons/customTune.png';
+  static const String noListIcon = 'assets/icons/noList.png';
+  static const String checkCircle = 'assets/icons/checkCircle.png';
 }
