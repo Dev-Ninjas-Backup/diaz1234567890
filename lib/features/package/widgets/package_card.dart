@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/constants/iconpath.dart';
+
 class PackageCard extends StatelessWidget {
   final String title;
   final String price;
@@ -55,11 +57,12 @@ class PackageCard extends StatelessWidget {
               Text(
                 price,
                 style: TextStyle(
-                  color: Color(0xFF006EF0),
-                  fontSize: 15,
+                  color: Color(0xFF10A8B1),
+                  fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
               ),
+              Divider(),
               SizedBox(height: 10),
               for (var feature in features)
                 Padding(
@@ -67,12 +70,12 @@ class PackageCard extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.check_circle, size: 18),
-                      SizedBox(width: 6),
+                      Image.asset(Iconpath.checkCircle, width: 18, height: 18),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           feature,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 13,
                             color: Colors.black87,
                             height: 1.4,
@@ -83,18 +86,22 @@ class PackageCard extends StatelessWidget {
                   ),
                 ),
               SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: onTap,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected
-                      ? Color(0xFF006EF0)
-                      : Colors.grey[200],
-                  foregroundColor: isSelected ? Colors.white : Colors.black87,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onTap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSelected
+                        ? Color(0xFF006EF0)
+                        : const Color.fromARGB(255, 212, 212, 212),
+                    foregroundColor: isSelected ? Colors.white : Colors.black87,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                   ),
+                  child: Text(isSelected ? "Selected" : "Select"),
                 ),
-                child: Text(isSelected ? "Selected" : "Select"),
               ),
             ],
           ),
