@@ -17,7 +17,7 @@ class SellPackageScreen extends StatelessWidget {
       backgroundColor: Color(0xFFF5FEFF),
       appBar: AppBar(
         backgroundColor: Color(0xFF006EF0),
-        toolbarHeight: 80, // Increased height
+        toolbarHeight: 80,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {

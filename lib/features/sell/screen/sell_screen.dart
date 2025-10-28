@@ -14,50 +14,46 @@ class SellScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5FEFF),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 220,
-                    width: double.infinity,
-                    child: Image.asset(
-                      Imagepath.registerBoatImage,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                Image.asset(
+                  Imagepath.registerBoatImage,
+                  height: 244,
+                  width: double.infinity,
+                  fit: BoxFit.fill,
+                ),
+              ],
+            ),
 
-              SizedBox(height: 100),
-              Align(
-                alignment: AlignmentGeometry.center,
-                child: SizedBox(
-                  child: Image.asset(Iconpath.noListIcon, fit: BoxFit.contain),
-                ),
+            SizedBox(height: 100),
+            Align(
+              alignment: AlignmentGeometry.center,
+              child: SizedBox(
+                child: Image.asset(Iconpath.noListIcon, fit: BoxFit.contain),
               ),
-              SizedBox(height: 20),
-              Align(
-                alignment: AlignmentGeometry.center,
-                child: Text(
-                  "No listing available",
-                  style: getTextStyle(fontSize: 16),
-                ),
+            ),
+            SizedBox(height: 20),
+            Align(
+              alignment: AlignmentGeometry.center,
+              child: Text(
+                "No listing available",
+                style: getTextStyle(fontSize: 16),
               ),
-              SizedBox(height: 50),
-              CustomButton(
-                label: "Create New Listing",
-                icon: Icons.add,
-                onPressed: () {
-                  Get.to(SellPackageScreen());
-                },
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: 50),
+            CustomButton(
+              label: "Create New Listing",
+              icon: Icons.add,
+              onPressed: () {
+                Get.to(SellPackageScreen());
+              },
+            ),
+          ],
         ),
       ),
     );
