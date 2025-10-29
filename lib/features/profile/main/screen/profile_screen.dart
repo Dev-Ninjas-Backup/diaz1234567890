@@ -73,7 +73,9 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.list,
                   title: 'My Listing',
                   subtitle: 'See All Publish Listing',
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed('/myListingScreen');
+                  },
                 ),
                 SettingsButton(
                   icon: Icons.assignment_outlined,

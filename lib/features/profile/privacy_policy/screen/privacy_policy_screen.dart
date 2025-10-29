@@ -15,7 +15,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Data We Collect',
+                'Data We Collect:',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -51,7 +51,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Text(
-                'Your Safety',
+                'Your Safety:',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
