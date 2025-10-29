@@ -1,5 +1,5 @@
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
-import 'package:diaz1234567890/features/profile/screen/profile_screen.dart';
+import 'package:diaz1234567890/features/profile/main/screen/profile_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoute {
