@@ -12,4 +12,6 @@ class Iconpath {
   static const String customTune = 'assets/icons/customTune.png';
   static const String noListIcon = 'assets/icons/noList.png';
   static const String checkCircle = 'assets/icons/checkCircle.png';
+  static const String headphoneLogo = 'assets/icons/headphoneLogo.png';
+  static const String accountUser = 'assets/icons/accountUser.png';
 }

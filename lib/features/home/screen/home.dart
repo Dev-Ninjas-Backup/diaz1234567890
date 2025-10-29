@@ -1,9 +1,9 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
-import 'package:diaz1234567890/core/utils/constants/imagepath.dart';
+import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/home/screen/listing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:diaz1234567890/core/utils/constants/iconpath.dart';
+import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 
 import '../controller/home_controller.dart';
 

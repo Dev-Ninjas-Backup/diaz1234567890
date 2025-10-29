@@ -1,4 +1,4 @@
-import 'package:diaz1234567890/core/utils/constants/iconpath.dart';
+import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:diaz1234567890/features/home/screen/home.dart';
 import 'package:diaz1234567890/features/profile/screen/profile_screen.dart';

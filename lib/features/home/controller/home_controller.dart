@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../core/utils/constants/imagepath.dart';
+import '../../../core/utils/constants/image_path.dart';
 import '../model/home_model.dart';
 
 class YachtController extends GetxController {

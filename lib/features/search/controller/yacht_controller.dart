@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../core/utils/constants/imagepath.dart';
+import '../../../core/utils/constants/image_path.dart';
 import '../model/yacht_model.dart';
 
 class YachtSearchListingController extends GetxController {
