@@ -93,7 +93,9 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.privacy_tip_outlined,
                   title: 'Privacy Policy',
                   subtitle: 'Data Protection Info',
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed('/privacyPolicyScreen');
+                  },
                 ),
                 SettingsButton(
                   icon: Icons.description_outlined,
