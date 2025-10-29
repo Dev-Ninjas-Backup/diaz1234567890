@@ -1,18 +1,19 @@
-import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 
-class CustomAppbar extends StatelessWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  const CustomAppbar({super.key, required this.title});
+
+  const CustomAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color(0xFF006EF0),
+      backgroundColor: const Color(0xFF006EF0),
       toolbarHeight: 80,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.white),
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () {
           Get.back();
         },
@@ -30,4 +31,8 @@ class CustomAppbar extends StatelessWidget {
       ),
     );
   }
+
+  // 👇 Required for Scaffold.appBar
+  @override
+  Size get preferredSize => const Size.fromHeight(80);
 }
