@@ -2,6 +2,7 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:flutter/material.dart';
@@ -14,27 +15,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(ProfileController());
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF006EF0),
-        toolbarHeight: 80,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        title: Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Profile",
-            style: getTextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-            ),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: "Profile"),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
@@ -84,7 +65,9 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.person_outline_outlined,
                   title: 'Profile Info',
                   subtitle: 'Email, Phone',
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed('/editProfileScreen');
+                  },
                 ),
                 SettingsButton(
                   icon: Icons.list,
