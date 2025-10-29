@@ -2,8 +2,8 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
-import 'package:diaz1234567890/features/profile/controller/profile_controller.dart';
-import 'package:diaz1234567890/features/profile/widgets/settings_button.dart';
+import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
+import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
