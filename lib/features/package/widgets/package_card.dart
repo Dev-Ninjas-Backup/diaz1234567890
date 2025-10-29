@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/utils/constants/iconpath.dart';
+import '../../../core/utils/constants/icon_path.dart';
 
 class PackageCard extends StatelessWidget {
   final String title;

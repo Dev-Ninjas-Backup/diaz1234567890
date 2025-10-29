@@ -1,11 +1,11 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
-import 'package:diaz1234567890/core/utils/constants/iconpath.dart';
+import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/common/widget/custom_button.dart';
-import '../../../core/utils/constants/imagepath.dart';
+import '../../../core/utils/constants/image_path.dart';
 
 class SellScreen extends StatelessWidget {
   const SellScreen({super.key});
