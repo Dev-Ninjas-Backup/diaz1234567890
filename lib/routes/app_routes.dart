@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/screen/edit_profile_screen.dart';
 import 'package:diaz1234567890/features/profile/main/screen/profile_screen.dart';
 import 'package:diaz1234567890/features/profile/my_listing/screen/my_listing_screen.dart';
@@ -11,12 +12,14 @@ class AppRoute {
   static String editProfileScreen = "/editProfileScreen";
   static String privacyPolicyScreen = "/privacyPolicyScreen";
   static String myListingScreen = "/myListingScreen";
+  static String detailsScreen = "/detailsScreen";
 
   static String getBottomNavBar() => bottomNavBar;
   static String getProfileScreen() => profileScreen;
   static String getEditProfileScreen() => editProfileScreen;
   static String getPrivacyPolicyScreen() => privacyPolicyScreen;
   static String getMyListingScreen() => myListingScreen;
+  static String getDetailsScreen() => detailsScreen;
 
   static List<GetPage> routes = [
     GetPage(name: bottomNavBar, page: () => BottomNavbarScreen()),
@@ -24,5 +27,6 @@ class AppRoute {
     GetPage(name: editProfileScreen, page: () => EditProfileScreen()),
     GetPage(name: privacyPolicyScreen, page: () => PrivacyPolicyScreen()),
     GetPage(name: myListingScreen, page: () => MyListingScreen()),
+    GetPage(name: detailsScreen, page: () => DetailsScreen()),
   ];
 }

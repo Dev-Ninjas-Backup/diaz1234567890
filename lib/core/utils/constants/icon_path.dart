@@ -14,4 +14,5 @@ class Iconpath {
   static const String checkCircle = 'assets/icons/checkCircle.png';
   static const String headphoneLogo = 'assets/icons/headphoneLogo.png';
   static const String accountUser = 'assets/icons/accountUser.png';
+  static const String askAiIcon = 'assets/icons/askAiButton.png';
 }
