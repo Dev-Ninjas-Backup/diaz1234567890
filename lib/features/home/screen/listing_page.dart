@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -58,15 +59,17 @@ class YachtListingPage extends StatelessWidget {
           child: Text(
             "Discover the best yachts available right now. These are handpicked deals.",
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
 
-        SizedBox(height: 10),
+        SizedBox(height: 20),
 
         SizedBox(
           height: 340,
           child: ListView.builder(
-            padding: EdgeInsets.only(left: 16, bottom: 8),
+            padding: EdgeInsets.only(left: 16),
             scrollDirection: Axis.horizontal,
             itemCount: yachts.length,
             itemBuilder: (context, index) {
@@ -143,6 +146,7 @@ class YachtListingPage extends StatelessWidget {
                                 _buildDetail("Year", yacht.year),
                               ],
                             ),
+                            Divider(),
 
                             Spacer(),
                             Text(
@@ -176,6 +180,90 @@ class YachtListingPage extends StatelessWidget {
             buildSection("Featured Yacht", controller.featuredYachts),
             SizedBox(height: 20),
             buildSection("Premium Deals", controller.premiumDeals),
+            SizedBox(height: 20),
+            buildSection("Centre Consoles", controller.premiumDeals),
+            SizedBox(height: 20),
+            buildSection("Sportfish", controller.premiumDeals),
+            SizedBox(height: 20),
+            buildSection("Luxury Yachts", controller.premiumDeals),
+            SizedBox(height: 20),
+            buildSection("Catamarans", controller.premiumDeals),
+            SizedBox(height: 20),
+            buildSection("Cruisers", controller.premiumDeals),
+            SizedBox(height: 13),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                height: 190,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  image: DecorationImage(
+                    image: AssetImage(Imagepath.homeBoat),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    // ignore: deprecated_member_use
+                    color: Colors.black.withOpacity(0.35),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Looking to Sell Your Boat?",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          "Showcasing the finest yachts from our trusted network.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            // ignore: deprecated_member_use
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 13,
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            // ignore: deprecated_member_use
+                            backgroundColor: Colors.black.withOpacity(0.8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+
+                          label: const Text(
+                            "List Your Yacht",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             SizedBox(height: 20),
           ],
         ),

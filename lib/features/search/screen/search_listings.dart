@@ -54,17 +54,16 @@ class YachtSearchListingPage extends StatelessWidget {
             ],
           ),
         ),
-
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Discover the best yachts available right now. These are handpicked deals.",
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-
         SizedBox(height: 10),
-
         SizedBox(
           height: 340,
           child: ListView.builder(
@@ -90,7 +89,6 @@ class YachtSearchListingPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ Yacht Image
                     ClipRRect(
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(12),

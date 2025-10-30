@@ -40,6 +40,7 @@ class PackageCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.grey.withOpacity(0.1),
                 blurRadius: 6,
                 offset: Offset(0, 3),
@@ -120,7 +121,7 @@ class PackageCard extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 10,
                   ),
                 ),
               ),
