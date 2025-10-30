@@ -1,6 +1,6 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
-import 'package:diaz1234567890/features/package/screen/package_screen.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
