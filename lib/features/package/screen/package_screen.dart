@@ -44,34 +44,109 @@ class SellPackageScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Listing progress",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 4),
                 Row(
                   children: [
-                    Container(
-                      width: 10,
-                      height: 2,
-                      color: const Color.fromARGB(255, 214, 214, 214),
+                    Text(
+                      "Listing Progress",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    SizedBox(width: 10),
-                    Container(width: 10, height: 2, color: Colors.grey),
-                    SizedBox(width: 10),
-                    Container(width: 10, height: 2, color: Colors.grey),
-                    SizedBox(width: 10),
-                    Container(width: 10, height: 2, color: Colors.grey),
+                    Spacer(),
+                    Text(
+                      "Step 1",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(height: 6),
+                SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      "Select Package",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Select Package",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
                     ),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Boat Information",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Seller Information",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Pay & Post",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    
                   ],
                 ),
                 SizedBox(height: 16),
@@ -90,6 +165,7 @@ class SellPackageScreen extends StatelessWidget {
                             price: pkg.price,
                             features: pkg.features,
                             tag: pkg.tag,
+                            // ignore: deprecated_member_use
                             color: pkg.color.withOpacity(0.1),
                             buttonColor: pkg.buttonColor,
                             isSelected: isSelected,

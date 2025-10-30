@@ -145,6 +145,7 @@ class YachtSearchPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.35),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -166,6 +167,7 @@ class YachtSearchPage extends StatelessWidget {
                           "Showcasing the finest yachts\nfrom our trusted network.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
+                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 13,
                             height: 1.4,
@@ -175,6 +177,7 @@ class YachtSearchPage extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
+                            // ignore: deprecated_member_use
                             backgroundColor: Colors.black.withOpacity(0.8),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 22,
