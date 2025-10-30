@@ -5,6 +5,13 @@ import '../model/package_model.dart';
 
 class SellPackageController extends GetxController {
   var selectedPackage = ''.obs;
+  var selectedBoatType = RxnString();
+
+  final List<String> year = ['2021', '2022', '2023', '2024', '2025'];
+
+  void selectBoatType(String? type) {
+    selectedBoatType.value = type;
+  }
 
   final List<PackageModel> packages = [
     PackageModel(

@@ -144,14 +144,17 @@ class SellPackageScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 6),
-                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                    
-                  ],
+                Divider(),
+                SizedBox(height: 24),
+                Text(
+                  'Select a Package',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                SizedBox(height: 16),
-
-                // Dynamically generate package cards
+                SizedBox(height: 24),
                 Obx(
                   () => Column(
                     children: controller.packages.map((pkg) {
@@ -182,7 +185,7 @@ class SellPackageScreen extends StatelessWidget {
                 CustomButton(
                   label: "Next →",
                   onPressed: () {
-                    // navigate next
+                    Get.toNamed('/packageScreenStep2');
                   },
                   width: double.infinity,
                 ),
