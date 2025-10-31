@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/features/auth/splash_login/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step2.dart';
@@ -19,6 +20,7 @@ class AppRoute {
   static String packageScreenStep2 = "/packageScreenStep2";
   static String packageScreenStep3 = "/packageScreenStep3";
   static String packageScreenStep4 = "/packageScreenStep4";
+  static String loginScreen = "/loginScreen";
 
   static String getBottomNavBar() => bottomNavBar;
   static String getProfileScreen() => profileScreen;
@@ -29,6 +31,7 @@ class AppRoute {
   static String getPackageScreenStep2() => packageScreenStep2;
   static String getPackageScreenStep3() => packageScreenStep3;
   static String getPackageScreenStep4() => packageScreenStep4;
+  static String getLoginScreen() => loginScreen;
 
   static List<GetPage> routes = [
     GetPage(name: bottomNavBar, page: () => BottomNavbarScreen()),
@@ -40,5 +43,6 @@ class AppRoute {
     GetPage(name: packageScreenStep2, page: () => PackageScreenStep2()),
     GetPage(name: packageScreenStep3, page: () => PackageScreenStep3()),
     GetPage(name: packageScreenStep4, page: () => PackageScreenStep4()),
+    GetPage(name: loginScreen, page: () => LoginScreen()),
   ];
 }

@@ -24,7 +24,7 @@ class Diaz extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
-          initialRoute: AppRoute.getBottomNavBar(),
+          initialRoute: AppRoute.getLoginScreen(),
           getPages: AppRoute.routes,
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,

@@ -3,6 +3,7 @@ import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
+import 'package:diaz1234567890/features/auth/splash_login/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:flutter/material.dart';
@@ -184,7 +185,9 @@ class ProfileScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.offAll(LoginScreen());
+                              },
                               icon: Icon(
                                 Icons.logout,
                                 color: Colors.blue,
@@ -201,7 +204,13 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             SizedBox(width: 14),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.snackbar(
+                                  'Delete',
+                                  'Account delete successfully',
+                                );
+                                Get.offAll(LoginScreen());
+                              },
                               icon: Icon(
                                 Icons.delete_outline,
                                 color: Colors.red,

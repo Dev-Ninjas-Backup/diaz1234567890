@@ -1,7 +1,6 @@
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class PackageScreenStep4 extends StatelessWidget {
   const PackageScreenStep4({super.key});
@@ -135,9 +134,7 @@ class PackageScreenStep4 extends StatelessWidget {
             SizedBox(height: 20),
             CustomButton(
               label: "Continue to payment →",
-              onPressed: () {
-                Get.toNamed('');
-              },
+              onPressed: () {},
               width: double.infinity,
             ),
           ],
