@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
+import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,7 +32,7 @@ class PackageScreenStep3 extends StatelessWidget {
                   ),
                   Spacer(),
                   Text(
-                    "Step 2",
+                    "Step 3",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -85,7 +86,7 @@ class PackageScreenStep3 extends StatelessWidget {
                         width: 62,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: Colors.grey,
+                          color: Colors.blue,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),
@@ -117,9 +118,10 @@ class PackageScreenStep3 extends StatelessWidget {
                   ),
                 ],
               ),
+              Divider(),
               SizedBox(height: 32),
               Text(
-                'Specifications',
+                'Your Contact Details',
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.black,
@@ -127,87 +129,53 @@ class PackageScreenStep3 extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              TextFieldWidget(
+                title1: 'First Name: *',
+                title2: 'Last Name: *',
+                hint1: 'Type here',
+                hint2: 'Type here',
+              ),
+              SizedBox(height: 14),
+              TextFieldWidget(
+                title1: 'Contact Number: *',
+                title2: 'Email: *',
+                hint1: 'Type here',
+                hint2: 'Type here',
+              ),
+              SizedBox(height: 14),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Build Year: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: Obx(
-                          () => DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: controller.selectedBoatType.value,
-                              hint: Text(
-                                'Select',
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                              isExpanded: true,
-                              items: controller.year.map((type) {
-                                return DropdownMenuItem<String>(
-                                  value: type,
-                                  child: Text(type),
-                                );
-                              }).toList(),
-                              onChanged: controller.selectBoatType,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Country: *',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Make: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
+                  SizedBox(height: 6),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    height: 36,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        hint: Text(
+                          'Select',
+                          style: TextStyle(color: Colors.grey),
                         ),
+                        isExpanded: true,
+                        value: null,
+                        onChanged: (value) {},
+                        items: [],
                       ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -219,7 +187,7 @@ class PackageScreenStep3 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Class: *',
+                        'City: *',
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 11,
@@ -230,7 +198,7 @@ class PackageScreenStep3 extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.only(left: 10),
                         height: 36,
-                        width: 155,
+                        width: 98,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(10),
@@ -251,11 +219,12 @@ class PackageScreenStep3 extends StatelessWidget {
                       ),
                     ],
                   ),
+                  Spacer(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Material: *',
+                        'State: *',
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 11,
@@ -266,7 +235,7 @@ class PackageScreenStep3 extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.only(left: 10),
                         height: 36,
-                        width: 155,
+                        width: 98,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(10),
@@ -282,6 +251,38 @@ class PackageScreenStep3 extends StatelessWidget {
                             value: null,
                             onChanged: (value) {},
                             items: [],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Zip: *',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Container(
+                        padding: EdgeInsets.only(left: 10),
+                        height: 36,
+                        width: 98,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Type here',
+                            hintStyle: TextStyle(color: Colors.grey),
                           ),
                         ),
                       ),
@@ -289,263 +290,23 @@ class PackageScreenStep3 extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Fuel Type: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Number of Engine: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Number of Cabin: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Number of Heads: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
+              SizedBox(height: 20),
+              Divider(),
+              SizedBox(height: 20),
               Text(
-                'Engine',
+                'Seller Account Information',
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.black,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 24),
-              TextFieldWidget(
-                title1: 'Hours:',
-                title2: 'Make:',
-                hint1: 'Type here',
-                hint2: 'Type here',
-              ),
-              SizedBox(height: 14),
-              TextFieldWidget(
-                title1: 'Model:',
-                title2: 'Total Power (HP):',
-                hint1: 'Type here',
-                hint2: 'Type here',
-              ),
-              SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Fuel Type: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Propeller Type: *',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Container(
-                        padding: EdgeInsets.only(left: 10),
-                        height: 36,
-                        width: 155,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              SizedBox(height: 24),
+              const EditFieldsWidget(title: 'Username: *', hint: 'username'),
+              const EditFieldsWidget(title: 'Password: *', hint: '********'),
+              const EditFieldsWidget(
+                title: 'Confirm Password: *',
+                hint: '********',
               ),
               SizedBox(height: 40),
               CustomButton(

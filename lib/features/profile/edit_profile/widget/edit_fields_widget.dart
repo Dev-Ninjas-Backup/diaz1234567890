@@ -40,6 +40,7 @@ class EditFieldsWidget extends StatelessWidget {
               hintText: hint,
               hintStyle: TextStyle(color: AppColors.subTitle),
               border: InputBorder.none,
+
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(vertical: 14),
             ),
