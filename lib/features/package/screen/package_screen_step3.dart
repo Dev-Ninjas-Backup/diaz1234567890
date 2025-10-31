@@ -1,7 +1,6 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
@@ -12,8 +11,7 @@ class PackageScreenStep3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SellPackageController());
-
+    Get.put(SellPackageController());
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Register Your Boat'),
@@ -312,11 +310,7 @@ class PackageScreenStep3 extends StatelessWidget {
               CustomButton(
                 label: "Next →",
                 onPressed: () {
-                  if (kDebugMode) {
-                    print(
-                      'Selected Boat Type: ${controller.selectedBoatType.value}',
-                    );
-                  }
+                  Get.toNamed('/packageScreenStep4');
                 },
                 width: double.infinity,
               ),
