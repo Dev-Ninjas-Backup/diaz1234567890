@@ -5,12 +5,70 @@ import '../model/package_model.dart';
 
 class SellPackageController extends GetxController {
   var selectedPackage = ''.obs;
+
+  // Specifications
   var selectedBoatType = RxnString();
+  var selectedMake = RxnString();
+  var selectedClass = RxnString();
+  var selectedMaterial = RxnString();
+  var selectedFuelType = RxnString();
+  var selectedNumberOfEngine = RxnString();
+  var selectedNumberOfCabin = RxnString();
+  var selectedNumberOfHeads = RxnString();
 
   final List<String> year = ['2021', '2022', '2023', '2024', '2025'];
+  final List<String> make = ['Yamaha', 'Sea Ray', 'Bayliner'];
+  final List<String> boatClass = ['Class A', 'Class B', 'Class C'];
+  final List<String> material = ['Fiberglass', 'Aluminum', 'Steel'];
+  final List<String> fuelType = ['Gasoline', 'Diesel', 'Electric'];
+  final List<String> numberOfEngines = ['1', '2', '3+'];
+  final List<String> numberOfCabins = ['1', '2', '3+'];
+  final List<String> numberOfHeads = ['1', '2', '3+'];
 
   void selectBoatType(String? type) {
     selectedBoatType.value = type;
+  }
+
+  void selectMake(String? value) {
+    selectedMake.value = value;
+  }
+
+  void selectClass(String? value) {
+    selectedClass.value = value;
+  }
+
+  void selectMaterial(String? value) {
+    selectedMaterial.value = value;
+  }
+
+  void selectFuelType(String? value) {
+    selectedFuelType.value = value;
+  }
+
+  void selectNumberOfEngine(String? value) {
+    selectedNumberOfEngine.value = value;
+  }
+
+  void selectNumberOfCabin(String? value) {
+    selectedNumberOfCabin.value = value;
+  }
+
+  void selectNumberOfHeads(String? value) {
+    selectedNumberOfHeads.value = value;
+  }
+
+  // Engine
+  var selectedEngineFuelType = RxnString();
+  var selectedPropellerType = RxnString();
+
+  final List<String> propellerType = ['Propeller A', 'Propeller B'];
+
+  void selectEngineFuelType(String? value) {
+    selectedEngineFuelType.value = value;
+  }
+
+  void selectPropellerType(String? value) {
+    selectedPropellerType.value = value;
   }
 
   final List<PackageModel> packages = [
