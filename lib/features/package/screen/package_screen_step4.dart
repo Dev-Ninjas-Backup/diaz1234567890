@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
+import 'package:diaz1234567890/features/package/widgets/listing_preview_card.dart';
 import 'package:flutter/material.dart';
 
 class PackageScreenStep4 extends StatelessWidget {
@@ -124,12 +125,7 @@ class PackageScreenStep4 extends StatelessWidget {
             ),
             SizedBox(height: 25),
             Center(
-              child: Image.asset(
-                'assets/images/listingFrame.png',
-                height: 360,
-                width: 300,
-                fit: BoxFit.fill,
-              ),
+              child: ListingPreviewCard(),
             ),
             SizedBox(height: 20),
             CustomButton(
