@@ -71,6 +71,27 @@ class SellPackageController extends GetxController {
     selectedPropellerType.value = value;
   }
 
+  // Contact Details
+  var selectedCountry = RxnString();
+  var selectedCity = RxnString();
+  var selectedState = RxnString();
+
+  final List<String> countries = ['USA', 'Canada', 'UK'];
+  final List<String> cities = ['New York', 'Los Angeles', 'Toronto'];
+  final List<String> states = ['California', 'New York', 'Ontario'];
+
+  void selectCountry(String? value) {
+    selectedCountry.value = value;
+  }
+
+  void selectCity(String? value) {
+    selectedCity.value = value;
+  }
+
+  void selectState(String? value) {
+    selectedState.value = value;
+  }
+
   final List<PackageModel> packages = [
     PackageModel(
       title: "Gold Package",
