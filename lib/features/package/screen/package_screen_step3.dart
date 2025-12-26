@@ -11,7 +11,7 @@ class PackageScreenStep3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(SellPackageController());
+    final controller = Get.find<SellPackageController>();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Register Your Boat'),
@@ -162,16 +162,23 @@ class PackageScreenStep3 extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        hint: Text(
-                          'Select',
-                          style: TextStyle(color: Colors.grey),
+                    child: Obx(
+                      () => DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: controller.selectedCountry.value,
+                          hint: Text(
+                            'Select',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          isExpanded: true,
+                          items: controller.countries.map((type) {
+                            return DropdownMenuItem<String>(
+                              value: type,
+                              child: Text(type),
+                            );
+                          }).toList(),
+                          onChanged: controller.selectCountry,
                         ),
-                        isExpanded: true,
-                        value: null,
-                        onChanged: (value) {},
-                        items: [],
                       ),
                     ),
                   ),
@@ -202,16 +209,23 @@ class PackageScreenStep3 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedCity.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.cities.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectCity,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -239,16 +253,23 @@ class PackageScreenStep3 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedState.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.states.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectState,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
