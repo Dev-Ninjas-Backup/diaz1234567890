@@ -67,14 +67,14 @@ class DetailsSpecifications extends StatelessWidget {
           Expanded(
             child: Container(
               alignment: Alignment.centerLeft,
-              height: 20,
+              height:30,
               color: const Color(0xFFEAEAEA),
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 title,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 11,
+                  fontSize: 13,
                 ),
               ),
             ),
@@ -82,13 +82,13 @@ class DetailsSpecifications extends StatelessWidget {
           Expanded(
             child: Container(
               alignment: Alignment.centerLeft,
-              height: 20,
+              height: 30,
               color: const Color(0xFFDBDBDB),
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 value,
                 textAlign: TextAlign.start,
-                style: const TextStyle(color: Colors.black45, fontSize: 11),
+                style: const TextStyle(color: Colors.black45, fontSize: 13),
               ),
             ),
           ),

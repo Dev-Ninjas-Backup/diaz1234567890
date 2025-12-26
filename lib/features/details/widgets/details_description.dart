@@ -18,7 +18,7 @@ class DetailsDescription extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Note: ONLY 1600 HOURS WITH EXTENDED WARRANTY UNTIL MAY 2025 OR 2700 HOURS',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
           ),
           const SizedBox(height: 6),
           const Text(

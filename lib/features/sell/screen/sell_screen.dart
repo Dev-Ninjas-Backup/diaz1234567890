@@ -20,13 +20,43 @@ class SellScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
+              alignment: Alignment.center,
               children: [
-                Image.asset(
-                  Imagepath.registerBoatImage,
-                  height: 244,
-                  width: double.infinity,
-                  fit: BoxFit.fill,
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20.0),
+                    bottomRight: Radius.circular(20.0),
+                  ),
+                  child: Image.asset(
+                    Imagepath.ship2,
+                    height: 244,
+                    width: double.infinity,
+                    fit: BoxFit.fill,
+                  ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 100), // Move text down
+                      Text(
+                        "Register Your Boat",
+                        style: getTextStyle(
+                            fontSize: 20, // Smaller size
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        "Join our global network of verified yacht sellers and\nreach high-value buyers worldwide",
+                        textAlign: TextAlign.center,
+                        style: getTextStyle(
+                            fontSize: 12, color: Colors.white), // Smaller size
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
 
