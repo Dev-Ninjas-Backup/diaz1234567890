@@ -10,7 +10,8 @@ class DetailsMapSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 26),
-          child: Text("Location in Map"),
+          child: Text("Location in Map",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 16),
         Padding(
@@ -20,8 +21,8 @@ class DetailsMapSection extends StatelessWidget {
               Icon(Icons.location_on_outlined, size: 20),
               SizedBox(width: 8),
               Text(
-                "Location in Map",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                "Montauk, NY",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
               ),
             ],
           ),

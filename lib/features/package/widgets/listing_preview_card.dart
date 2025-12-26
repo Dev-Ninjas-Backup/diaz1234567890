@@ -13,6 +13,7 @@ class ListingPreviewCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade300, width: 2),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 8,

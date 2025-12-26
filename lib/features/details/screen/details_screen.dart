@@ -26,6 +26,7 @@ class DetailsScreen extends StatelessWidget {
             const DetailsSpecifications(),
             const DetailsDescription(),
             const DetailsMapSection(),
+            const SizedBox(height: 50),
           ],
         ),
       ),
