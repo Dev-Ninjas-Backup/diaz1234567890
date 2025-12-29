@@ -194,16 +194,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedMake.value,
+                              hint: Text(
+                                'Select',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.make.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectMake,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -236,16 +243,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedClass.value,
+                              hint: Text(
+                                'Select',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.boatClass.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectClass,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -272,16 +286,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedMaterial.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.material.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectMaterial,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -314,16 +335,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedFuelType.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.fuelType.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectFuelType,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -350,16 +378,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedNumberOfEngine.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.numberOfEngines.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectNumberOfEngine,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -392,16 +427,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedNumberOfCabin.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.numberOfCabins.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectNumberOfCabin,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -428,16 +470,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedNumberOfHeads.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.numberOfHeads.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectNumberOfHeads,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -494,16 +543,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedEngineFuelType.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.fuelType.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectEngineFuelType,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
@@ -530,16 +586,23 @@ class PackageScreenStep2 extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: Text(
-                              'Select',
-                              style: TextStyle(color: Colors.grey),
+                        child: Obx(
+                          () => DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: controller.selectedPropellerType.value,
+                              hint: Text(
+                                'Select',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              isExpanded: true,
+                              items: controller.propellerType.map((type) {
+                                return DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                );
+                              }).toList(),
+                              onChanged: controller.selectPropellerType,
                             ),
-                            isExpanded: true,
-                            value: null,
-                            onChanged: (value) {},
-                            items: [],
                           ),
                         ),
                       ),
