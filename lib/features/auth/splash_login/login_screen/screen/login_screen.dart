@@ -1,7 +1,6 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/auth/forget_password/forget_password_page/screen/forget_password_page.dart';
-import 'package:diaz1234567890/features/auth/sign_up/signup_page/screen/sign_up_page.dart';
 import 'package:diaz1234567890/features/auth/splash_login/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +17,6 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
@@ -171,27 +169,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: screenHeight * 0.08),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account?  ",
-                        style: getBodyTextStyle(),
-                      ),
-                      GestureDetector(
-                        onTap: controller.goToSignUp,
-                        child: GestureDetector(
-                          onTap: () {
-                            Get.to(SignUpPage());
-                          },
-                          child: Text('Sign up', style: getTextStyle()),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+
                 SizedBox(height: screenHeight * 0.03),
               ],
             ),
