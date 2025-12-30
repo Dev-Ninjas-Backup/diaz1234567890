@@ -98,8 +98,6 @@ class YachtHomePage extends StatelessWidget {
             ),
 
             SizedBox(height: 20),
-
-            // Tab View (Categories)
             Obx(
               () => SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -117,9 +115,7 @@ class YachtHomePage extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.black : Color(0xFFF5FEFF),
-                          border: Border.all(
-                            color: Colors.black,
-                          ), // 👈 always black border
+                          border: Border.all(color: Colors.black),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

@@ -1,8 +1,7 @@
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../controller/home_controller.dart';
 import '../model/home_model.dart';
 
 class YachtListingPage extends StatelessWidget {
@@ -16,9 +15,9 @@ class YachtListingPage extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
       ],
     );
@@ -28,21 +27,21 @@ class YachtListingPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-              Text(
+              const Text(
                 "See All",
                 style: TextStyle(
                   fontSize: 14,
@@ -53,9 +52,8 @@ class YachtListingPage extends StatelessWidget {
             ],
           ),
         ),
-
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             "Discover the best yachts available right now. These are handpicked deals.",
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -63,20 +61,18 @@ class YachtListingPage extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-
-        SizedBox(height: 20),
-
+        const SizedBox(height: 20),
         SizedBox(
           height: 340,
           child: ListView.builder(
-            padding: EdgeInsets.only(left: 16),
+            padding: const EdgeInsets.only(left: 16),
             scrollDirection: Axis.horizontal,
             itemCount: yachts.length,
             itemBuilder: (context, index) {
               final yacht = yachts[index];
               return Container(
                 width: 230,
-                margin: EdgeInsets.only(right: 12, bottom: 6),
+                margin: const EdgeInsets.only(right: 12, bottom: 6),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
@@ -84,40 +80,57 @@ class YachtListingPage extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black12,
                       blurRadius: 5,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ✅ Yacht Image
+                    // Yacht Image - Now using Image.network with fallback
                     ClipRRect(
-                      borderRadius: BorderRadius.vertical(
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(12),
                       ),
-                      child: Image.asset(
+                      child: Image.network(
                         yacht.image,
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 150,
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            Imagepath.singleBoat,
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
                       ),
                     ),
-
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.location_on,
                                   size: 14,
                                   color: Colors.grey,
                                 ),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
                                   yacht.location,
                                   style: TextStyle(
@@ -127,17 +140,16 @@ class YachtListingPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 6),
+                            const SizedBox(height: 6),
                             Text(
                               yacht.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
                             ),
-                            SizedBox(height: 6),
-                            Divider(),
-
+                            const SizedBox(height: 6),
+                            const Divider(),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -146,12 +158,11 @@ class YachtListingPage extends StatelessWidget {
                                 _buildDetail("Year", yacht.year),
                               ],
                             ),
-                            Divider(),
-
-                            Spacer(),
+                            const Divider(),
+                            const Spacer(),
                             Text(
                               "Price: ${yacht.price}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color(0xFF00A3AC),
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
@@ -173,24 +184,31 @@ class YachtListingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => SingleChildScrollView(
+    return Obx(() {
+      // Show loading indicator while fetching data
+      if (controller.isLoading.value) {
+        return const Center(
+          child: CircularProgressIndicator(color: Color(0xFF00A3AC)),
+        );
+      }
+
+      return SingleChildScrollView(
         child: Column(
           children: [
-            buildSection("Featured Yacht", controller.featuredYachts),
-            SizedBox(height: 20),
-            buildSection("Premium Deals", controller.premiumDeals),
-            SizedBox(height: 20),
-            buildSection("Centre Consoles", controller.premiumDeals),
-            SizedBox(height: 20),
-            buildSection("Sportfish", controller.premiumDeals),
-            SizedBox(height: 20),
-            buildSection("Luxury Yachts", controller.premiumDeals),
-            SizedBox(height: 20),
-            buildSection("Catamarans", controller.premiumDeals),
-            SizedBox(height: 20),
-            buildSection("Cruisers", controller.premiumDeals),
-            SizedBox(height: 13),
+            // Show Featured Yacht section only if data exists (JUPITER)
+            if (controller.featuredYachts.isNotEmpty)
+              buildSection("Featured Yacht", controller.featuredYachts),
+
+            if (controller.featuredYachts.isNotEmpty)
+              const SizedBox(height: 20),
+
+            // Show Premium Deals section only if data exists (FLORIDA)
+            if (controller.premiumDeals.isNotEmpty)
+              buildSection("Premium Deals", controller.premiumDeals),
+
+            const SizedBox(height: 20),
+
+            // Banner Section - Unchanged
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -206,7 +224,6 @@ class YachtListingPage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.35),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -215,9 +232,9 @@ class YachtListingPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Looking to Sell Your Boat?",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -228,7 +245,6 @@ class YachtListingPage extends StatelessWidget {
                           "Showcasing the finest yachts from our trusted network.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            // ignore: deprecated_member_use
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 13,
                             height: 1.4,
@@ -238,7 +254,6 @@ class YachtListingPage extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            // ignore: deprecated_member_use
                             backgroundColor: Colors.black.withOpacity(0.8),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 22,
@@ -248,7 +263,6 @@ class YachtListingPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-
                           label: const Text(
                             "List Your Yacht",
                             style: TextStyle(
@@ -264,10 +278,10 @@ class YachtListingPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }

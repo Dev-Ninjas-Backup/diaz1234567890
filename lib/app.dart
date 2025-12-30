@@ -24,12 +24,10 @@ class Diaz extends StatelessWidget {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
-          initialRoute: AppRoute.getLoginScreen(),
+          initialRoute: AppRoute.getBottomNavBar(),
           getPages: AppRoute.routes,
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,
-          // theme: AppTheme.lightTheme,
-          // darkTheme: AppTheme.darkTheme,
         );
       },
     );
