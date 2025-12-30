@@ -9,6 +9,27 @@ class YachtListingController extends GetxController {
   var featuredYachts = <Yacht>[].obs;
   var premiumDeals = <Yacht>[].obs;
   var isLoading = true.obs;
+  var selectedTab = 0.obs;
+
+  List<String> tabs = ["All", "Featured Yacht", "Premium Deals"];
+
+  void changeTab(int index) {
+    selectedTab.value = index;
+    update();
+  }
+
+  List<Yacht> get currentYachts {
+    switch (selectedTab.value) {
+      case 0:
+        return [...premiumDeals, ...featuredYachts];
+      case 1:
+        return featuredYachts;
+      case 2:
+        return premiumDeals;
+      default:
+        return [];
+    }
+  }
 
   Future<void> fetchForSite(String site) async {
     try {
@@ -45,9 +66,9 @@ class YachtListingController extends GetxController {
           );
 
           if (site == 'JUPITER') {
-            featuredYachts.add(yacht);
+            featuredYachts.assign(yacht);
           } else if (site == 'FLORIDA') {
-            premiumDeals.add(yacht);
+            premiumDeals.assign(yacht);
           }
         }
       }

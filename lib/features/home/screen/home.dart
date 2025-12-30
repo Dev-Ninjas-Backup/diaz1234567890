@@ -1,18 +1,17 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
 import 'package:diaz1234567890/features/home/screen/listing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
-
-import '../controller/home_controller.dart';
 
 class YachtHomePage extends StatelessWidget {
   const YachtHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final YachtController controller = Get.put(YachtController());
+    final YachtListingController controller = Get.put(YachtListingController());
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
       body: SingleChildScrollView(

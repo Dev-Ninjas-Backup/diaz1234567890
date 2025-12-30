@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../model/home_model.dart';
 
 class YachtListingPage extends StatelessWidget {
-  final YachtListingController controller = Get.put(YachtListingController());
+  final YachtListingController controller = Get.find<YachtListingController>();
 
   YachtListingPage({super.key});
 
@@ -24,6 +24,7 @@ class YachtListingPage extends StatelessWidget {
   }
 
   Widget buildSection(String title, List<Yacht> yachts) {
+    if (yachts.isEmpty) return const SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -39,14 +40,6 @@ class YachtListingPage extends StatelessWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
-                ),
-              ),
-              const Text(
-                "See All",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.blue,
                 ),
               ),
             ],
@@ -87,7 +80,6 @@ class YachtListingPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Yacht Image - Now using Image.network with fallback
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(12),
@@ -185,102 +177,97 @@ class YachtListingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Show loading indicator while fetching data
       if (controller.isLoading.value) {
-        return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF00A3AC)),
+        return const SizedBox(
+          height: 300,
+          child: Center(
+            child: CircularProgressIndicator(color: Color(0xFF00A3AC)),
+          ),
         );
       }
 
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            // Show Featured Yacht section only if data exists (JUPITER)
-            if (controller.featuredYachts.isNotEmpty)
-              buildSection("Featured Yacht", controller.featuredYachts),
+      final yachts = controller.currentYachts;
+      final title = controller.tabs[controller.selectedTab.value];
 
-            if (controller.featuredYachts.isNotEmpty)
-              const SizedBox(height: 20),
-
-            // Show Premium Deals section only if data exists (FLORIDA)
-            if (controller.premiumDeals.isNotEmpty)
-              buildSection("Premium Deals", controller.premiumDeals),
-
-            const SizedBox(height: 20),
-
-            // Banner Section - Unchanged
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+      return Column(
+        children: [
+          if (yachts.isNotEmpty) buildSection(title, yachts),
+          const SizedBox(height: 20),
+          // Your banner remains unchanged
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 190,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: DecorationImage(
+                  image: AssetImage(Imagepath.homeBoat),
+                  fit: BoxFit.cover,
+                ),
+              ),
               child: Container(
-                height: 190,
-                width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  image: DecorationImage(
-                    image: AssetImage(Imagepath.homeBoat),
-                    fit: BoxFit.cover,
-                  ),
+                  // ignore: deprecated_member_use
+                  color: Colors.black.withOpacity(0.35),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.black.withOpacity(0.35),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Looking to Sell Your Boat?",
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Looking to Sell Your Boat?",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        "Showcasing the finest yachts from our trusted network.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          // ignore: deprecated_member_use
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      ElevatedButton.icon(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          // ignore: deprecated_member_use
+                          backgroundColor: Colors.black.withOpacity(0.8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        label: const Text(
+                          "List Your Yacht",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Text(
-                          "Showcasing the finest yachts from our trusted network.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w600,
                             fontSize: 13,
-                            height: 1.4,
                           ),
                         ),
-                        const SizedBox(height: 15),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black.withOpacity(0.8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 22,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          label: const Text(
-                            "List Your Yacht",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
       );
     });
   }
