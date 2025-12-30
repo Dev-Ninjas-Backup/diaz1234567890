@@ -1,7 +1,7 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
-import 'package:diaz1234567890/features/search/widget/filterBar.dart';
+import 'package:diaz1234567890/features/search/widget/filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 

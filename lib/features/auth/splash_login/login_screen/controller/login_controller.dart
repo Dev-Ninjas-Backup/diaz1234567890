@@ -5,10 +5,9 @@ class LoginController extends GetxController {
   var rememberMe = false.obs;
   var isPasswordHidden = true.obs;
 
+  var isGuest = true.obs;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  get inputFieldColor => null;
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -20,16 +19,20 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      Get.snackbar("Error", "Please fill all fields");
       return;
     }
 
     if (emailController.text == "1" && passwordController.text == "1") {
+      isGuest.value = false;
       Get.offAllNamed('/bottomNavBar');
-      return;
+    } else {
+      Get.snackbar("Error", "Invalid credentials");
     }
   }
 
-  void forgotPassword() {}
-
-  void goToSignUp() {}
+  void loginAsGuest() {
+    isGuest.value = true;
+    Get.offAllNamed('/bottomNavBar');
+  }
 }

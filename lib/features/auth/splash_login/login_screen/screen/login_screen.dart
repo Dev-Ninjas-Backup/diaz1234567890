@@ -1,6 +1,5 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
-import 'package:diaz1234567890/features/auth/forget_password/forget_password_page/screen/forget_password_page.dart';
 import 'package:diaz1234567890/features/auth/splash_login/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -126,23 +125,6 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: controller.forgotPassword,
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.to(ForgetPasswordPage());
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: AppColors.remindColor,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.02),
@@ -161,6 +143,30 @@ class LoginScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'Log In',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: screenHeight * 0.022,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  height: screenHeight * 0.065,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      controller.loginAsGuest();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF0C2C70),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      'Guest Account',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: screenHeight * 0.022,
