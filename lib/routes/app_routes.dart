@@ -1,4 +1,4 @@
-import 'package:diaz1234567890/features/auth/splash_login/login_screen/screen/login_screen.dart';
+import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step2.dart';

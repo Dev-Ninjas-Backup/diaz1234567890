@@ -1,6 +1,6 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
-import 'package:diaz1234567890/features/auth/splash_login/login_screen/controller/login_controller.dart';
+import 'package:diaz1234567890/features/auth/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
