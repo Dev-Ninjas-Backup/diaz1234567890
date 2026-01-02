@@ -1,13 +1,17 @@
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
+import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/listing_preview_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PackageScreenStep4 extends StatelessWidget {
   const PackageScreenStep4({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<SellPackageController>();
+
     return Scaffold(
       appBar: CustomAppBar(title: 'Register Your Boat'),
       body: Padding(
@@ -124,14 +128,33 @@ class PackageScreenStep4 extends StatelessWidget {
               ),
             ),
             SizedBox(height: 25),
-            Center(
-              child: ListingPreviewCard(),
+            Obx(
+              () => Center(
+                child: ListingPreviewCard(
+                  boatName: controller.nameController.text,
+                  boatYear: controller.selectedBuildYear.value,
+                  boatMake: controller.selectedMake.value,
+                  boatModel: controller.modelController.text,
+                  price: controller.priceController.text,
+                  location:
+                      '${controller.selectedBoatCity.value ?? ''}, ${controller.selectedBoatState.value ?? ''}',
+                  coverImagePath: controller.coverImage.value?.path,
+                ),
+              ),
             ),
             SizedBox(height: 20),
-            CustomButton(
-              label: "Continue to payment →",
-              onPressed: () {},
-              width: double.infinity,
+            Obx(
+              () => CustomButton(
+                label: controller.isLoading.value
+                    ? "Processing..."
+                    : "Continue to payment →",
+                onPressed: controller.isLoading.value
+                    ? () {}
+                    : () async {
+                        await controller.submitBoatOnboarding();
+                      },
+                width: double.infinity,
+              ),
             ),
           ],
         ),

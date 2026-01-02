@@ -155,18 +155,37 @@ class SellPackageScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 24),
-                Obx(
-                  () => Column(
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.errorMessage.value.isNotEmpty) {
+                    return Center(
+                      child: Text(
+                        controller.errorMessage.value,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    );
+                  }
+
+                  if (controller.packages.isEmpty) {
+                    return Center(child: Text('No packages available'));
+                  }
+
+                  return Column(
                     children: controller.packages.map((pkg) {
                       final isSelected =
                           controller.selectedPackage.value == pkg.title;
+                      final priceString =
+                          '\$${pkg.price.toStringAsFixed(2)} /${pkg.billingPeriodMonths == 1 ? 'month' : '${pkg.billingPeriodMonths} months'}';
 
                       return Column(
                         children: [
                           PackageCard(
                             title: pkg.title,
-                            price: pkg.price,
-                            features: pkg.features,
+                            price: priceString,
+                            features: pkg.benefits,
                             tag: pkg.tag,
                             // ignore: deprecated_member_use
                             color: pkg.color.withOpacity(0.1),
@@ -178,9 +197,8 @@ class SellPackageScreen extends StatelessWidget {
                         ],
                       );
                     }).toList(),
-                  ),
-                ),
-
+                  );
+                }),
                 SizedBox(height: 20),
                 CustomButton(
                   label: "Next →",

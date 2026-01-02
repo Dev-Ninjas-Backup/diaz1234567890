@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 
 class YachtFilterBar extends StatelessWidget {
@@ -50,7 +52,6 @@ class YachtFilterBar extends StatelessWidget {
                 value: currentValue,
                 icon: const SizedBox.shrink(), // Hide default icon
                 onChanged: (String? newValue) {
-                  // TODO: Handle filter change
                   if (newValue != null) {
                     print("$key changed to $newValue");
                   }
