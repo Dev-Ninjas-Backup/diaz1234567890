@@ -5,6 +5,8 @@ class TextFieldWidget extends StatelessWidget {
   final String title2;
   final String hint1;
   final String hint2;
+  final TextEditingController? controller1;
+  final TextEditingController? controller2;
 
   const TextFieldWidget({
     super.key,
@@ -12,6 +14,8 @@ class TextFieldWidget extends StatelessWidget {
     required this.title2,
     required this.hint1,
     required this.hint2,
+    this.controller1,
+    this.controller2,
   });
 
   @override
@@ -41,6 +45,7 @@ class TextFieldWidget extends StatelessWidget {
                 color: Colors.white,
               ),
               child: TextField(
+                controller: controller1,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: hint1,
@@ -72,6 +77,7 @@ class TextFieldWidget extends StatelessWidget {
                 color: Colors.white,
               ),
               child: TextField(
+                controller: controller2,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: hint2,

@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class ListingPreviewCard extends StatelessWidget {
-  const ListingPreviewCard({super.key});
+  final String? boatName;
+  final String? boatYear;
+  final String? boatMake;
+  final String? boatModel;
+  final String? price;
+  final String? location;
+  final String? coverImagePath;
+
+  const ListingPreviewCard({
+    super.key,
+    this.boatName,
+    this.boatYear,
+    this.boatMake,
+    this.boatModel,
+    this.price,
+    this.location,
+    this.coverImagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +45,19 @@ class ListingPreviewCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/images/listingPreviewCardPhoto.png', // Placeholder image
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            coverImagePath != null
+                ? Image.file(
+                    File(coverImagePath!),
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/listingPreviewCardPhoto.png',
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -40,24 +65,28 @@ class ListingPreviewCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined,
-                          color: Colors.black54, size: 16),
+                      Icon(
+                        Icons.location_on_outlined,
+                        color: Colors.black54,
+                        size: 16,
+                      ),
                       SizedBox(width: 4),
                       Text(
-                        'Florida',
-                        style: TextStyle(
-                            fontSize: 14, color: Colors.black54),
+                        location ?? 'Location',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
                       ),
                     ],
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '2018 Viking 80 Enclosed Flybridge',
+                    '$boatYear ${boatMake ?? ''} ${boatModel ?? ''}'.trim(),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 12),
                   Divider(color: Colors.grey.shade200),
@@ -68,40 +97,52 @@ class ListingPreviewCard extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Make',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
+                          Text(
+                            'Make',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                           SizedBox(height: 4),
-                          Text('Viking',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500)),
+                          Text(
+                            boatMake ?? 'N/A',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Model',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
+                          Text(
+                            'Model',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                           SizedBox(height: 4),
-                          Text('80 Enclosed',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500)),
+                          Text(
+                            boatModel ?? 'N/A',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Year',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.grey)),
+                          Text(
+                            'Year',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
                           SizedBox(height: 4),
-                          Text('2018',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500)),
+                          Text(
+                            boatYear ?? 'N/A',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -113,16 +154,18 @@ class ListingPreviewCard extends StatelessWidget {
                         TextSpan(
                           text: 'Price: ',
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF007A7A)),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF007A7A),
+                          ),
                         ),
                         TextSpan(
-                          text: '\$1,195,000',
+                          text: price != null ? '\$${price!}' : 'N/A',
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF007A7A)),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF007A7A),
+                          ),
                         ),
                       ],
                     ),

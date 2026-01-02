@@ -132,6 +132,8 @@ class PackageScreenStep3 extends StatelessWidget {
                 title2: 'Last Name: *',
                 hint1: 'Type here',
                 hint2: 'Type here',
+                controller1: controller.sellerNameController,
+                controller2: TextEditingController(), // Combined in seller name
               ),
               SizedBox(height: 14),
               TextFieldWidget(
@@ -139,6 +141,8 @@ class PackageScreenStep3 extends StatelessWidget {
                 title2: 'Email: *',
                 hint1: 'Type here',
                 hint2: 'Type here',
+                controller1: controller.sellerPhoneController,
+                controller2: controller.sellerEmailController,
               ),
               SizedBox(height: 14),
               Column(
@@ -298,6 +302,7 @@ class PackageScreenStep3 extends StatelessWidget {
                           color: Colors.white,
                         ),
                         child: TextField(
+                          controller: controller.sellerZipController,
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Type here',
@@ -321,11 +326,22 @@ class PackageScreenStep3 extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 24),
-              const EditFieldsWidget(title: 'Username: *', hint: 'username'),
-              const EditFieldsWidget(title: 'Password: *', hint: '********'),
-              const EditFieldsWidget(
+              EditFieldsWidget(
+                title: 'Username: *',
+                hint: 'username',
+                controller: controller.sellerUsernameController,
+              ),
+              EditFieldsWidget(
+                title: 'Password: *',
+                hint: '********',
+                controller: controller.sellerPasswordController,
+                obscureText: true,
+              ),
+              EditFieldsWidget(
                 title: 'Confirm Password: *',
                 hint: '********',
+                controller: controller.sellerConfirmPasswordController,
+                obscureText: true,
               ),
               SizedBox(height: 40),
               CustomButton(

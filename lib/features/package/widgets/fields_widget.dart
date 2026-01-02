@@ -41,7 +41,7 @@ class FieldsWidget extends StatelessWidget {
                 child: Obx(
                   () => DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      value: controller.selectedBoatType.value,
+                      value: controller.selectedBuildYear.value,
                       hint: Text(
                         hint,
                         style: const TextStyle(color: Colors.grey),
@@ -53,7 +53,7 @@ class FieldsWidget extends StatelessWidget {
                           child: Text(type),
                         );
                       }).toList(),
-                      onChanged: controller.selectBoatType,
+                      onChanged: controller.selectBuildYear,
                     ),
                   ),
                 ),

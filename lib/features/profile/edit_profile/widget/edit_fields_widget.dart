@@ -4,7 +4,16 @@ import 'package:flutter/material.dart';
 class EditFieldsWidget extends StatelessWidget {
   final String title;
   final String hint;
-  const EditFieldsWidget({super.key, required this.title, required this.hint});
+  final TextEditingController? controller;
+  final bool obscureText;
+
+  const EditFieldsWidget({
+    super.key,
+    required this.title,
+    required this.hint,
+    this.controller,
+    this.obscureText = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +44,8 @@ class EditFieldsWidget extends StatelessWidget {
             ],
           ),
           child: TextField(
+            controller: controller,
+            obscureText: obscureText,
             style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               hintText: hint,
