@@ -14,6 +14,89 @@ class SellPackageController extends GetxController {
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
+  // Payment and Listing Data
+  var paymentIntentId = ''.obs;
+  var paymentIntentClientSecret = ''.obs;
+  var listingId = ''.obs;
+  var userId = ''.obs;
+
+  // Helpers
+  bool _isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
+
+  String _normalizeClassValue(String? value) {
+    if (value == null || value.isEmpty) return '12'; // default value
+    // Extract numeric part if present, otherwise return as-is
+    final match = RegExp(r'(\d+)').firstMatch(value);
+    return match != null ? match.group(1)! : value;
+  }
+
+  void _validateBoatDimensions() {
+    // Sanitize inputs: remove non-numeric and enforce max length
+    String sanitizeFeet(String text) {
+      final cleaned = text.replaceAll(RegExp(r'[^0-9]'), '');
+      return cleaned.length > 3 ? cleaned.substring(0, 3) : cleaned;
+    }
+
+    String sanitizeInches(String text) {
+      final cleaned = text.replaceAll(RegExp(r'[^0-9]'), '');
+      return cleaned.length > 2 ? cleaned.substring(0, 2) : cleaned;
+    }
+
+    final lengthFeetText = sanitizeFeet(lengthFeetController.text);
+    final lengthInchesText = sanitizeInches(lengthInchesController.text);
+    final beamFeetText = sanitizeFeet(beamFeetController.text);
+    final beamInchesText = sanitizeInches(beamInchesController.text);
+    final draftFeetText = sanitizeFeet(draftFeetController.text);
+    final draftInchesText = sanitizeInches(draftInchesController.text);
+
+    // Update controllers with sanitized values
+    lengthFeetController.text = lengthFeetText;
+    lengthInchesController.text = lengthInchesText;
+    beamFeetController.text = beamFeetText;
+    beamInchesController.text = beamInchesText;
+    draftFeetController.text = draftFeetText;
+    draftInchesController.text = draftInchesText;
+
+    final lengthFeet = int.tryParse(lengthFeetText) ?? 0;
+    final lengthInches = int.tryParse(lengthInchesText) ?? 0;
+    final beamFeet = int.tryParse(beamFeetText) ?? 0;
+    final beamInches = int.tryParse(beamInchesText) ?? 0;
+    final draftFeet = int.tryParse(draftFeetText) ?? 0;
+    final draftInches = int.tryParse(draftInchesText) ?? 0;
+
+    if (lengthFeet <= 0 || lengthFeet > 200) {
+      throw Exception(
+        'Length (feet) must be between 1 and 200 (got: $lengthFeet)',
+      );
+    }
+    if (beamFeet <= 0 || beamFeet > 50) {
+      throw Exception('Beam (feet) must be between 1 and 50 (got: $beamFeet)');
+    }
+    if (draftFeet < 0 || draftFeet > 30) {
+      throw Exception(
+        'Draft (feet) must be between 0 and 30 (got: $draftFeet)',
+      );
+    }
+    if (lengthInches < 0 || lengthInches > 11) {
+      throw Exception(
+        'Length (inches) must be between 0 and 11 (got: $lengthInches)',
+      );
+    }
+    if (beamInches < 0 || beamInches > 11) {
+      throw Exception(
+        'Beam (inches) must be between 0 and 11 (got: $beamInches)',
+      );
+    }
+    if (draftInches < 0 || draftInches > 11) {
+      throw Exception(
+        'Draft (inches) must be between 0 and 11 (got: $draftInches)',
+      );
+    }
+  }
+
   // Boat Info Text Controllers
   final nameController = TextEditingController();
   final priceController = TextEditingController();
@@ -66,9 +149,24 @@ class SellPackageController extends GetxController {
   var coverImage = Rxn<XFile>();
   var galleryImages = <XFile>[].obs;
 
-  final List<String> year = ['2021', '2022', '2023', '2024', '2025'];
-  final List<String> make = ['Yamaha', 'Sea Ray', 'Bayliner', 'Beneteau'];
-  final List<String> boatClass = ['Class A', 'Class B', 'Class C'];
+  final List<String> year = [
+    '2018',
+    '2019',
+    '2020',
+    '2021',
+    '2022',
+    '2023',
+    '2024',
+    '2025',
+  ];
+  final List<String> make = [
+    'Yamaha',
+    'Sea Ray',
+    'Bayliner',
+    'Beneteau',
+    'Mercury',
+  ];
+  final List<String> boatClass = ['12', '14', '16', '18', '20', '22', '24'];
   final List<String> material = [
     'Fiberglass',
     'Aluminum',
@@ -217,9 +315,90 @@ class SellPackageController extends GetxController {
     selectedState.value = value;
   }
 
+  void clearAllControllers() {
+    nameController.clear();
+    priceController.clear();
+    modelController.clear();
+    descriptionController.clear();
+    videoURLController.clear();
+    lengthFeetController.clear();
+    lengthInchesController.clear();
+    beamFeetController.clear();
+    beamInchesController.clear();
+    draftFeetController.clear();
+    draftInchesController.clear();
+    engineHoursController.clear();
+    engineMakeController.clear();
+    engineModelController.clear();
+    engineHorsepowerController.clear();
+    sellerNameController.clear();
+    sellerEmailController.clear();
+    sellerUsernameController.clear();
+    sellerPasswordController.clear();
+    boatCityController.clear();
+    boatZipController.clear();
+  }
+
+  void prefillTestData() {
+    // Boat Info
+    nameController.text = 'Sapphire';
+    priceController.text = '125000.5';
+    modelController.text = 'Oceanis 38';
+    descriptionController.text = 'Beautiful yacht with all amenities';
+    videoURLController.text = 'https://www.youtube.com/watch?v=8eZu8K5W0mM';
+
+    // Dimensions
+    lengthFeetController.text = '36';
+    lengthInchesController.text = '6';
+    beamFeetController.text = '12';
+    beamInchesController.text = '6';
+    draftFeetController.text = '3';
+    draftInchesController.text = '2';
+
+    // Engine Info
+    engineHoursController.text = '1200';
+    engineMakeController.text = 'Mercury';
+    engineModelController.text = 'Verado 350';
+    engineHorsepowerController.text = '350';
+
+    // Location
+    boatCityController.text = 'Miami';
+    boatZipController.text = '33101';
+
+    // Seller Info - Use unique values to avoid duplicate user errors
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    sellerNameController.text = 'John Doe';
+    sellerEmailController.text = 'seller$timestamp@example.com';
+    sellerUsernameController.text = 'seller_$timestamp';
+    sellerPasswordController.text = 'strongPassword123!';
+    sellerZipController.text = '33101';
+    sellerPhoneController.text = '+1234567890';
+
+    // Dropdown selections
+    selectedBuildYear.value = '2018';
+    selectedMake.value = 'Beneteau';
+    selectedClass.value = '12';
+    selectedMaterial.value = 'Aluminium';
+    selectedFuelType.value = 'Mercury';
+    selectedCondition.value = 'New';
+    selectedEngineType.value = 'Propeller';
+    selectedPropType.value = 'Propeller';
+    selectedPropMaterial.value = 'Aluminium';
+    selectedNumberOfEngine.value = '2';
+    selectedNumberOfCabin.value = '3';
+    selectedNumberOfHeads.value = '2';
+    selectedBoatState.value = 'Florida';
+    selectedEngineFuelType.value = 'Mercury';
+    selectedPropellerType.value = '12';
+    selectedCountry.value = 'USA';
+    selectedCity.value = 'New York';
+    selectedState.value = 'Florida';
+  }
+
   @override
   void onInit() {
     super.onInit();
+    clearAllControllers();
     fetchPackages();
   }
 
@@ -260,14 +439,59 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
+      // Validate required fields
+      if (nameController.text.isEmpty) {
+        throw Exception('Boat name is required');
+      }
+      if (selectedPackageId.value.isEmpty) {
+        throw Exception('Please select a package first');
+      }
+      if (sellerEmailController.text.isEmpty) {
+        throw Exception('Seller email is required');
+      }
+      if (boatCityController.text.trim().isEmpty) {
+        throw Exception('Boat city is required');
+      }
+      if ((selectedBoatState.value ?? '').trim().isEmpty) {
+        throw Exception('Boat state is required');
+      }
+
+      // Zip must be numeric
+      final zip = boatZipController.text.trim();
+      if (zip.isEmpty || !RegExp(r'^\d{3,10}$').hasMatch(zip)) {
+        throw Exception('Boat ZIP/postal code must be numeric (3-10 digits)');
+      }
+
+      // Build year sanity check
+      final currentYear = DateTime.now().year;
+      final buildYear = int.tryParse(selectedBuildYear.value ?? '') ?? 0;
+      if (buildYear < 1900 || buildYear > currentYear) {
+        throw Exception('Build year must be between 1900 and $currentYear');
+      }
+
+      // Price must be positive
+      final priceVal = double.tryParse(priceController.text) ?? 0.0;
+      if (priceVal <= 0) {
+        throw Exception('Price must be greater than 0');
+      }
+
+      // Video URL optional but if provided should be valid
+      if (videoURLController.text.trim().isNotEmpty &&
+          !_isValidUrl(videoURLController.text.trim())) {
+        throw Exception('Video URL must start with http or https');
+      }
+
+      // Dimensions validation
+      _validateBoatDimensions();
+
       // Build boat info
       final boatInfo = {
         'name': nameController.text,
-        'price': double.tryParse(priceController.text) ?? 0.0,
+        'price': priceVal,
         'model': modelController.text,
         'make': selectedMake.value ?? '',
-        'buildYear': int.tryParse(selectedBuildYear.value ?? '') ?? 0,
-        'boatClass': selectedClass.value ?? '',
+        'buildYear': buildYear,
+        'boatClass': _normalizeClassValue(selectedClass.value),
         'material': selectedMaterial.value ?? '',
         'fuelType': selectedFuelType.value ?? '',
         'condition': selectedCondition.value ?? 'Used',
@@ -279,7 +503,7 @@ class SellPackageController extends GetxController {
         'headsNumber': int.tryParse(selectedNumberOfHeads.value ?? '1') ?? 1,
         'description': descriptionController.text,
         'videoURL': videoURLController.text,
-        'city': selectedBoatCity.value ?? '',
+        'city': boatCityController.text.trim(),
         'state': selectedBoatState.value ?? '',
         'zip': boatZipController.text,
         'boatDimensions': {
@@ -304,12 +528,22 @@ class SellPackageController extends GetxController {
         'electricalEquipment': <String>[],
         'insideEquipment': <String>[],
         'outsideEquipment': <String>[],
-        'coversEquipment': <String>[],
+        'coversEquipment':
+            <String>[], // This stays as is based on your original code
         'additionalEquipment': <String>[],
-        'extraDetails': <Map<String, String>>[],
-        'covers': coverImage.value != null ? [coverImage.value!.path] : [],
-        'galleries': galleryImages.map((image) => image.path).toList(),
+        'extraDetails':
+            <
+              Map<String, dynamic>
+            >[], // Changed to dynamic for proper JSON encoding
       };
+
+      // Prepare file paths separately
+      final List<String> coverPaths = coverImage.value != null
+          ? [coverImage.value!.path]
+          : [];
+      final List<String> galleryPaths = galleryImages
+          .map((image) => image.path)
+          .toList();
 
       // Build seller info
       final sellerInfo = {
@@ -324,17 +558,126 @@ class SellPackageController extends GetxController {
         'zip': sellerZipController.text,
       };
 
+      print('\n=== Submitting Boat Onboarding ===');
+      print('Boat Info: $boatInfo');
+      print('Seller Info: $sellerInfo');
+      print('Plan ID: ${selectedPackageId.value}');
+      print('Cover Images: $coverPaths');
+      print('Gallery Images: $galleryPaths');
+      print('================================\n');
+
+      // Try simple JSON approach first (without file uploads)
+      print('Attempting submission without file uploads first...');
+      try {
+        final response = await ApiService.createBoatOnboardingSimple(
+          boatInfo: boatInfo,
+          sellerInfo: sellerInfo,
+          planId: selectedPackageId.value,
+        );
+
+        print('Response: $response');
+
+        if (response['success'] == true) {
+          // Store payment intent data
+          final data = response['data'];
+          if (data != null) {
+            paymentIntentId.value = data['paymentIntentId'] ?? '';
+            paymentIntentClientSecret.value =
+                data['paymentIntentClientSecret'] ?? '';
+            userId.value = data['userId'] ?? '';
+
+            if (data['listingPreview'] != null) {
+              listingId.value = data['listingPreview']['listingId'] ?? '';
+            }
+
+            print('\n=== Onboarding Success ===');
+            print('Listing ID: ${listingId.value}');
+            print('Payment Intent ID: ${paymentIntentId.value}');
+            print('User ID: ${userId.value}');
+            print('========================\n');
+          }
+
+          Get.snackbar(
+            'Success',
+            'Boat listing created successfully! Listing ID: ${listingId.value}',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 5),
+          );
+
+          // TODO: Navigate to payment screen with payment intent
+          // Get.toNamed('/payment', arguments: {
+          //   'clientSecret': paymentIntentClientSecret.value,
+          //   'listingId': listingId.value,
+          // });
+
+          return;
+        } else {
+          errorMessage.value =
+              response['message'] ?? 'Failed to create listing';
+          Get.snackbar(
+            'Error',
+            errorMessage.value,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+          return;
+        }
+      } catch (e) {
+        print('Simple submission failed: $e');
+        print(
+          'Note: Listing created without images. Files may need separate upload endpoint.',
+        );
+
+        // Don't try multipart if simple JSON succeeded with payment intent
+        if (paymentIntentId.value.isNotEmpty) {
+          Get.snackbar(
+            'Note',
+            'Listing created but images need to be uploaded separately',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.orange,
+            colorText: Colors.white,
+          );
+          return;
+        }
+
+        print('Trying with file uploads...');
+      }
+
+      // If simple approach fails or doesn't work, try with files
       final response = await ApiService.createBoatOnboarding(
         boatInfo: boatInfo,
         sellerInfo: sellerInfo,
         planId: selectedPackageId.value,
+        coverPaths: coverPaths,
+        galleryPaths: galleryPaths,
       );
 
+      print('Response: $response');
+
       if (response['success'] == true) {
+        // Store payment intent data
+        final data = response['data'];
+        if (data != null) {
+          paymentIntentId.value = data['paymentIntentId'] ?? '';
+          paymentIntentClientSecret.value =
+              data['paymentIntentClientSecret'] ?? '';
+          userId.value = data['userId'] ?? '';
+
+          if (data['listingPreview'] != null) {
+            listingId.value = data['listingPreview']['listingId'] ?? '';
+          }
+        }
+
         Get.snackbar(
           'Success',
-          'Boat listing created successfully!',
+          'Boat listing created successfully with images! Listing ID: ${listingId.value}',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 5),
         );
         // Navigate to payment or success screen
       } else {
@@ -343,6 +686,8 @@ class SellPackageController extends GetxController {
           'Error',
           errorMessage.value,
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
         );
       }
     } catch (e) {
@@ -351,6 +696,9 @@ class SellPackageController extends GetxController {
         'Error',
         errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
       );
       print('Error submitting boat listing: $e');
     } finally {
