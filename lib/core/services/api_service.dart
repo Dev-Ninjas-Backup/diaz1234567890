@@ -1,9 +1,31 @@
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
+import 'dart:io';
 
 class ApiService {
   static const String baseUrl =
       'https://api.floridayachttrader.com'; // Replace with your actual base URL
+
+  /// Get MIME type from file extension
+  static MediaType _getMediaType(String filename) {
+    final ext = filename.split('.').last.toLowerCase();
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      case 'gif':
+        return MediaType('image', 'gif');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'heic':
+        return MediaType('image', 'heic');
+      default:
+        return MediaType('application', 'octet-stream');
+    }
+  }
 
   static Future<dynamic> getSubscriptionPlans() async {
     try {
@@ -25,7 +47,7 @@ class ApiService {
     }
   }
 
-  static Future<dynamic> createBoatOnboarding({
+  static Future<dynamic> createBoatOnboardingSimple({
     required Map<String, dynamic> boatInfo,
     required Map<String, dynamic> sellerInfo,
     required String planId,
@@ -37,10 +59,23 @@ class ApiService {
         'planId': planId,
       };
 
+      print('\n=== Simple JSON Request (No Files) ===');
+      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('\\nBoat Info Keys: ${boatInfo.keys.toList()}');
+      print('\\nBoat Info:');
+      boatInfo.forEach((key, value) {
+        print('  $key: $value (${value.runtimeType})');
+      });
+      print('\\nRequest Body: ${json.encode(requestBody)}');
+      print('=====================================\n');
+
       final response = await http
           .post(
             Uri.parse('$baseUrl/api/boats/seller/onboarding'),
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
             body: json.encode(requestBody),
           )
           .timeout(
@@ -52,14 +87,235 @@ class ApiService {
         final jsonData = json.decode(response.body);
         return jsonData;
       } else {
-        final errorData = json.decode(response.body);
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Server error (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Server error (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } on SocketException catch (e) {
+      throw Exception(
+        'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException catch (e) {
+      throw Exception(
+        'Connection error: ${e.message}. The server may be unavailable.',
+      );
+    } catch (e) {
+      throw Exception('Error creating boat listing: $e');
+    }
+  }
+
+  static Future<dynamic> createBoatOnboarding({
+    required Map<String, dynamic> boatInfo,
+    required Map<String, dynamic> sellerInfo,
+    required String planId,
+    List<String>? coverPaths,
+    List<String>? galleryPaths,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/api/boats/seller/onboarding'),
+      );
+
+      // Remove covers and galleries from boatInfo before sending
+      final boatInfoCopy = Map<String, dynamic>.from(boatInfo);
+      boatInfoCopy.remove('covers');
+      boatInfoCopy.remove('galleries');
+
+      // Add text fields
+      request.fields['boatInfo'] = json.encode(boatInfoCopy);
+      request.fields['sellerInfo'] = json.encode(sellerInfo);
+      request.fields['planId'] = planId;
+
+      print('\n=== API Multipart Request ===');
+      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('boatInfo: ${json.encode(boatInfoCopy)}');
+      print('sellerInfo: ${json.encode(sellerInfo)}');
+      print('planId: $planId');
+
+      // Add cover image
+      if (coverPaths != null && coverPaths.isNotEmpty) {
+        for (var path in coverPaths) {
+          if (path.isNotEmpty) {
+            var file = File(path);
+            if (await file.exists()) {
+              var fileSize = await file.length();
+              var filename = path.split('/').last;
+              var mediaType = _getMediaType(filename);
+              print(
+                'Cover file size: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
+              );
+              print('Cover content type: ${mediaType.mimeType}');
+
+              var stream = http.ByteStream(file.openRead());
+              var multipartFile = http.MultipartFile(
+                'covers',
+                stream,
+                fileSize,
+                filename: filename,
+                contentType: mediaType,
+              );
+              request.files.add(multipartFile);
+              print('Added cover: $filename');
+            }
+          }
+        }
+      }
+
+      // Add gallery images
+      if (galleryPaths != null && galleryPaths.isNotEmpty) {
+        for (var path in galleryPaths) {
+          if (path.isNotEmpty) {
+            var file = File(path);
+            if (await file.exists()) {
+              var fileSize = await file.length();
+              var filename = path.split('/').last;
+              var mediaType = _getMediaType(filename);
+              print(
+                'Gallery file size: ${(fileSize / 1024 / 1024).toStringAsFixed(2)} MB',
+              );
+              print('Gallery content type: ${mediaType.mimeType}');
+
+              var stream = http.ByteStream(file.openRead());
+              var multipartFile = http.MultipartFile(
+                'galleries',
+                stream,
+                fileSize,
+                filename: filename,
+                contentType: mediaType,
+              );
+              request.files.add(multipartFile);
+              print('Added gallery: $filename');
+            }
+          }
+        }
+      }
+
+      print('Total files: ${request.files.length}');
+      print('Sending request...');
+      print('=============================\n');
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 120),
+        onTimeout: () =>
+            throw Exception('Upload timeout - files may be too large'),
+      );
+
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('\n=== API Response ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body: ${response.body}');
+      print('===================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Server error (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Server error (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } on SocketException catch (e) {
+      throw Exception(
+        'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException catch (e) {
+      throw Exception(
+        'Connection error: ${e.message}. The server may be unavailable or files are too large.',
+      );
+    } catch (e) {
+      throw Exception('Error creating boat listing: $e');
+    }
+  }
+
+  /// Test endpoint with minimal payload to debug 500 errors
+  static Future<dynamic> createBoatOnboardingMinimal({
+    required String boatName,
+    required double price,
+    required String make,
+    required String model,
+    required int buildYear,
+    required String city,
+    required String state,
+    required String zip,
+    required String sellerName,
+    required String sellerEmail,
+    required String username,
+    required String password,
+    required String planId,
+  }) async {
+    try {
+      final requestBody = {
+        'boatInfo': {
+          'name': boatName,
+          'price': price,
+          'make': make,
+          'model': model,
+          'buildYear': buildYear,
+          'city': city,
+          'state': state,
+          'zip': zip,
+        },
+        'sellerInfo': {
+          'name': sellerName,
+          'email': sellerEmail,
+          'username': username,
+          'password': password,
+        },
+        'planId': planId,
+      };
+
+      print('\n=== Minimal Test Request ===');
+      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('Body: ${json.encode(requestBody)}');
+      print('=============================\n');
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/boats/seller/onboarding'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('\n=== API Response ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body: ${response.body}');
+      print('===================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
         throw Exception(
-          errorData['message'] ??
-              'Failed to create boat listing: ${response.statusCode}',
+          'Server error (${response.statusCode}): ${response.body}',
         );
       }
     } catch (e) {
-      throw Exception('Error creating boat listing: $e');
+      throw Exception('Error with minimal test: $e');
     }
   }
 }

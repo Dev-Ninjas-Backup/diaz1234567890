@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TextFieldWidget extends StatelessWidget {
   final String title1;
@@ -7,6 +8,9 @@ class TextFieldWidget extends StatelessWidget {
   final String hint2;
   final TextEditingController? controller1;
   final TextEditingController? controller2;
+  final bool isNumeric;
+  final int? maxLength1;
+  final int? maxLength2;
 
   const TextFieldWidget({
     super.key,
@@ -16,6 +20,9 @@ class TextFieldWidget extends StatelessWidget {
     required this.hint2,
     this.controller1,
     this.controller2,
+    this.isNumeric = false,
+    this.maxLength1,
+    this.maxLength2,
   });
 
   @override
@@ -46,10 +53,18 @@ class TextFieldWidget extends StatelessWidget {
               ),
               child: TextField(
                 controller: controller1,
+                keyboardType: isNumeric
+                    ? TextInputType.number
+                    : TextInputType.text,
+                maxLength: maxLength1 ?? (isNumeric ? 3 : null),
+                inputFormatters: isNumeric
+                    ? [FilteringTextInputFormatter.digitsOnly]
+                    : [],
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: hint1,
                   hintStyle: TextStyle(color: Colors.grey),
+                  counterText: '',
                 ),
               ),
             ),
@@ -78,11 +93,18 @@ class TextFieldWidget extends StatelessWidget {
               ),
               child: TextField(
                 controller: controller2,
+                keyboardType: isNumeric
+                    ? TextInputType.number
+                    : TextInputType.text,
+                maxLength: maxLength2 ?? (isNumeric ? 2 : null),
+                inputFormatters: isNumeric
+                    ? [FilteringTextInputFormatter.digitsOnly]
+                    : [],
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: hint2,
-
                   hintStyle: TextStyle(color: Colors.grey),
+                  counterText: '',
                 ),
               ),
             ),

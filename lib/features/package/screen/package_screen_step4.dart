@@ -137,7 +137,7 @@ class PackageScreenStep4 extends StatelessWidget {
                   boatModel: controller.modelController.text,
                   price: controller.priceController.text,
                   location:
-                      '${controller.selectedBoatCity.value ?? ''}, ${controller.selectedBoatState.value ?? ''}',
+                      '${controller.boatCityController.text.trim()}, ${controller.selectedBoatState.value ?? ''}',
                   coverImagePath: controller.coverImage.value?.path,
                 ),
               ),

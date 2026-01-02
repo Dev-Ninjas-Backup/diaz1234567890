@@ -6,12 +6,25 @@ import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 import 'dart:io';
 
-class PackageScreenStep2 extends StatelessWidget {
+class PackageScreenStep2 extends StatefulWidget {
   const PackageScreenStep2({super.key});
 
   @override
+  State<PackageScreenStep2> createState() => _PackageScreenStep2State();
+}
+
+class _PackageScreenStep2State extends State<PackageScreenStep2> {
+  @override
+  void initState() {
+    super.initState();
+    // Clear all form controllers when entering Step 2
+    final controller = Get.find<SellPackageController>();
+    controller.clearAllControllers();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SellPackageController());
+    final controller = Get.find<SellPackageController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -344,6 +357,9 @@ class PackageScreenStep2 extends StatelessWidget {
                 hint2: '6',
                 controller1: controller.lengthFeetController,
                 controller2: controller.lengthInchesController,
+                isNumeric: true,
+                maxLength1: 2,
+                maxLength2: 1,
               ),
               SizedBox(height: 14),
               TextFieldWidget(
@@ -353,6 +369,9 @@ class PackageScreenStep2 extends StatelessWidget {
                 hint2: '6',
                 controller1: controller.beamFeetController,
                 controller2: controller.beamInchesController,
+                isNumeric: true,
+                maxLength1: 2,
+                maxLength2: 1,
               ),
               SizedBox(height: 14),
               TextFieldWidget(
@@ -362,6 +381,9 @@ class PackageScreenStep2 extends StatelessWidget {
                 hint2: '2',
                 controller1: controller.draftFeetController,
                 controller2: controller.draftInchesController,
+                isNumeric: true,
+                maxLength1: 1,
+                maxLength2: 1,
               ),
               SizedBox(height: 30),
               Text(
