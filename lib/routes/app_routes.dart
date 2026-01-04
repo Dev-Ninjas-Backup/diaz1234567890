@@ -33,6 +33,8 @@ class AppRoute {
   static String getPackageScreenStep4() => packageScreenStep4;
   static String getLoginScreen() => loginScreen;
 
+  // ...existing code...
+
   static List<GetPage> routes = [
     GetPage(name: bottomNavBar, page: () => BottomNavbarScreen()),
     GetPage(name: profileScreen, page: () => ProfileScreen()),

@@ -5,6 +5,7 @@ import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/auth/login_screen/controller/login_controller.dart';
+import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:flutter/material.dart';
@@ -269,9 +270,11 @@ class ProfileScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               IconButton(
-                                onPressed: () {
-                                  loginController.isGuest.value =
-                                      true; // Optional: reset on logout
+                                onPressed: () async {
+                                  // Remove stored token and user id, update reactive
+                                  // state, then navigate to login screen.
+                                  await StorageService.logoutUser();
+                                  loginController.isGuest.value = true;
                                   Get.offAll(LoginScreen());
                                 },
                                 icon: Icon(
