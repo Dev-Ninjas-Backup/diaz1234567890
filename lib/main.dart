@@ -8,5 +8,13 @@ void main() async {
   Get.put(LoginController());
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService.init();
+  // Sync the reactive guest/auth state from persisted storage so Obx widgets
+  // that observe `isGuest` will build consistently on startup.
+  try {
+    final lc = Get.find<LoginController>();
+    lc.isGuest.value = !StorageService.hasToken();
+  } catch (_) {
+    // If the controller isn't available for some reason, ignore.
+  }
   runApp(Diaz());
 }

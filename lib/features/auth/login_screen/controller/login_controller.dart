@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class LoginController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('https://api.floridayachttrader.com/api/auth/login'),
+        Uri.parse(Endpoints.login),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -79,6 +80,7 @@ class LoginController extends GetxController {
           final String token = jsonResponse['data']['token'];
           await StorageService.saveToken(token, userId);
           isGuest.value = false;
+          print("User Token: $token");
 
           Get.offAllNamed('/bottomNavBar');
         } else {

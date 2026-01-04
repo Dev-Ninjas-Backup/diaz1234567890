@@ -1,9 +1,12 @@
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/features/profile/my_listing/model/boat.dart';
 import 'package:flutter/material.dart';
 
 class MyListingContainer extends StatelessWidget {
-  const MyListingContainer({super.key});
+  final Boat? boat;
+
+  const MyListingContainer({super.key, this.boat});
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +37,25 @@ class MyListingContainer extends StatelessWidget {
                       topLeft: Radius.circular(14),
                       topRight: Radius.circular(14),
                     ),
-                    child: Image.asset(
-                      Imagepath.ship1,
-                      height: 98,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child: boat != null && boat!.coverImages.isNotEmpty
+                        ? Image.network(
+                            boat!.coverImages.first.url,
+                            height: 98,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
+                              Imagepath.ship1,
+                              height: 98,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Image.asset(
+                            Imagepath.ship1,
+                            height: 98,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                   ),
 
                   Padding(
@@ -49,7 +65,7 @@ class MyListingContainer extends StatelessWidget {
                         Icon(Icons.location_on_outlined),
                         SizedBox(width: 5),
                         Text(
-                          'Florida',
+                          boat?.state ?? 'Florida',
                           style: TextStyle(
                             color: AppColors.subTitle,
                             fontSize: 12,
@@ -62,7 +78,7 @@ class MyListingContainer extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      '2015 Lagoon 450 F Catamaran',
+                      boat?.name ?? '2015 Lagoon 450 F Catamaran',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.black,
@@ -93,7 +109,7 @@ class MyListingContainer extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Mercury',
+                              boat?.make ?? 'Mercury',
                               style: TextStyle(
                                 color: AppColors.subTitle,
                                 fontSize: 13,
@@ -115,7 +131,7 @@ class MyListingContainer extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              'Volvo',
+                              boat?.model ?? 'Volvo',
                               style: TextStyle(
                                 color: AppColors.subTitle,
                                 fontSize: 13,
@@ -137,7 +153,7 @@ class MyListingContainer extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '2008',
+                              boat?.buildYear?.toString() ?? '2008',
                               style: TextStyle(
                                 color: AppColors.subTitle,
                                 fontSize: 13,
@@ -158,7 +174,7 @@ class MyListingContainer extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      'Price: \$ 1,195,000',
+                      'Price: \$ ${boat != null ? boat!.price.toString() : '1,195,000'}',
                       style: TextStyle(
                         color: Color(0xFF00AC9D),
                         fontSize: 16,
