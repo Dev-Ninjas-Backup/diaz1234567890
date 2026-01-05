@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/features/details/controller/details_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,23 +15,40 @@ class DetailsImageSlider extends StatelessWidget {
         SizedBox(
           height: 244,
           width: double.infinity,
-          child: PageView.builder(
-            itemCount: controller.images.length,
-            onPageChanged: controller.onPageChanged,
-            itemBuilder: (context, index) {
-              return ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-                child: Image.asset(
-                  controller.images[index],
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              );
-            },
-          ),
+          child: Obx(() {
+            // rebuild when controller.images changes
+            if (kDebugMode) {
+              final count = controller.images.length;
+              if (count > 0) {
+                print(
+                  'Building image slider with $count images, first:${controller.images[0]}',
+                );
+              } else {
+                print('Building image slider with 0 images');
+              }
+            }
+
+            return PageView.builder(
+              itemCount: controller.images.length,
+              onPageChanged: controller.onPageChanged,
+              itemBuilder: (context, index) {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(12),
+                    bottomRight: Radius.circular(12),
+                  ),
+                  child: controller.images.isNotEmpty
+                      ? Image.network(
+                          controller.images[index],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        )
+                      : const SizedBox.shrink(),
+                );
+              },
+            );
+          }),
         ),
         Positioned(
           bottom: 12,
