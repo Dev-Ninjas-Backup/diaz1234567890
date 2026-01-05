@@ -98,36 +98,77 @@ class YachtHomePage extends StatelessWidget {
 
             SizedBox(height: 20),
             Obx(
-              () => SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: List.generate(controller.tabs.length, (index) {
-                    bool isSelected = controller.selectedTab.value == index;
-                    return GestureDetector(
-                      onTap: () => controller.changeTab(index),
-                      child: Container(
-                        margin: EdgeInsets.only(right: 12),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.black : Color(0xFFF5FEFF),
-                          border: Border.all(color: Colors.black),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          controller.tabs[index],
-                          style: getTextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w500,
+              () => Column(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: List.generate(controller.tabs.length, (index) {
+                        bool isSelected = controller.selectedTab.value == index;
+                        return GestureDetector(
+                          onTap: () => controller.changeTab(index),
+                          child: Container(
+                            margin: EdgeInsets.only(right: 12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.black
+                                  : Color(0xFFF5FEFF),
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              controller.tabs[index],
+                              style: getTextStyle(
+                                color: isSelected ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
-                        ),
+                        );
+                      }),
+                    ),
+                  ),
+                  // Show featured site selector only when Featured Yacht tab is selected
+                  if (controller.selectedTab.value == 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                    );
-                  }),
-                ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Site:',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(width: 12),
+                          DropdownButton<String>(
+                            value: controller.selectedFeaturedSite.value,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'JUPITER',
+                                child: Text('JUPITER'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'FLORIDA',
+                                child: Text('FLORIDA'),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              if (val == null) return;
+                              controller.selectedFeaturedSite.value = val;
+                              controller.fetchFeaturedBoats(site: val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             ),
             YachtListingPage(),
