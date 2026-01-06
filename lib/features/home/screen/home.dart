@@ -5,6 +5,7 @@ import 'package:diaz1234567890/features/home/screen/listing_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
+import 'package:diaz1234567890/features/ai/screen/ai_chat_screen.dart';
 
 class YachtHomePage extends StatelessWidget {
   const YachtHomePage({super.key});
@@ -173,6 +174,24 @@ class YachtHomePage extends StatelessWidget {
             ),
             YachtListingPage(),
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // open the AI chat screen
+          Get.to(() => const AiChatScreen());
+        },
+        backgroundColor: Colors.white,
+        icon: Image.asset(Iconpath.askAi, width: 18, height: 18),
+        label: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'Ask AI',
+            style: getTextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );
