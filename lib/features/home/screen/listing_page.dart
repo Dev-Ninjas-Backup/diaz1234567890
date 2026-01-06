@@ -3,6 +3,7 @@ import 'package:diaz1234567890/features/home/controller/yacht_listing_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/home_model.dart';
+import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 
 class YachtListingPage extends StatelessWidget {
   final YachtListingController controller = Get.find<YachtListingController>();
@@ -63,108 +64,122 @@ class YachtListingPage extends StatelessWidget {
             itemCount: yachts.length,
             itemBuilder: (context, index) {
               final yacht = yachts[index];
-              return Container(
-                width: 230,
-                margin: const EdgeInsets.only(right: 12, bottom: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(12),
+              return GestureDetector(
+                onTap: () {
+                  // Pass the yacht id to the DetailsController via Get.arguments
+                  try {
+                    Get.to(() => DetailsScreen(), arguments: yacht.id);
+                  } catch (_) {
+                    // Fallback to named route if used elsewhere
+                    Get.toNamed('/detailsScreen', arguments: yacht.id);
+                  }
+                },
+                child: Container(
+                  width: 230,
+                  margin: const EdgeInsets.only(right: 12, bottom: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
-                      child: Image.network(
-                        yacht.image,
-                        height: 150,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            height: 150,
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            Imagepath.singleBoat,
-                            height: 150,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          );
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 14,
-                                  color: Colors.grey,
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        child: Image.network(
+                          yacht.image,
+                          height: 150,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              height: 150,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  yacht.location,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              yacht.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
                               ),
-                            ),
-                            const SizedBox(height: 6),
-                            const Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildDetail("Make", yacht.make),
-                                _buildDetail("Model", yacht.model),
-                                _buildDetail("Year", yacht.year),
-                              ],
-                            ),
-                            const Divider(),
-                            const Spacer(),
-                            Text(
-                              "Price: ${yacht.price}",
-                              style: const TextStyle(
-                                color: Color(0xFF00A3AC),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              Imagepath.singleBoat,
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    size: 14,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    yacht.location,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                yacht.title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildDetail("Make", yacht.make),
+                                  _buildDetail("Model", yacht.model),
+                                  _buildDetail("Year", yacht.year),
+                                ],
+                              ),
+                              const Divider(),
+                              const Spacer(),
+                              Text(
+                                "Price: ${yacht.price}",
+                                style: const TextStyle(
+                                  color: Color(0xFF00A3AC),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
