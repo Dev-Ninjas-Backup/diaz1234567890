@@ -8,4 +8,7 @@ class Endpoints {
   static const String allBoats = '$baseUrl/boats';
   static const String featuredBoats = '$baseUrl/boats/featured';
   static const String premiumDeals = '$baseUrl/boats/premium-deals/florida';
+  // Normalized to a single slash to avoid relying on tolerant URI parsing
+  static const String userMe = '$baseUrl/auth/profile';
+  static const String changePassword = '$baseUrl/auth/change-password';
 }

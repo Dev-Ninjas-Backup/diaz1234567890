@@ -109,24 +109,43 @@ class ProfileScreen extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Image.asset(
-                      Imagepath.user,
-                      height: 68,
-                      width: 68,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    "Wade Warren",
-                    style: getTextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
-                    ),
-                  ),
+                  Obx(() {
+                    final avatar = profileController.avatarUrl.value;
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: avatar != null && avatar.isNotEmpty
+                          ? Image.network(
+                              avatar,
+                              height: 68,
+                              width: 68,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                Imagepath.user,
+                                height: 68,
+                                width: 68,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Image.asset(
+                              Imagepath.user,
+                              height: 68,
+                              width: 68,
+                              fit: BoxFit.cover,
+                            ),
+                    );
+                  }),
+                  const SizedBox(height: 20),
+                  Obx(() {
+                    final name = profileController.userName.value ?? '';
+                    return Text(
+                      name.isNotEmpty ? name : '',
+                      style: getTextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
+                    );
+                  }),
                   SizedBox(height: 30),
                   Row(
                     children: [

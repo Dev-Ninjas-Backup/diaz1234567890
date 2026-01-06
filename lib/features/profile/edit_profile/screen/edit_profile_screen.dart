@@ -28,6 +28,7 @@ class EditProfileScreen extends StatelessWidget {
                   children: [
                     Obx(() {
                       final File? imageFile = controller.selectedImage.value;
+                      final existingAvatar = controller.existingAvatarUrl.value;
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(100),
                         child: imageFile != null
@@ -36,6 +37,20 @@ class EditProfileScreen extends StatelessWidget {
                                 height: 68,
                                 width: 68,
                                 fit: BoxFit.cover,
+                              )
+                            : (existingAvatar != null &&
+                                  existingAvatar.isNotEmpty)
+                            ? Image.network(
+                                existingAvatar,
+                                height: 68,
+                                width: 68,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  Imagepath.user,
+                                  height: 68,
+                                  width: 68,
+                                  fit: BoxFit.cover,
+                                ),
                               )
                             : Image.asset(
                                 Imagepath.user,
@@ -67,22 +82,35 @@ class EditProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              const EditFieldsWidget(
+              EditFieldsWidget(
                 title: 'Full Name: *',
                 hint: 'Update Name',
+                controller: controller.nameController,
               ),
-              const EditFieldsWidget(
-                title: 'Contact Number: *',
-                hint: 'Update Contact Number',
-              ),
-              const EditFieldsWidget(
+              EditFieldsWidget(
                 title: 'Country: *',
                 hint: 'Update Country',
+                controller: controller.countryController,
               ),
-              const EditFieldsWidget(title: 'City: *', hint: 'Update City'),
-              const EditFieldsWidget(
+              EditFieldsWidget(
+                title: 'City: *',
+                hint: 'Update City',
+                controller: controller.cityController,
+              ),
+              EditFieldsWidget(
+                title: 'State: *',
+                hint: 'Update State',
+                controller: controller.stateController,
+              ),
+              EditFieldsWidget(
+                title: 'Zip Code: *',
+                hint: 'Update Zip Code',
+                controller: controller.zipController,
+              ),
+              EditFieldsWidget(
                 title: 'Phone Number:',
                 hint: 'Update Phone Number',
+                controller: controller.phoneController,
               ),
               const Text(
                 'Change Password',
@@ -93,24 +121,29 @@ class EditProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const EditFieldsWidget(
+              EditFieldsWidget(
                 title: 'Enter Old Password: *',
                 hint: '********',
+                controller: controller.oldPasswordController,
+                obscureText: true,
               ),
-              const EditFieldsWidget(
+              EditFieldsWidget(
                 title: 'Enter New Password: *',
                 hint: '********',
+                controller: controller.newPasswordController,
+                obscureText: true,
               ),
-              const EditFieldsWidget(
+              EditFieldsWidget(
                 title: 'Enter Confirm Password: *',
                 hint: '********',
+                controller: controller.confirmPasswordController,
+                obscureText: true,
               ),
               const SizedBox(height: 10),
               CustomButton(
                 label: 'Save Change',
-                onPressed: () {
-                  Get.snackbar('Success', 'Saved Changes');
-                  Get.offAllNamed('/profileScreen');
+                onPressed: () async {
+                  await controller.saveChanges();
                 },
               ),
             ],
