@@ -84,7 +84,7 @@ class EditProfileController extends GetxController {
         }
 
         if (data != null) {
-          nameController.text = (data['username'] ?? '')?.toString() ?? '';
+          nameController.text = (data['name'] ?? '')?.toString() ?? '';
           phoneController.text = (data['phone'] ?? '')?.toString() ?? '';
           contactController.text = phoneController.text;
           countryController.text = (data['country'] ?? '')?.toString() ?? '';
@@ -142,7 +142,7 @@ class EditProfileController extends GetxController {
       }
 
       // Add fields
-      request.fields['username'] = nameController.text;
+      request.fields['name'] = nameController.text;
       request.fields['phone'] = phoneController.text;
       request.fields['country'] = countryController.text;
       request.fields['city'] = cityController.text;

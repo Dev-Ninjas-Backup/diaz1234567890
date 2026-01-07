@@ -2,7 +2,9 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
 import 'package:diaz1234567890/features/search/widget/filter_bar.dart';
+import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 
 class YachtSearchPage extends StatelessWidget {
@@ -10,6 +12,10 @@ class YachtSearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final YachtSearchListingController controller = Get.put(
+      YachtSearchListingController(),
+    );
+
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
       body: SingleChildScrollView(
@@ -95,13 +101,18 @@ class YachtSearchPage extends StatelessWidget {
 
             SizedBox(height: 20),
 
-            YachtFilterBar(
-              filters: {
-                "Year": "2008",
-                "Model": "80 Enclosed",
-                "Price": "\$22,000",
-                "Boat Type": "Flybridge",
-              },
+            Obx(
+              () => YachtFilterBar(
+                models: controller.models.toList(),
+                classes: controller.classes.toList(),
+                onModelChanged: (value) =>
+                    controller.selectedModel.value = value,
+                onClassChanged: (value) =>
+                    controller.selectedClass.value = value,
+                onYearChanged: (value) => controller.selectedYear.value = value,
+                onPriceChanged: (value) =>
+                    controller.selectedPrice.value = value,
+              ),
             ),
             YachtSearchListingPage(),
 

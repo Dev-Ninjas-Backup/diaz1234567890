@@ -88,7 +88,9 @@ class YachtListingController extends GetxController {
                 }
               }
 
+              final id = (map['id'] ?? map['DocumentID'] ?? '').toString();
               final yacht = Yacht(
+                id: id,
                 title: map['ListingTitle'] ?? 'Unknown Yacht',
                 location:
                     '${map['BoatLocation']?['BoatCityName'] ?? ''}, ${map['BoatLocation']?['BoatStateCode'] ?? ''}',
@@ -151,7 +153,12 @@ class YachtListingController extends GetxController {
             }
           }
 
+          final id =
+              ( //boatData['id'] ??
+                  boatData['boatId'] ?? '')
+                  .toString();
           final yacht = Yacht(
+            id: id,
             title:
                 boatData['name'] ?? boatData['ListingTitle'] ?? 'Unknown Yacht',
             location:
@@ -208,7 +215,9 @@ class YachtListingController extends GetxController {
                 }
               }
 
+              final id = (map['DocumentID'] ?? '').toString();
               final yacht = Yacht(
+                id: id,
                 title: map['ListingTitle'] ?? 'Unknown Yacht',
                 location:
                     '${map['BoatLocation']?['BoatCityName'] ?? ''}, ${map['BoatLocation']?['BoatStateCode'] ?? ''}',

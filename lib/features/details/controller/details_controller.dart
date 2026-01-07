@@ -43,9 +43,9 @@ class DetailsController extends GetxController {
       final uri = Uri.parse(Endpoints.getBoatById(id));
       if (kDebugMode) {
         print('Fetching boat by id: $uri');
-        print('Auth token present: ${token != null && token.isNotEmpty}');
+        //print('Auth token present: ${token != null && token.isNotEmpty}');
       }
-      final response = await http.get(uri, headers: headers);
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
