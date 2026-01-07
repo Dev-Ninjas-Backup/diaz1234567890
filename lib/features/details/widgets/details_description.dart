@@ -56,21 +56,21 @@ class DetailsDescription extends StatelessWidget {
     });
   }
 
-  Widget _buildFeatureItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('• ', style: TextStyle(fontSize: 12)),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 11, height: 1.1),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildFeatureItem(String text) {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(bottom: 2.0),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text('• ', style: TextStyle(fontSize: 12)),
+  //         Expanded(
+  //           child: Text(
+  //             text,
+  //             style: const TextStyle(fontSize: 11, height: 1.1),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

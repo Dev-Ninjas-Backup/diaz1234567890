@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:diaz1234567890/features/details/controller/details_controller.dart';
+//import 'package:diaz1234567890/features/details/controller/details_controller.dart';
 
 class DetailsExpansionTileList extends StatelessWidget {
   const DetailsExpansionTileList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<DetailsController>();
+    //final controller = Get.find<DetailsController>();
 
     return Obx(() {
-      final gallery = controller.boat.value?.galleryImages ?? <dynamic>[];
+      //final gallery = controller.boat.value?.galleryImages ?? <dynamic>[];
 
-      Widget galleryChildrenBuilder() {
-        if (gallery.isEmpty) return const SizedBox.shrink();
-        // show images in a vertical column (keeping layout minimal)
-        return Column(
-          children: gallery
-              .map<Widget>(
-                (img) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      img.url ?? '',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        );
-      }
+      // Widget galleryChildrenBuilder() {
+      //   if (gallery.isEmpty) return const SizedBox.shrink();
+      //   // show images in a vertical column (keeping layout minimal)
+      //   return Column(
+      //     children: gallery
+      //         .map<Widget>(
+      //           (img) => Padding(
+      //             padding: const EdgeInsets.symmetric(vertical: 8.0),
+      //             child: ClipRRect(
+      //               borderRadius: BorderRadius.circular(8),
+      //               child: Image.network(
+      //                 img.url ?? '',
+      //                 fit: BoxFit.cover,
+      //                 width: double.infinity,
+      //                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      //               ),
+      //             ),
+      //           ),
+      //         )
+      //         .toList(),
+      //   );
+      // }
 
       return Column(
         children: [
@@ -44,7 +44,7 @@ class DetailsExpansionTileList extends StatelessWidget {
           // Galley tile - show gallery images from API
           _ExpansionTileWithScale(
             title: 'Galley',
-            children: [galleryChildrenBuilder()],
+            // children: [galleryChildrenBuilder()],
           ),
           const _ExpansionTileWithScale(title: 'Companionway'),
           const _ExpansionTileWithScale(title: 'Master Stateroom'),
@@ -72,11 +72,7 @@ class DetailsExpansionTileList extends StatelessWidget {
 
 class _ExpansionTileWithScale extends StatelessWidget {
   final String title;
-  final List<Widget> children;
-  const _ExpansionTileWithScale({
-    required this.title,
-    this.children = const [],
-  });
+  const _ExpansionTileWithScale({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +91,7 @@ class _ExpansionTileWithScale extends StatelessWidget {
             Divider(color: Colors.grey.shade300, height: 1),
           ],
         ),
-        children: children,
+        //children: children,
       ),
     );
   }

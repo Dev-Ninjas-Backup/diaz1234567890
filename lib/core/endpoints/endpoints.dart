@@ -5,6 +5,7 @@ class Endpoints {
   static const String getMyBoats = '$baseUrl/boats/seller/get-own-boats';
   // Build boat-by-id endpoint
   static String getBoatById(String id) => '$baseUrl/boats/$id/details';
+  static String deleteBoat(String boatId) => '$baseUrl/boats/seller/delete-listing/$boatId';
   static const String allBoats = '$baseUrl/boats';
   static const String featuredBoats = '$baseUrl/boats/featured';
   static const String premiumDeals = '$baseUrl/boats/premium-deals/florida';
