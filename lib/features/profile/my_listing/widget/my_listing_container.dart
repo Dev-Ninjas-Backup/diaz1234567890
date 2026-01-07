@@ -1,6 +1,7 @@
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/profile/my_listing/model/boat.dart';
+import 'package:diaz1234567890/features/profile/my_listing/controller/my_listing_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/routes/app_routes.dart';
@@ -221,7 +222,9 @@ class MyListingContainer extends StatelessWidget {
                 ),
                 SizedBox(width: 6),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _showDeleteConfirmationDialog(context);
+                  },
                   icon: Icon(Icons.delete_outline, color: Colors.red, size: 20),
                 ),
               ],
@@ -230,5 +233,40 @@ class MyListingContainer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Boat'),
+          content: const Text(
+            'Are you sure you want to delete this boat listing? This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _performDelete();
+                Get.back();
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performDelete() {
+    if (boat == null) return;
+
+    final MyListingController controller = Get.find();
+    final boatId = boat!.id.isNotEmpty ? boat!.id : boat!.listingId;
+    controller.deleteBoat(boatId);
   }
 }
