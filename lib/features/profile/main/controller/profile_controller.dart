@@ -80,13 +80,8 @@ class ProfileController extends GetxController {
         }
 
         if (data != null) {
-          userName.value =
-              (data['username'])
-                  ?.toString() ??
-              '';
-          avatarUrl.value =
-              (data['avatarUrl'])
-                  ?.toString();
+          userName.value = (data['name'])?.toString() ?? '';
+          avatarUrl.value = (data['avatarUrl'])?.toString();
           if (kDebugMode) {
             print(
               'Profile parsed: name=${userName.value}, avatar=${avatarUrl.value}',

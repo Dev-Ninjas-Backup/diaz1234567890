@@ -11,4 +11,5 @@ class Endpoints {
   // Normalized to a single slash to avoid relying on tolerant URI parsing
   static const String userMe = '$baseUrl/auth/profile';
   static const String changePassword = '$baseUrl/auth/change-password';
+  static const String filters = '$baseUrl/boats/filter-options';
 }

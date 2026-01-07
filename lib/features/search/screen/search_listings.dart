@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../features/details/screen/details_screen.dart';
 import '../controller/yacht_controller.dart';
 import '../model/yacht_model.dart';
 
 class YachtSearchListingPage extends StatelessWidget {
-  final YachtSearchListingController controller = Get.put(
-    YachtSearchListingController(),
-  );
+  final YachtSearchListingController controller = Get.find();
 
   YachtSearchListingPage({super.key});
 
@@ -74,7 +73,11 @@ class YachtSearchListingPage extends StatelessWidget {
               final yacht = yachts[index];
               return GestureDetector(
                 onTap: () {
-                  Get.toNamed('/detailsScreen');
+                  try {
+                    Get.to(() => DetailsScreen(), arguments: yacht.id);
+                  } catch (_) {
+                    Get.toNamed('/detailsScreen', arguments: yacht.id);
+                  }
                 },
                 child: Container(
                   width: 230,
@@ -97,11 +100,35 @@ class YachtSearchListingPage extends StatelessWidget {
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(12),
                         ),
-                        child: Image.asset(
+                        child: Image.network(
                           yacht.image,
                           height: 150,
                           width: double.infinity,
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              height: 150,
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 150,
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(
+                                  Icons.image_not_supported,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
 
@@ -179,8 +206,25 @@ class YachtSearchListingPage extends StatelessWidget {
       () => SingleChildScrollView(
         child: Column(
           children: [
-            buildSection("120 Similar Listings", controller.similarYachts),
-            SizedBox(height: 20),
+            if (controller.isLoading.value)
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(),
+              )
+            else if (controller.similarYachts.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  "No boats found. Try adjusting your filters.",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              )
+            else
+              buildSection(
+                "${controller.similarYachts.length} Listings",
+                controller.similarYachts,
+              ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
