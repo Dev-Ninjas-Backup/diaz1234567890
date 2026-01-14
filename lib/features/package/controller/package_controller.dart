@@ -706,6 +706,199 @@ class SellPackageController extends GetxController {
     }
   }
 
+  Future<void> loginAndNavigate() async {
+    try {
+      // Validate login fields
+      if (sellerEmailController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Email is required for login',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      if (sellerPasswordController.text.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Password is required for login',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      // Call login API
+      final response = await ApiService.login(
+        email: sellerEmailController.text,
+        password: sellerPasswordController.text,
+      );
+
+      if (response['success'] == true) {
+        Get.snackbar(
+          'Success',
+          'Login successful!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        // Navigate to next screen after successful login
+        Get.toNamed('/packageScreenStep4');
+      } else {
+        errorMessage.value =
+            response['message'] ?? 'Login failed. Please try again.';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Login error: $e';
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      print('Login error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> confirmPayment() async {
+    try {
+      if (paymentIntentClientSecret.value.isEmpty) {
+        throw Exception(
+          'Payment intent not initialized. Please submit boat listing first.',
+        );
+      }
+
+      if (userId.value.isEmpty) {
+        throw Exception(
+          'User ID not available. Please ensure onboarding was successful.',
+        );
+      }
+
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      print('User ID: ${userId.value}');
+      print('Payment Intent Secret: ${paymentIntentClientSecret.value}');
+
+      // Confirm the setup intent with Stripe
+      final result = await ApiService.confirmPayment(
+        clientSecret: paymentIntentClientSecret.value,
+      );
+
+      if (result['success'] == true) {
+        Get.snackbar(
+          'Success',
+          'Payment method confirmed successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        // Fetch subscription confirmation
+        await fetchSubscriptionConfirmation();
+      } else {
+        errorMessage.value = result['message'] ?? 'Payment confirmation failed';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Payment error: $e';
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      print('Payment error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchSubscriptionConfirmation() async {
+    try {
+      final userIdValue = userId.value;
+
+      if (userIdValue.isEmpty || userIdValue == null) {
+        throw Exception(
+          'User ID is not available. Onboarding may have failed.',
+        );
+      }
+
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      print('Fetching confirmation for User ID: $userIdValue');
+
+      final response = await ApiService.getSubscriptionConfirmation(
+        userId: userIdValue,
+      );
+
+      print('Confirmation response: $response');
+
+      if (response != null && response['success'] == true) {
+        Get.snackbar(
+          'Success',
+          'Subscription activated successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+
+        // Navigate to success or home screen
+        Future.delayed(Duration(seconds: 1), () {
+          Get.offAllNamed('/home');
+        });
+      } else {
+        errorMessage.value =
+            response?['message'] ?? 'Failed to fetch subscription confirmation';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Error fetching confirmation: $e';
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      print('Confirmation error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   @override
   void onClose() {
     // Dispose all text controllers

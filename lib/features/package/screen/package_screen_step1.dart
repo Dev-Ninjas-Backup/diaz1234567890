@@ -11,7 +11,7 @@ class SellPackageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SellPackageController());
+    final controller = Get.put(SellPackageController(), permanent: false);
 
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
