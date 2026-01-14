@@ -842,7 +842,7 @@ class SellPackageController extends GetxController {
     try {
       final userIdValue = userId.value;
 
-      if (userIdValue.isEmpty || userIdValue == null) {
+      if (userIdValue.isEmpty) {
         throw Exception(
           'User ID is not available. Onboarding may have failed.',
         );
@@ -872,10 +872,10 @@ class SellPackageController extends GetxController {
         // Navigate to home screen after snackbar is shown
         print('Navigation: Going to home screen');
         await Future.delayed(Duration(seconds: 2));
-        
+
         // Clear the loading state before navigation
         isLoading.value = false;
-        
+
         try {
           // Navigate to bottom nav bar (home screen)
           await Get.offAllNamed('/bottomNavBar');
