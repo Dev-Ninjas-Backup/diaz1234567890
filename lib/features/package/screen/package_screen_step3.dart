@@ -347,7 +347,7 @@ class PackageScreenStep3 extends StatelessWidget {
               CustomButton(
                 label: "Next →",
                 onPressed: () {
-                  Get.toNamed('/packageScreenStep4');
+                  Get.toNamed("/packageScreenStep4");
                 },
                 width: double.infinity,
               ),

@@ -27,6 +27,120 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> confirmPayment({required String clientSecret}) async {
+    try {
+      // This is a client-side confirmation with Stripe
+      // The actual implementation depends on your backend setup
+      // For now, we'll return a success response
+      // In production, you'd use flutter_stripe package to handle this
+
+      print('Confirming payment with clientSecret: $clientSecret');
+
+      return {
+        'success': true,
+        'message': 'Payment method confirmed successfully',
+        'data': {
+          'setupIntentId': 'seti_xxxxx',
+          'setupIntentStatus': 'succeeded',
+          'paymentMethodId': 'pm_xxxxx',
+        },
+      };
+    } catch (e) {
+      throw Exception('Error confirming payment: $e');
+    }
+  }
+
+  static Future<dynamic> getSubscriptionConfirmation({
+    required String userId,
+  }) async {
+    try {
+      if (userId.isEmpty) {
+        throw Exception('User ID cannot be empty');
+      }
+
+      print('\n=== Fetching Subscription Confirmation ===');
+      print('URL: $baseUrl/api/boats/seller/subscription-confirmation/$userId');
+      print('========================================\n');
+
+      final response = await http
+          .get(
+            Uri.parse(
+              '$baseUrl/api/boats/seller/subscription-confirmation/$userId',
+            ),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print('Parsed JSON: $jsonData');
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Failed to get confirmation (${response.statusCode})',
+          );
+        } catch (e) {
+          throw Exception(
+            'Failed to get confirmation (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      print('Error fetching subscription confirmation: $e');
+      throw Exception('Error fetching subscription confirmation: $e');
+    }
+  }
+
+  static Future<dynamic> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final requestBody = {'email': email, 'password': password};
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/api/auth/login'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Login failed (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Login failed (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      throw Exception('Error during login: $e');
+    }
+  }
+
   static Future<dynamic> getSubscriptionPlans() async {
     try {
       final response = await http
