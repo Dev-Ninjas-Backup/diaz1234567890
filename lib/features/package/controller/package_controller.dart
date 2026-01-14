@@ -866,13 +866,29 @@ class SellPackageController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          duration: const Duration(seconds: 3),
+          duration: const Duration(seconds: 2),
         );
 
-        // Navigate to success or home screen
-        Future.delayed(Duration(seconds: 1), () {
-          Get.offAllNamed('/home');
-        });
+        // Navigate to home screen after snackbar is shown
+        print('Navigation: Going to home screen');
+        await Future.delayed(Duration(seconds: 2));
+        
+        // Clear the loading state before navigation
+        isLoading.value = false;
+        
+        try {
+          // Navigate to bottom nav bar (home screen)
+          await Get.offAllNamed('/bottomNavBar');
+          print('Successfully navigated to home');
+        } catch (navError) {
+          print('Navigation error: $navError');
+          // Fallback: try navigating to root if route doesn't exist
+          try {
+            await Get.offAllNamed('/');
+          } catch (e) {
+            print('Fallback navigation also failed: $e');
+          }
+        }
       } else {
         errorMessage.value =
             response?['message'] ?? 'Failed to fetch subscription confirmation';
@@ -883,9 +899,11 @@ class SellPackageController extends GetxController {
           backgroundColor: Colors.red,
           colorText: Colors.white,
         );
+        isLoading.value = false;
       }
     } catch (e) {
       errorMessage.value = 'Error fetching confirmation: $e';
+      print('Confirmation error: $e');
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -893,8 +911,6 @@ class SellPackageController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      print('Confirmation error: $e');
-    } finally {
       isLoading.value = false;
     }
   }
