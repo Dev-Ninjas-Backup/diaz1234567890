@@ -1,13 +1,13 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
-import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/auth/login_screen/controller/login_controller.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
+import 'package:diaz1234567890/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -111,41 +111,79 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Obx(() {
                     final avatar = profileController.avatarUrl.value;
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: avatar != null && avatar.isNotEmpty
-                          ? Image.network(
-                              avatar,
-                              height: 68,
-                              width: 68,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                Imagepath.user,
-                                height: 68,
-                                width: 68,
-                                fit: BoxFit.cover,
+
+                    return GestureDetector(
+                      onTap: () async {
+                        if (!profileController.notificationToggle.value) {
+                          Get.snackbar(
+                            'Notifications disabled',
+                            'Enable notifications to view them',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+                        await profileController.loadNotifications();
+                        Get.toNamed(AppRoute.notificationsScreen);
+                      },
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: avatar != null && avatar.isNotEmpty
+                                ? Image.network(
+                                    avatar,
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Icon(
+                                    Icons.account_circle_outlined,
+                                    size: 120,
+                                    color: Colors.grey.shade400,
+                                  ),
+                          ),
+
+                          /// 🔴 Notification badge
+                          Obx(() {
+                            if (!profileController.notificationToggle.value) {
+                              return const SizedBox.shrink();
+                            }
+
+                            final unread = profileController.notifications
+                                .where((n) => n['read'] == false)
+                                .length;
+
+                            if (unread == 0) return const SizedBox.shrink();
+
+                            return Positioned(
+                              right: 6,
+                              top: 6,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  unread.toString(),
+                                  style: getTextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
-                            )
-                          : Image.asset(
-                              Imagepath.user,
-                              height: 68,
-                              width: 68,
-                              fit: BoxFit.cover,
-                            ),
-                    );
-                  }),
-                  const SizedBox(height: 20),
-                  Obx(() {
-                    final name = profileController.userName.value ?? '';
-                    return Text(
-                      name.isNotEmpty ? name : '',
-                      style: getTextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
+                            );
+                          }),
+                        ],
                       ),
                     );
                   }),
+
                   SizedBox(height: 30),
                   Row(
                     children: [
@@ -194,14 +232,41 @@ class ProfileScreen extends StatelessWidget {
                     subtitle: 'Enable Push Notification',
                     toggleValue: profileController.notificationToggle,
                     onToggle: profileController.toggleNotification,
-                    onTap: () {},
+                    trailing: Obx(() {
+                      final unread = profileController.notifications
+                          .where((n) => n['read'] == false)
+                          .length;
+                      if (unread == 0) return const SizedBox.shrink();
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          unread.toString(),
+                          style: getTextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      );
+                    }),
+                    onTap: () async {
+                      await profileController.loadNotifications();
+                      Get.toNamed(AppRoute.notificationsScreen);
+                    },
                   ),
                   SettingsButton(
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacy Policy',
                     subtitle: 'Data Protection Info',
                     onTap: () {
-                      Get.toNamed('/privacyPolicyScreen');
+                      Get.toNamed(AppRoute.privacyPolicyScreen);
                     },
                   ),
                   SettingsButton(

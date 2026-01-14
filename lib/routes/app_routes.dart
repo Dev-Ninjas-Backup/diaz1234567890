@@ -8,6 +8,7 @@ import 'package:diaz1234567890/features/profile/edit_profile/screen/edit_profile
 import 'package:diaz1234567890/features/profile/main/screen/profile_screen.dart';
 import 'package:diaz1234567890/features/profile/my_listing/screen/my_listing_screen.dart';
 import 'package:diaz1234567890/features/profile/privacy_policy/screen/privacy_policy_screen.dart';
+import 'package:diaz1234567890/features/notifications/screen/notification_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoute {
@@ -21,6 +22,7 @@ class AppRoute {
   static String packageScreenStep3 = "/packageScreenStep3";
   static String packageScreenStep4 = "/packageScreenStep4";
   static String loginScreen = "/loginScreen";
+  static String notificationsScreen = "/notifications";
 
   static String getBottomNavBar() => bottomNavBar;
   static String getProfileScreen() => profileScreen;
@@ -32,6 +34,7 @@ class AppRoute {
   static String getPackageScreenStep3() => packageScreenStep3;
   static String getPackageScreenStep4() => packageScreenStep4;
   static String getLoginScreen() => loginScreen;
+  static String getNotificationsScreen() => notificationsScreen;
 
   // ...existing code...
 
@@ -41,6 +44,7 @@ class AppRoute {
     GetPage(name: editProfileScreen, page: () => EditProfileScreen()),
     GetPage(name: privacyPolicyScreen, page: () => PrivacyPolicyScreen()),
     GetPage(name: myListingScreen, page: () => MyListingScreen()),
+    GetPage(name: notificationsScreen, page: () => NotificationScreen()),
     GetPage(name: detailsScreen, page: () => DetailsScreen()),
     GetPage(name: packageScreenStep2, page: () => PackageScreenStep2()),
     GetPage(name: packageScreenStep3, page: () => PackageScreenStep3()),

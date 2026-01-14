@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StorageService {
   static const String _tokenKey = 'token';
   static const String _idKey = 'userId';
+  static const String _notificationsEnabledKey = 'notifications_enabled';
 
   static SharedPreferences? preferences;
 
@@ -56,6 +57,16 @@ class StorageService {
     await preferences?.remove(_tokenKey);
     await preferences?.remove(_idKey);
   }
+
+  /// Persist whether the user wants in-app (socket) notifications enabled.
+  static Future<void> setNotificationsEnabled(bool enabled) async {
+    if (preferences == null) await init();
+    await preferences?.setBool(_notificationsEnabledKey, enabled);
+  }
+
+  /// Read persisted notification preference. Defaults to `false` if unset.
+  static bool get notificationsEnabled =>
+      preferences?.getBool(_notificationsEnabledKey) ?? false;
 
   static String? get userId => preferences?.getString(_idKey);
 

@@ -9,6 +9,7 @@ class SettingsButton extends StatelessWidget {
   final String subtitle;
   final RxBool? toggleValue;
   final VoidCallback? onToggle;
+  final Widget? trailing;
   final VoidCallback onTap;
   const SettingsButton({
     super.key,
@@ -17,6 +18,7 @@ class SettingsButton extends StatelessWidget {
     required this.subtitle,
     this.toggleValue,
     this.onToggle,
+    this.trailing,
     required this.onTap,
   });
 
@@ -58,6 +60,7 @@ class SettingsButton extends StatelessWidget {
               ],
             ),
             Spacer(),
+            if (trailing != null) trailing!,
             if (toggleValue != null)
               Obx(
                 () => GestureDetector(
