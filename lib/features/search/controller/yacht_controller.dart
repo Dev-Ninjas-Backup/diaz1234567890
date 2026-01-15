@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../../core/utils/constants/image_path.dart';
 import '../../../core/endpoints/endpoints.dart';
 import '../model/yacht_model.dart';
+import '../service/boat_search_service.dart';
 
 class YachtSearchListingController extends GetxController {
   var similarYachts = <Yacht>[].obs;
@@ -129,6 +130,77 @@ class YachtSearchListingController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) print('Error performing search: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> naturalLanguageSearch(String query) async {
+    if (query.trim().isEmpty) return;
+
+    isLoading.value = true;
+    try {
+      final response = await BoatSearchService.queryBoats(
+        query: query,
+        limit: 20,
+      );
+
+      // Parse the API response
+      final data = response['data'] as List<dynamic>? ?? [];
+      final error = response['error'];
+
+      if (error != null) {
+        if (kDebugMode) print('Search error: $error');
+        similarYachts.clear();
+        return;
+      }
+
+      // Convert response data to Yacht objects
+      final yachts = <Yacht>[];
+      for (final item in data) {
+        try {
+          final map = item as Map<String, dynamic>;
+
+          // Get the best image (by priority)
+          final images = (map['images'] as List<dynamic>? ?? [])
+              .where((img) => img is Map && img['Uri'] != null)
+              .cast<Map<String, dynamic>>()
+              .toList();
+          images.sort(
+            (a, b) => (a['Priority'] ?? 0).compareTo(b['Priority'] ?? 0),
+          );
+
+          String coverImageUrl = Imagepath.singleBoat;
+          if (images.isNotEmpty) {
+            coverImageUrl = images.first['Uri'] as String;
+          }
+
+          final location = map['location'] as Map<String, dynamic>? ?? {};
+          final yacht = Yacht(
+            id: map['document_id']?.toString() ?? '',
+            title: '${map['make'] ?? ''} ${map['model'] ?? ''}'.trim(),
+            location:
+                '${location['BoatCityName'] ?? ''}, ${location['BoatStateCode'] ?? ''}',
+            make: map['make']?.toString() ?? 'N/A',
+            model: map['model']?.toString() ?? 'N/A',
+            year: map['model_year']?.toString() ?? 'N/A',
+            price: map['price'] != null
+                ? '\$${(map['price'] as num).toStringAsFixed(0)}'
+                : 'Call for Price',
+            image: coverImageUrl,
+          );
+          yachts.add(yacht);
+        } catch (e) {
+          if (kDebugMode)
+            print('Error parsing natural language search result: $e');
+        }
+      }
+
+      similarYachts.assignAll(yachts);
+      if (kDebugMode)
+        print('Natural language search returned ${yachts.length} boats');
+    } catch (e) {
+      if (kDebugMode) print('Error performing natural language search: $e');
     } finally {
       isLoading.value = false;
     }

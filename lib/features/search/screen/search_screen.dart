@@ -3,19 +3,37 @@ import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
 import 'package:diaz1234567890/features/search/widget/filter_bar.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
+import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 
-class YachtSearchPage extends StatelessWidget {
+class YachtSearchPage extends StatefulWidget {
   const YachtSearchPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final YachtSearchListingController controller = Get.put(
-      YachtSearchListingController(),
-    );
+  State<YachtSearchPage> createState() => _YachtSearchPageState();
+}
 
+class _YachtSearchPageState extends State<YachtSearchPage> {
+  late TextEditingController _searchController;
+  late YachtSearchListingController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    controller = Get.put(YachtSearchListingController());
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
       body: SingleChildScrollView(
@@ -47,6 +65,12 @@ class YachtSearchPage extends StatelessWidget {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
+                            controller: _searchController,
+                            onSubmitted: (value) {
+                              if (value.isNotEmpty) {
+                                controller.naturalLanguageSearch(value);
+                              }
+                            },
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText:
@@ -58,38 +82,65 @@ class YachtSearchPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            backgroundColor: Colors.grey[200],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            foregroundColor: Colors.black,
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                Iconpath.askAi,
-                                width: 18,
-                                height: 18,
+                        Obx(
+                          () => TextButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () async {
+                                    if (_searchController.text.isNotEmpty) {
+                                      final query = _searchController.text;
+                                      await controller.naturalLanguageSearch(
+                                        query,
+                                      );
+                                      Get.to(
+                                        () => AiSearchResultsScreen(
+                                          query: query,
+                                          controller: controller,
+                                        ),
+                                      );
+                                    }
+                                  },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
                               ),
-                              SizedBox(width: 6),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 2),
-                                child: Text(
-                                  "Ask AI",
-                                  style: getTextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
+                              backgroundColor: Colors.grey[200],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              foregroundColor: Colors.black,
+                            ),
+                            child: controller.isLoading.value
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Row(
+                                    children: [
+                                      Image.asset(
+                                        Iconpath.askAi,
+                                        width: 18,
+                                        height: 18,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 2,
+                                        ),
+                                        child: Text(
+                                          "Ask AI",
+                                          style: getTextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ],
