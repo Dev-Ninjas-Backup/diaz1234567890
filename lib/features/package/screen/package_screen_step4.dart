@@ -266,8 +266,8 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
         (pkg) => pkg.id == selectedId,
       );
 
-      if (package != null && package.price != null) {
-        return '\$${package.price!.toStringAsFixed(2)}';
+      if (package != null) {
+        return '\$${package.price.toStringAsFixed(2)}';
       }
       return '-';
     } catch (e) {
