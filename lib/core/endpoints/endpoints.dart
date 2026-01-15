@@ -22,5 +22,12 @@ class Endpoints {
 
   // Florida Query (boat search) endpoint
   static const String floridaQuery = '$aiBaseUrl/v1/florida_query';
-}
 
+  // Notification endpoints
+  static const String getUserAllNotificationa =
+      '$baseUrl/auth/notification';
+  static String markOneNotificationAsRead(String notificationId) =>
+      '$baseUrl/auth/notification/mark-as-read/$notificationId';
+  static const String markAllNotificationAsRead =
+      '$baseUrl/auth/notification/mark-all-as-read';
+}
