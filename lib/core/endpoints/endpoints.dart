@@ -20,3 +20,4 @@ class Endpoints {
   static const String floridaChat = '$aiBaseUrl/v1/florida_chat';
   static const String floridaChatHistory = '$aiBaseUrl/v1/florida_chat_history';
 }
+
