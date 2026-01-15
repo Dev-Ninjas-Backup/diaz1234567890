@@ -116,7 +116,8 @@ class AiChatController extends GetxController {
       }
     } catch (e) {
       final err = e.toString();
-      final isNotFound = err.contains('404') ||
+      final isNotFound =
+          err.contains('404') ||
           err.contains('Not Found') ||
           err.contains('Cannot POST');
 

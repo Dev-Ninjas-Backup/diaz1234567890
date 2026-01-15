@@ -2,17 +2,44 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
 import 'package:diaz1234567890/features/home/screen/listing_page.dart';
+import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
+import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_chat_screen.dart';
 
-class YachtHomePage extends StatelessWidget {
+class YachtHomePage extends StatefulWidget {
   const YachtHomePage({super.key});
 
   @override
+  State<YachtHomePage> createState() => _YachtHomePageState();
+}
+
+class _YachtHomePageState extends State<YachtHomePage> {
+  late TextEditingController _searchController;
+  late YachtListingController _homeController;
+  late YachtSearchListingController _searchController_;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _homeController = Get.put(YachtListingController());
+    _searchController_ = Get.put(
+      YachtSearchListingController(),
+      tag: 'home_search',
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final YachtListingController controller = Get.put(YachtListingController());
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
       body: SingleChildScrollView(
@@ -42,6 +69,12 @@ class YachtHomePage extends StatelessWidget {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
+                            controller: _searchController,
+                            onSubmitted: (value) {
+                              if (value.isNotEmpty) {
+                                _searchController_.naturalLanguageSearch(value);
+                              }
+                            },
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText:
@@ -53,41 +86,65 @@ class YachtHomePage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            backgroundColor: Colors.grey[200],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            foregroundColor: Colors.black,
-                            elevation: 0, // 👈 no shadow
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                Iconpath.askAi,
-                                width: 18,
-                                height: 18,
+                        Obx(
+                          () => TextButton(
+                            onPressed: _searchController_.isLoading.value
+                                ? null
+                                : () async {
+                                    if (_searchController.text.isNotEmpty) {
+                                      final query = _searchController.text;
+                                      await _searchController_
+                                          .naturalLanguageSearch(query);
+                                      Get.to(
+                                        () => AiSearchResultsScreen(
+                                          query: query,
+                                          controller: _searchController_,
+                                        ),
+                                      );
+                                    }
+                                  },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
                               ),
-                              SizedBox(width: 6),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 2,
-                                ),
-                                child: Text(
-                                  "Ask AI",
-                                  style: getTextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
+                              backgroundColor: Colors.grey[200],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              foregroundColor: Colors.black,
+                              elevation: 0,
+                            ),
+                            child: _searchController_.isLoading.value
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Row(
+                                    children: [
+                                      Image.asset(
+                                        Iconpath.askAi,
+                                        width: 18,
+                                        height: 18,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 2,
+                                        ),
+                                        child: Text(
+                                          "Ask AI",
+                                          style: getTextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ],
@@ -105,10 +162,13 @@ class YachtHomePage extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
-                      children: List.generate(controller.tabs.length, (index) {
-                        bool isSelected = controller.selectedTab.value == index;
+                      children: List.generate(_homeController.tabs.length, (
+                        index,
+                      ) {
+                        bool isSelected =
+                            _homeController.selectedTab.value == index;
                         return GestureDetector(
-                          onTap: () => controller.changeTab(index),
+                          onTap: () => _homeController.changeTab(index),
                           child: Container(
                             margin: EdgeInsets.only(right: 12),
                             padding: EdgeInsets.symmetric(
@@ -123,7 +183,7 @@ class YachtHomePage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              controller.tabs[index],
+                              _homeController.tabs[index],
                               style: getTextStyle(
                                 color: isSelected ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -135,7 +195,7 @@ class YachtHomePage extends StatelessWidget {
                     ),
                   ),
                   // Show featured site selector only when Featured Yacht tab is selected
-                  if (controller.selectedTab.value == 1)
+                  if (_homeController.selectedTab.value == 1)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -149,7 +209,7 @@ class YachtHomePage extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           DropdownButton<String>(
-                            value: controller.selectedFeaturedSite.value,
+                            value: _homeController.selectedFeaturedSite.value,
                             items: const [
                               DropdownMenuItem(
                                 value: 'JUPITER',
@@ -162,8 +222,8 @@ class YachtHomePage extends StatelessWidget {
                             ],
                             onChanged: (val) {
                               if (val == null) return;
-                              controller.selectedFeaturedSite.value = val;
-                              controller.fetchFeaturedBoats(site: val);
+                              _homeController.selectedFeaturedSite.value = val;
+                              _homeController.fetchFeaturedBoats(site: val);
                             },
                           ),
                         ],

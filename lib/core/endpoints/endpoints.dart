@@ -19,4 +19,7 @@ class Endpoints {
   static const String aiBaseUrl = 'https://ai.jupitermarinesales.com/api';
   static const String floridaChat = '$aiBaseUrl/v1/florida_chat';
   static const String floridaChatHistory = '$aiBaseUrl/v1/florida_chat_history';
+
+  // Florida Query (boat search) endpoint
+  static const String floridaQuery = '$aiBaseUrl/v1/florida_query';
 }
