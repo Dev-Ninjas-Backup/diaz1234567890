@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
+import 'package:diaz1234567890/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/home_model.dart';
@@ -254,7 +255,9 @@ class YachtListingPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed(AppRoute.sellScreen);
+                        },
                         style: ElevatedButton.styleFrom(
                           // ignore: deprecated_member_use
                           backgroundColor: Colors.black.withOpacity(0.8),

@@ -1,19 +1,19 @@
 class Endpoints {
-  static const String baseUrl = 'https://api.floridayachttrader.com/api';
+  static const String baseUrl = 'https://api.floridayachttrader.com';
 
-  static const String login = '$baseUrl/auth/login';
-  static const String getMyBoats = '$baseUrl/boats/seller/get-own-boats';
+  static const String login = '$baseUrl/api/auth/login';
+  static const String getMyBoats = '$baseUrl/api/boats/seller/get-own-boats';
   // Build boat-by-id endpoint
-  static String getBoatById(String id) => '$baseUrl/boats/$id/details';
+  static String getBoatById(String id) => '$baseUrl/api/boats/$id/details';
   static String deleteBoat(String boatId) =>
-      '$baseUrl/boats/seller/delete-listing/$boatId';
-  static const String allBoats = '$baseUrl/boats';
-  static const String featuredBoats = '$baseUrl/boats/featured';
-  static const String premiumDeals = '$baseUrl/boats/premium-deals/florida';
+      '$baseUrl/api/boats/seller/delete-listing/$boatId';
+  static const String allBoats = '$baseUrl/api/boats';
+  static const String featuredBoats = '$baseUrl/api/boats/featured';
+  static const String premiumDeals = '$baseUrl/api/boats/premium-deals/florida';
   // Normalized to a single slash to avoid relying on tolerant URI parsing
-  static const String userMe = '$baseUrl/auth/profile';
-  static const String changePassword = '$baseUrl/auth/change-password';
-  static const String filters = '$baseUrl/boats/filter-options';
+  static const String userMe = '$baseUrl/api/auth/profile';
+  static const String changePassword = '$baseUrl/api/auth/change-password';
+  static const String filters = '$baseUrl/api/boats/filter-options';
 
   // AI Chat endpoints live on a different host
   static const String aiBaseUrl = 'https://ai.jupitermarinesales.com/api';
@@ -24,10 +24,10 @@ class Endpoints {
   static const String floridaQuery = '$aiBaseUrl/v1/florida_query';
 
   // Notification endpoints
-  static const String getUserAllNotificationa =
-      '$baseUrl/auth/notification';
+  static const String getUserAllNotifications =
+      '$baseUrl/api/auth/notification';
   static String markOneNotificationAsRead(String notificationId) =>
-      '$baseUrl/auth/notification/mark-as-read/$notificationId';
+      '$baseUrl/api/auth/notification/mark-as-read/$notificationId';
   static const String markAllNotificationAsRead =
-      '$baseUrl/auth/notification/mark-all-as-read';
+      '$baseUrl/api/auth/notification/mark-all-as-read';
 }

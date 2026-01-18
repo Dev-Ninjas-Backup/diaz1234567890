@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
-import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/foundation.dart';
 
@@ -42,7 +42,8 @@ class SocketService {
         opts['extraHeaders'] = {'Authorization': 'Bearer $token'};
       }
 
-      final uri = Endpoints.baseUrl; // e.g. https://api.example.com
+      // Socket server typically runs on the base domain, not /api endpoint
+      final uri = Endpoints.baseUrl;
 
       if (kDebugMode) print('SocketService: connecting to $uri');
 
