@@ -14,6 +14,38 @@ class LoginController extends GetxController {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  @override
+  void onInit() {
+    super.onInit();
+    // Print existing token if available
+    _printExistingToken();
+  }
+
+  Future<void> _printExistingToken() async {
+    // Ensure StorageService is initialized
+    if (!StorageService.isInitialized) {
+      await StorageService.init();
+    }
+
+    final existingToken = StorageService.token;
+    final userId = StorageService.userId;
+
+    if (existingToken != null && existingToken.isNotEmpty) {
+      if (kDebugMode) {
+        print('═══════════════════════════════════════════════════════');
+        print('Existing User Token Found');
+        print('Token: $existingToken');
+        print('User ID: $userId');
+        print('═══════════════════════════════════════════════════════');
+      }
+      isGuest.value = false;
+    } else {
+      if (kDebugMode) {
+        print('No existing token found - User is guest');
+      }
+    }
+  }
+
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
@@ -80,7 +112,13 @@ class LoginController extends GetxController {
           final String token = jsonResponse['data']['token'];
           await StorageService.saveToken(token, userId);
           isGuest.value = false;
-          print("User Token: $token");
+          if (kDebugMode) {
+            print('═══════════════════════════════════════════════════════');
+            print('Login Successful!');
+            print('Token: $token');
+            print('User ID: $userId');
+            print('═══════════════════════════════════════════════════════');
+          }
 
           Get.offAllNamed('/bottomNavBar');
         } else {

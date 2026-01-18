@@ -18,7 +18,7 @@ class NotificationService {
 
   /// Fetch all notifications for the current user
   static Future<List<Map<String, dynamic>>> getAll() async {
-    final uri = Uri.parse(Endpoints.getUserAllNotificationa);
+    final uri = Uri.parse(Endpoints.getUserAllNotifications);
     final resp = await http.get(uri, headers: _headers());
     if (resp.statusCode == 200) {
       final jsonBody = json.decode(resp.body);
