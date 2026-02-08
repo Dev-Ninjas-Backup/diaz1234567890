@@ -434,4 +434,41 @@ class ApiService {
       throw Exception('Error with minimal test: $e');
     }
   }
+
+  static Future<dynamic> getUserProfile(String token) async {
+    try {
+      final response = await http
+          .get(
+            Uri.parse('$baseUrl/api/auth/profile'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Failed to fetch profile (${response.statusCode})',
+          );
+        } catch (e) {
+          throw Exception(
+            'Failed to fetch profile (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      throw Exception('Error fetching user profile: $e');
+    }
+  }
 }
