@@ -21,6 +21,9 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
   void initState() {
     super.initState();
     controller = Get.find<SellPackageController>();
+    // Print selected package ID on screen load
+    print('📦 Selected Package ID: ${controller.selectedPackageId.value}');
+    print('📦 Selected Package Name: ${controller.selectedPackage.value}');
   }
 
   @override
@@ -172,6 +175,31 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                                 .paymentIntentClientSecret
                                 .value
                                 .isNotEmpty) {
+                              // Print payment details before showing payment section
+                              print(
+                                '\n════════════════════════════════════════',
+                              );
+                              print('💳 MOVING TO PAYMENT SECTION');
+                              print('════════════════════════════════════════');
+                              print(
+                                '📦 Package ID: ${controller.selectedPackageId.value}',
+                              );
+                              print(
+                                '📦 Package Name: ${controller.selectedPackage.value}',
+                              );
+                              print(
+                                '💰 Plan Amount: \$${controller.packages.firstWhereOrNull((pkg) => pkg.id == controller.selectedPackageId.value)?.price.toStringAsFixed(2) ?? '-'}',
+                              );
+                              print(
+                                '📋 Listing ID: ${controller.listingId.value}',
+                              );
+                              print(
+                                '💳 Payment Intent: ${controller.paymentIntentId.value}',
+                              );
+                              print(
+                                '════════════════════════════════════════\n',
+                              );
+
                               setState(() {
                                 _showPaymentSection = true;
                               });
@@ -222,6 +250,15 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
   }
 
   Widget _buildPaymentSummary() {
+    // Print payment summary details
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('\n📊 PAYMENT SECTION LOADED - DETAILS:');
+      print('  📦 Package ID: ${controller.selectedPackageId.value}');
+      print('  🛥️  Boat: ${controller.nameController.text}');
+      print('  📋 Listing ID: ${controller.listingId.value}');
+      print('  💳 Payment Ready\n');
+    });
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -250,6 +287,8 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
           ),
           Divider(height: 16),
           _summaryRow('Plan Amount', _getPlanPrice(), isBold: true),
+          Divider(height: 16),
+          _summaryRow('Package ID', controller.selectedPackageId.value),
           Divider(height: 16),
           _summaryRow('Listing ID', controller.listingId.value),
         ],
