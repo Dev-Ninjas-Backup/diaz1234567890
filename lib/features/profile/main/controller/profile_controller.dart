@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/core/services/socket_service.dart';
+import 'package:diaz1234567890/core/services/socket_manager.dart';
 import 'package:diaz1234567890/core/services/notification_service.dart';
 
 class ProfileController extends GetxController {
@@ -25,15 +26,14 @@ class ProfileController extends GetxController {
     super.onInit();
     fetchUserProfile();
     _restoreNotificationPreference();
+    _subscribeToSocket();
   }
 
   StreamSubscription<Map<String, dynamic>>? _notifSub;
 
   void _subscribeToSocket() {
-    // user enabled notifications: connect socket and listen for events
-    SocketService().connect();
-
-    // avoid creating multiple subscriptions
+    // Subscribe to incoming notifications from socket
+    // SocketManager handles connect/disconnect based on user preference
     _notifSub ??= SocketService().notifications.listen((payload) async {
       try {
         Map<String, dynamic> top;
@@ -77,19 +77,12 @@ class ProfileController extends GetxController {
     });
   }
 
-  void _unsubscribeFromSocket() {
-    _notifSub?.cancel();
-    _notifSub = null;
-    SocketService().disconnect();
-  }
-
   void _restoreNotificationPreference() async {
     try {
       if (!StorageService.isInitialized) await StorageService.init();
       final enabled = StorageService.notificationsEnabled;
       notificationToggle.value = enabled;
       if (enabled) {
-        _subscribeToSocket();
         await loadNotifications();
       }
     } catch (e) {
@@ -257,15 +250,16 @@ class ProfileController extends GetxController {
     // flip the toggle state first so UI updates immediately
     notificationToggle.value = !notificationToggle.value;
 
-    // persist the user's choice
-    StorageService.setNotificationsEnabled(notificationToggle.value);
+    // delegate socket lifecycle management to SocketManager
+    if (Get.isRegistered<SocketManager>()) {
+      final socketManager = Get.find<SocketManager>();
+      socketManager.toggleNotifications(notificationToggle.value);
+    }
 
     if (notificationToggle.value) {
-      _subscribeToSocket();
       // fetch unread notifications immediately so badge updates
       loadNotifications();
     } else {
-      _unsubscribeFromSocket();
       // clear list when disabled
       notifications.clear();
     }
@@ -274,7 +268,6 @@ class ProfileController extends GetxController {
   @override
   void onClose() {
     _notifSub?.cancel();
-    SocketService().disconnect();
     super.onClose();
   }
 }

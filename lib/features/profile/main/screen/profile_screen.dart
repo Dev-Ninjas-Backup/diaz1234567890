@@ -232,33 +232,33 @@ class ProfileScreen extends StatelessWidget {
                     subtitle: 'Enable Push Notification',
                     toggleValue: profileController.notificationToggle,
                     onToggle: profileController.toggleNotification,
-                    trailing: Obx(() {
-                      final unread = profileController.notifications
-                          .where((n) => n['read'] == false)
-                          .length;
-                      if (unread == 0) return const SizedBox.shrink();
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          unread.toString(),
-                          style: getTextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      );
-                    }),
+                    // trailing: Obx(() {
+                    //   final unread = profileController.notifications
+                    //       .where((n) => n['read'] == false)
+                    //       .length;
+                    //   if (unread == 0) return const SizedBox.shrink();
+                    //   return Container(
+                    //     padding: const EdgeInsets.symmetric(
+                    //       horizontal: 8,
+                    //       vertical: 4,
+                    //     ),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.red,
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: Text(
+                    //       unread.toString(),
+                    //       style: getTextStyle(
+                    //         color: Colors.white,
+                    //         fontSize: 10,
+                    //         fontWeight: FontWeight.w600,
+                    //       ),
+                    //     ),
+                    //   );
+                    // }),
                     onTap: () async {
                       await profileController.loadNotifications();
-                      Get.toNamed(AppRoute.notificationsScreen);
+                      //Get.toNamed(AppRoute.notificationsScreen);
                     },
                   ),
                   SettingsButton(
