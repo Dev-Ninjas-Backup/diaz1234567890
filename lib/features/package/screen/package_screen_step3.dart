@@ -6,21 +6,8 @@ import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 
-class PackageScreenStep3 extends StatefulWidget {
+class PackageScreenStep3 extends StatelessWidget {
   const PackageScreenStep3({super.key});
-
-  @override
-  State<PackageScreenStep3> createState() => _PackageScreenStep3State();
-}
-
-class _PackageScreenStep3State extends State<PackageScreenStep3> {
-  @override
-  void initState() {
-    super.initState();
-    // Fetch and populate user data if logged in
-    final controller = Get.find<SellPackageController>();
-    controller.fetchAndPopulateUserData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -328,46 +315,35 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                 ],
               ),
               SizedBox(height: 20),
-              // Only show seller account information if user is NOT logged in
-              Obx(
-                () => controller.isUserLoggedIn.value
-                    ? SizedBox.shrink()
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Divider(),
-                          SizedBox(height: 20),
-                          Text(
-                            'Seller Account Information',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 24),
-                          EditFieldsWidget(
-                            title: 'Username: *',
-                            hint: 'username',
-                            controller: controller.sellerUsernameController,
-                          ),
-                          EditFieldsWidget(
-                            title: 'Password: *',
-                            hint: '********',
-                            controller: controller.sellerPasswordController,
-                            obscureText: true,
-                          ),
-                          EditFieldsWidget(
-                            title: 'Confirm Password: *',
-                            hint: '********',
-                            controller:
-                                controller.sellerConfirmPasswordController,
-                            obscureText: true,
-                          ),
-                          SizedBox(height: 40),
-                        ],
-                      ),
+              Divider(),
+              SizedBox(height: 20),
+              Text(
+                'Seller Account Information',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
+              SizedBox(height: 24),
+              EditFieldsWidget(
+                title: 'Username: *',
+                hint: 'username',
+                controller: controller.sellerUsernameController,
+              ),
+              EditFieldsWidget(
+                title: 'Password: *',
+                hint: '********',
+                controller: controller.sellerPasswordController,
+                obscureText: true,
+              ),
+              EditFieldsWidget(
+                title: 'Confirm Password: *',
+                hint: '********',
+                controller: controller.sellerConfirmPasswordController,
+                obscureText: true,
+              ),
+              SizedBox(height: 40),
               CustomButton(
                 label: "Next →",
                 onPressed: () {
