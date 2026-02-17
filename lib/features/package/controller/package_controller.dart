@@ -397,6 +397,7 @@ class SellPackageController extends GetxController {
 
   @override
   void onInit() {
+    print('[DEBUG] SellPackageController: onInit called');
     super.onInit();
     clearAllControllers();
     fetchPackages();
@@ -404,51 +405,66 @@ class SellPackageController extends GetxController {
 
   Future<void> fetchPackages() async {
     try {
+      print('[DEBUG] fetchPackages: Starting to fetch packages');
       isLoading.value = true;
       errorMessage.value = '';
 
       final response = await ApiService.getSubscriptionPlans();
+      print('[DEBUG] fetchPackages: API Response received - $response');
 
       if (response['success'] == true && response['data'] != null) {
         final List<dynamic> data = response['data'];
         packages.value = data
             .map((item) => PackageModel.fromJson(item as Map<String, dynamic>))
             .toList();
+        print('[DEBUG] fetchPackages: Loaded ${packages.length} packages');
+        print('[DEBUG] Packages: $packages');
       } else {
         errorMessage.value = response['message'] ?? 'Failed to load packages';
+        print('[DEBUG] fetchPackages: Error - ${errorMessage.value}');
       }
     } catch (e) {
       errorMessage.value = 'Error loading packages: $e';
       print('Error fetching packages: $e');
     } finally {
       isLoading.value = false;
+      print('[DEBUG] fetchPackages: Completed, isLoading = ${isLoading.value}');
     }
   }
 
   void selectPackage(String title) {
+    print('[DEBUG] selectPackage: Selected package - $title');
     selectedPackage.value = title;
     // Find and set the package ID
     final package = packages.firstWhereOrNull((pkg) => pkg.title == title);
     if (package != null) {
       selectedPackageId.value = package.id;
+      print('[DEBUG] selectPackage: Package ID set to ${package.id}');
+    } else {
+      print('[DEBUG] selectPackage: Package not found!');
     }
   }
 
   Future<void> submitBoatOnboarding() async {
     try {
+      print('[DEBUG] submitBoatOnboarding: Starting boat onboarding submission');
       isLoading.value = true;
       errorMessage.value = '';
 
       // Validate required fields
+      print('[DEBUG] submitBoatOnboarding: Validating required fields');
       if (nameController.text.isEmpty) {
         throw Exception('Boat name is required');
       }
+      print('[DEBUG] Boat name: ${nameController.text}');
       if (selectedPackageId.value.isEmpty) {
         throw Exception('Please select a package first');
       }
+      print('[DEBUG] Selected Package ID: ${selectedPackageId.value}');
       if (sellerEmailController.text.isEmpty) {
         throw Exception('Seller email is required');
       }
+      print('[DEBUG] Seller email: ${sellerEmailController.text}');
       if (boatCityController.text.trim().isEmpty) {
         throw Exception('Boat city is required');
       }
@@ -558,16 +574,16 @@ class SellPackageController extends GetxController {
         'zip': sellerZipController.text,
       };
 
-      print('\n=== Submitting Boat Onboarding ===');
-      print('Boat Info: $boatInfo');
-      print('Seller Info: $sellerInfo');
-      print('Plan ID: ${selectedPackageId.value}');
-      print('Cover Images: $coverPaths');
-      print('Gallery Images: $galleryPaths');
-      print('================================\n');
+      print('\n[DEBUG] ========== Submitting Boat Onboarding ==========');
+      print('[DEBUG] Boat Info: $boatInfo');
+      print('[DEBUG] Seller Info: $sellerInfo');
+      print('[DEBUG] Plan ID: ${selectedPackageId.value}');
+      print('[DEBUG] Cover Images: $coverPaths');
+      print('[DEBUG] Gallery Images: $galleryPaths');
+      print('[DEBUG] =========================================\n');
 
       // Try simple JSON approach first (without file uploads)
-      print('Attempting submission without file uploads first...');
+      print('[DEBUG] Attempting submission without file uploads first...');
       try {
         final response = await ApiService.createBoatOnboardingSimple(
           boatInfo: boatInfo,
@@ -575,7 +591,7 @@ class SellPackageController extends GetxController {
           planId: selectedPackageId.value,
         );
 
-        print('Response: $response');
+        print('[DEBUG] submitBoatOnboarding: Response received - $response');
 
         if (response['success'] == true) {
           // Store payment intent data
@@ -626,10 +642,8 @@ class SellPackageController extends GetxController {
           return;
         }
       } catch (e) {
-        print('Simple submission failed: $e');
-        print(
-          'Note: Listing created without images. Files may need separate upload endpoint.',
-        );
+        print('[DEBUG] Simple submission failed: $e');
+        print('[DEBUG] Note: Listing created without images. Files may need separate upload endpoint.');
 
         // Don't try multipart if simple JSON succeeded with payment intent
         if (paymentIntentId.value.isNotEmpty) {
@@ -643,7 +657,7 @@ class SellPackageController extends GetxController {
           return;
         }
 
-        print('Trying with file uploads...');
+        print('[DEBUG] Trying with file uploads...');
       }
 
       // If simple approach fails or doesn't work, try with files
@@ -655,7 +669,7 @@ class SellPackageController extends GetxController {
         galleryPaths: galleryPaths,
       );
 
-      print('Response: $response');
+      print('[DEBUG] submitBoatOnboarding: File upload response - $response');
 
       if (response['success'] == true) {
         // Store payment intent data
@@ -692,6 +706,7 @@ class SellPackageController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = 'Error submitting boat listing: $e';
+      print('[DEBUG] submitBoatOnboarding: Error - $e');
       Get.snackbar(
         'Error',
         errorMessage.value,
@@ -700,13 +715,14 @@ class SellPackageController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
-      print('Error submitting boat listing: $e');
     } finally {
       isLoading.value = false;
+      print('[DEBUG] submitBoatOnboarding: Completed, isLoading = false');
     }
   }
 
   Future<void> loginAndNavigate() async {
+    print('[DEBUG] loginAndNavigate: Starting login process');
     try {
       // Validate login fields
       if (sellerEmailController.text.isEmpty) {
@@ -734,6 +750,7 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
+      print('[DEBUG] loginAndNavigate: Calling login API');
       // Call login API
       final response = await ApiService.login(
         email: sellerEmailController.text,
@@ -741,6 +758,7 @@ class SellPackageController extends GetxController {
       );
 
       if (response['success'] == true) {
+        print('[DEBUG] loginAndNavigate: Login successful');
         Get.snackbar(
           'Success',
           'Login successful!',
@@ -750,6 +768,7 @@ class SellPackageController extends GetxController {
         );
 
         // Navigate to next screen after successful login
+        print('[DEBUG] loginAndNavigate: Navigating to packageScreenStep4');
         Get.toNamed('/packageScreenStep4');
       } else {
         errorMessage.value =
@@ -771,13 +790,14 @@ class SellPackageController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      print('Login error: $e');
+      print('[DEBUG] loginAndNavigate: Login error - $e');
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> confirmPayment() async {
+    print('[DEBUG] confirmPayment: Starting payment confirmation');
     try {
       if (paymentIntentClientSecret.value.isEmpty) {
         throw Exception(
@@ -812,6 +832,7 @@ class SellPackageController extends GetxController {
         );
 
         // Fetch subscription confirmation
+        print('[DEBUG] confirmPayment: Fetching subscription confirmation');
         await fetchSubscriptionConfirmation();
       } else {
         errorMessage.value = result['message'] ?? 'Payment confirmation failed';
@@ -839,6 +860,7 @@ class SellPackageController extends GetxController {
   }
 
   Future<void> fetchSubscriptionConfirmation() async {
+    print('[DEBUG] fetchSubscriptionConfirmation: Starting');
     try {
       final userIdValue = userId.value;
 
@@ -851,13 +873,13 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      print('Fetching confirmation for User ID: $userIdValue');
+      print('[DEBUG] fetchSubscriptionConfirmation: Fetching confirmation for User ID = $userIdValue');
 
       final response = await ApiService.getSubscriptionConfirmation(
         userId: userIdValue,
       );
 
-      print('Confirmation response: $response');
+      print('[DEBUG] fetchSubscriptionConfirmation: Response - $response');
 
       if (response != null && response['success'] == true) {
         Get.snackbar(
@@ -870,7 +892,7 @@ class SellPackageController extends GetxController {
         );
 
         // Navigate to home screen after snackbar is shown
-        print('Navigation: Going to home screen');
+        print('[DEBUG] fetchSubscriptionConfirmation: Navigation - Going to home screen');
         await Future.delayed(Duration(seconds: 2));
 
         // Clear the loading state before navigation
@@ -879,14 +901,14 @@ class SellPackageController extends GetxController {
         try {
           // Navigate to bottom nav bar (home screen)
           await Get.offAllNamed('/bottomNavBar');
-          print('Successfully navigated to home');
+          print('[DEBUG] fetchSubscriptionConfirmation: Successfully navigated to home');
         } catch (navError) {
-          print('Navigation error: $navError');
+          print('[DEBUG] fetchSubscriptionConfirmation: Navigation error - $navError');
           // Fallback: try navigating to root if route doesn't exist
           try {
             await Get.offAllNamed('/');
           } catch (e) {
-            print('Fallback navigation also failed: $e');
+            print('[DEBUG] fetchSubscriptionConfirmation: Fallback navigation also failed - $e');
           }
         }
       } else {
@@ -903,7 +925,7 @@ class SellPackageController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = 'Error fetching confirmation: $e';
-      print('Confirmation error: $e');
+      print('[DEBUG] fetchSubscriptionConfirmation: Error - $e');
       Get.snackbar(
         'Error',
         errorMessage.value,
