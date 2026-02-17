@@ -35,18 +35,6 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
-            
-            // Disable minification for Stripe SDK compatibility
-            isMinifyEnabled = false
-            
-            // Disable resource shrinking when minification is disabled
-            isShrinkResources = false
-            
-            // Add ProGuard rules for R8 minification
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
     }
 }

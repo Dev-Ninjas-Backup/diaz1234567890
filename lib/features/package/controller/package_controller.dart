@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/services/api_service.dart';
-import '../../../core/services/firebase/storage_service.dart';
 import '../model/package_model.dart';
 
 class SellPackageController extends GetxController {
@@ -435,55 +434,6 @@ class SellPackageController extends GetxController {
     }
   }
 
-  // Add a RxBool to track if user is logged in
-  var isUserLoggedIn = false.obs;
-
-  /// Fetch user profile from API and auto-populate form fields
-  Future<void> fetchAndPopulateUserData() async {
-    try {
-      final token = StorageService.token;
-
-      if (token == null || token.isEmpty) {
-        isUserLoggedIn.value = false;
-        return;
-      }
-
-      isUserLoggedIn.value = true;
-
-      final response = await ApiService.getUserProfile(token);
-
-      if (response['success'] == true && response['data'] != null) {
-        final userData = response['data'] as Map<String, dynamic>;
-
-        // Auto-fill contact details
-        final name = userData['name'] as String? ?? '';
-        final nameParts = name.split(' ');
-
-        // Split name into first and last name
-        if (nameParts.isNotEmpty) {
-          sellerNameController.text = nameParts.first;
-          // In the form, the second controller in TextFieldWidget is used for last name
-          // but it's not directly tied to a separate controller, so we'll use the name field
-        }
-
-        sellerPhoneController.text = userData['phone'] as String? ?? '';
-        sellerEmailController.text = userData['email'] as String? ?? '';
-        selectedCountry.value = userData['country'] as String? ?? '';
-        selectedCity.value = userData['city'] as String? ?? '';
-        selectedState.value = userData['state'] as String? ?? '';
-        sellerZipController.text = userData['zip'] as String? ?? '';
-
-        print('✓ User data loaded and auto-filled');
-      } else {
-        print('✗ Failed to load user data: ${response['message']}');
-        isUserLoggedIn.value = false;
-      }
-    } catch (e) {
-      print('Error fetching user profile: $e');
-      isUserLoggedIn.value = false;
-    }
-  }
-
   Future<void> submitBoatOnboarding() async {
     try {
       isLoading.value = true;
@@ -505,15 +455,6 @@ class SellPackageController extends GetxController {
       if ((selectedBoatState.value ?? '').trim().isEmpty) {
         throw Exception('Boat state is required');
       }
-
-      // Print package being used
-      print('═════════════════════════════════════');
-      print('🚀 SUBMITTING BOAT LISTING');
-      print('═════════════════════════════════════');
-      print('📦 Package ID: ${selectedPackageId.value}');
-      print('📦 Package Name: ${selectedPackage.value}');
-      print('⛵ Boat Name: ${nameController.text}');
-      print('═════════════════════════════════════');
 
       // Zip must be numeric
       final zip = boatZipController.text.trim();
@@ -649,15 +590,11 @@ class SellPackageController extends GetxController {
               listingId.value = data['listingPreview']['listingId'] ?? '';
             }
 
-            print('\n═════════════════════════════════════');
-            print('✅ ONBOARDING SUCCESS');
-            print('═════════════════════════════════════');
-            print('📦 Package ID: ${selectedPackageId.value}');
-            print('📦 Package Name: ${selectedPackage.value}');
-            print('📋 Listing ID: ${listingId.value}');
-            print('💳 Payment Intent ID: ${paymentIntentId.value}');
-            print('👤 User ID: ${userId.value}');
-            print('═════════════════════════════════════\n');
+            print('\n=== Onboarding Success ===');
+            print('Listing ID: ${listingId.value}');
+            print('Payment Intent ID: ${paymentIntentId.value}');
+            print('User ID: ${userId.value}');
+            print('========================\n');
           }
 
           Get.snackbar(
@@ -857,17 +794,8 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Print payment and package details
-      print('═══════════════════════════════════════════');
-      print('💳 PAYMENT CONFIRMATION DETAILS');
-      print('═══════════════════════════════════════════');
-      print('📦 Package ID: ${selectedPackageId.value}');
-      print('📦 Package Name: ${selectedPackage.value}');
-      print('👤 User ID: ${userId.value}');
-      print('💰 Payment Intent ID: ${paymentIntentId.value}');
-      print('🔐 Payment Intent Secret: ${paymentIntentClientSecret.value}');
-      print('📋 Listing ID: ${listingId.value}');
-      print('═══════════════════════════════════════════');
+      print('User ID: ${userId.value}');
+      print('Payment Intent Secret: ${paymentIntentClientSecret.value}');
 
       // Confirm the setup intent with Stripe
       final result = await ApiService.confirmPayment(
@@ -875,9 +803,6 @@ class SellPackageController extends GetxController {
       );
 
       if (result['success'] == true) {
-        print(
-          '✅ Payment confirmed successfully with Package ID: ${selectedPackageId.value}',
-        );
         Get.snackbar(
           'Success',
           'Payment method confirmed successfully!',
@@ -907,7 +832,7 @@ class SellPackageController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
-      print('❌ Payment error: $e');
+      print('Payment error: $e');
     } finally {
       isLoading.value = false;
     }
