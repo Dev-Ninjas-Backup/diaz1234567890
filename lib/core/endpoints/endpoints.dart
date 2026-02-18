@@ -30,4 +30,6 @@ class Endpoints {
       '$baseUrl/api/auth/notification/mark-as-read/$notificationId';
   static const String markAllNotificationAsRead =
       '$baseUrl/api/auth/notification/mark-all-as-read';
+  static String setupIntent(String planId) =>
+      '$baseUrl/api/payment/seller/setup-intent/$planId';
 }

@@ -4,6 +4,7 @@ import 'package:diaz1234567890/features/package/controller/package_controller.da
 import 'package:diaz1234567890/features/package/widgets/listing_preview_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 
 class PackageScreenStep4 extends StatefulWidget {
@@ -169,7 +170,7 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                         : () async {
                             await controller.submitBoatOnboarding();
                             if (controller
-                                .paymentIntentClientSecret
+                                .setupIntentClientSecret
                                 .value
                                 .isNotEmpty) {
                               setState(() {
@@ -329,19 +330,16 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
             ),
           ),
           SizedBox(height: 6),
-          TextField(
-            keyboardType: TextInputType.number,
-            maxLength: 19,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(16),
-              _CardNumberFormatter(),
-            ],
+          CardField(
+            onCardChanged: (card) {
+              print('[CardField] Card changed: complete=${card?.complete}');
+              print('[CardField] Card brand: ${card?.brand}');
+              controller.cardFieldInputDetails.value = card;
+            },
             decoration: InputDecoration(
-              hintText: '1234 5678 9012 3456',
-              hintStyle: TextStyle(color: Colors.grey.shade400),
               prefixIcon: Icon(Icons.credit_card, color: Colors.blue),
-              counterText: '',
+              hintText: '0000 0000 0000 0000',
+              hintStyle: TextStyle(color: Colors.grey.shade400),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.grey.shade300),
@@ -361,106 +359,6 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
             ),
           ),
           SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Expiry Date',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      maxLength: 5,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(4),
-                        _ExpiryDateFormatter(),
-                      ],
-                      decoration: InputDecoration(
-                        hintText: 'MM/YY',
-                        hintStyle: TextStyle(color: Colors.grey.shade400),
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'CVC',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      obscureText: true,
-                      maxLength: 4,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(4),
-                      ],
-                      decoration: InputDecoration(
-                        hintText: '123',
-                        hintStyle: TextStyle(color: Colors.grey.shade400),
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -474,86 +372,15 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Your payment information is encrypted and secure',
+                    'Your payment information is secured with Stripe encryption',
                     style: TextStyle(fontSize: 11, color: Colors.blue.shade900),
                   ),
                 ),
               ],
             ),
           ),
-          // SizedBox(height: 8),
-          // Container(
-          //   padding: EdgeInsets.all(10),
-          //   decoration: BoxDecoration(
-          //     color: Colors.grey.shade100,
-          //     borderRadius: BorderRadius.circular(8),
-          //   ),
-          //   child: Text(
-          //     'Test Card: 4242 4242 4242 4242 | Exp: 12/25 | CVC: 123',
-          //     style: TextStyle(
-          //       fontSize: 10,
-          //       color: Colors.grey.shade600,
-          //       fontStyle: FontStyle.italic,
-          //     ),
-          //     textAlign: TextAlign.center,
-          //   ),
-          // ),
         ],
       ),
-    );
-  }
-}
-
-// Card Number Formatter
-class _CardNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text;
-    if (text.isEmpty) return newValue;
-
-    final buffer = StringBuffer();
-    for (int i = 0; i < text.length; i++) {
-      buffer.write(text[i]);
-      final nonZeroIndex = i + 1;
-      if (nonZeroIndex % 4 == 0 && nonZeroIndex != text.length) {
-        buffer.write(' ');
-      }
-    }
-
-    final string = buffer.toString();
-    return newValue.copyWith(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
-    );
-  }
-}
-
-// Expiry Date Formatter
-class _ExpiryDateFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text;
-    if (text.isEmpty) return newValue;
-
-    if (text.length <= 2) {
-      return newValue;
-    }
-
-    final buffer = StringBuffer();
-    buffer.write(text.substring(0, 2));
-    buffer.write('/');
-    buffer.write(text.substring(2));
-
-    final string = buffer.toString();
-    return newValue.copyWith(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
     );
   }
 }

@@ -1,10 +1,13 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/services/api_service.dart';
+import '../../../core/services/firebase/storage_service.dart';
+import '../../../core/services/stripe_service.dart';
 import '../model/package_model.dart';
 
 class SellPackageController extends GetxController {
@@ -19,6 +22,17 @@ class SellPackageController extends GetxController {
   var paymentIntentClientSecret = ''.obs;
   var listingId = ''.obs;
   var userId = ''.obs;
+  var accessToken = ''.obs; // Store access token after hidden login
+
+  // Setup Intent Data (for Stripe payment)
+  var setupIntentId = ''.obs;
+  var setupIntentClientSecret = ''.obs;
+  var planPrice = 0.0.obs;
+  var planTitle = ''.obs;
+
+  // Card Input Fields (using CardField for PCI compliance)
+  var cardFieldInputDetails = Rx<CardFieldInputDetails?>(null);
+  var isCardValid = false.obs;
 
   // Helpers
   bool _isValidUrl(String url) {
@@ -447,9 +461,15 @@ class SellPackageController extends GetxController {
 
   Future<void> submitBoatOnboarding() async {
     try {
-      print('[DEBUG] submitBoatOnboarding: Starting boat onboarding submission');
+      print(
+        '[DEBUG] submitBoatOnboarding: Starting boat onboarding submission',
+      );
       isLoading.value = true;
       errorMessage.value = '';
+
+      // Check if user is logged in
+      final isLoggedIn = StorageService.hasToken();
+      print('[DEBUG] User is logged in: $isLoggedIn');
 
       // Validate required fields
       print('[DEBUG] submitBoatOnboarding: Validating required fields');
@@ -461,10 +481,14 @@ class SellPackageController extends GetxController {
         throw Exception('Please select a package first');
       }
       print('[DEBUG] Selected Package ID: ${selectedPackageId.value}');
-      if (sellerEmailController.text.isEmpty) {
-        throw Exception('Seller email is required');
+
+      // Only validate seller fields if user is NOT logged in
+      if (!isLoggedIn) {
+        if (sellerEmailController.text.isEmpty) {
+          throw Exception('Seller email is required');
+        }
+        print('[DEBUG] Seller email: ${sellerEmailController.text}');
       }
-      print('[DEBUG] Seller email: ${sellerEmailController.text}');
       if (boatCityController.text.trim().isEmpty) {
         throw Exception('Boat city is required');
       }
@@ -622,6 +646,19 @@ class SellPackageController extends GetxController {
             duration: const Duration(seconds: 5),
           );
 
+          // Only perform login if user is not already logged in
+          if (!isLoggedIn) {
+            await performHiddenLogin(
+              email: sellerEmailController.text.trim(),
+              password: sellerPasswordController.text,
+            );
+          } else {
+            // User is already logged in, just fetch setup intent
+            print('[DEBUG] User already logged in, fetching setup intent...');
+            userId.value = StorageService.userId ?? '';
+            await _fetchSetupIntentForPayment();
+          }
+
           // TODO: Navigate to payment screen with payment intent
           // Get.toNamed('/payment', arguments: {
           //   'clientSecret': paymentIntentClientSecret.value,
@@ -643,7 +680,9 @@ class SellPackageController extends GetxController {
         }
       } catch (e) {
         print('[DEBUG] Simple submission failed: $e');
-        print('[DEBUG] Note: Listing created without images. Files may need separate upload endpoint.');
+        print(
+          '[DEBUG] Note: Listing created without images. Files may need separate upload endpoint.',
+        );
 
         // Don't try multipart if simple JSON succeeded with payment intent
         if (paymentIntentId.value.isNotEmpty) {
@@ -693,6 +732,20 @@ class SellPackageController extends GetxController {
           colorText: Colors.white,
           duration: const Duration(seconds: 5),
         );
+
+        // Only perform login if user is not already logged in
+        if (!isLoggedIn) {
+          await performHiddenLogin(
+            email: sellerEmailController.text.trim(),
+            password: sellerPasswordController.text,
+          );
+        } else {
+          // User is already logged in, just fetch setup intent
+          print('[DEBUG] User already logged in, fetching setup intent...');
+          userId.value = StorageService.userId ?? '';
+          await _fetchSetupIntentForPayment();
+        }
+
         // Navigate to payment or success screen
       } else {
         errorMessage.value = response['message'] ?? 'Failed to create listing';
@@ -718,6 +771,94 @@ class SellPackageController extends GetxController {
     } finally {
       isLoading.value = false;
       print('[DEBUG] submitBoatOnboarding: Completed, isLoading = false');
+    }
+  }
+
+  /// Perform hidden login with seller credentials and fetch setup intent for payment
+  Future<void> performHiddenLogin({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      print('═══════════════════════════════════════════════════════');
+      print('🔐 HIDDEN LOGIN INITIATED');
+      print('═══════════════════════════════════════════════════════');
+
+      // Ensure StorageService is initialized
+      if (!StorageService.isInitialized) {
+        await StorageService.init();
+      }
+
+      // Call login API
+      final response = await ApiService.login(email: email, password: password);
+
+      print('\n📋 LOGIN RESPONSE:');
+      print('Response: $response\n');
+
+      if (response['success'] == true && response['data'] != null) {
+        final userData = response['data']['user'];
+        final String userId = userData['id'];
+        final String token = response['data']['token'];
+
+        // Save token to storage
+        await StorageService.saveToken(token, userId);
+
+        // Store token in observable
+        accessToken.value = token;
+        this.userId.value = userId;
+
+        print('═══════════════════════════════════════════════════════');
+        print('✅ HIDDEN LOGIN SUCCESSFUL');
+        print('═══════════════════════════════════════════════════════');
+        print('📧 Email: $email');
+        print('👤 User ID: $userId');
+        print('🔑 Access Token: $token');
+        print('═══════════════════════════════════════════════════════\n');
+
+        // Now fetch the setup intent for payment
+        print('\n🔄 Fetching Setup Intent for Payment...\n');
+        await _fetchSetupIntentForPayment();
+      } else {
+        print('❌ Login failed: ${response['message']}\n');
+      }
+    } catch (e) {
+      print('❌ Hidden login error: $e\n');
+      rethrow;
+    }
+  }
+
+  /// Fetch setup intent data from backend for Stripe payment
+  Future<void> _fetchSetupIntentForPayment() async {
+    try {
+      final response = await ApiService.getSetupIntent(selectedPackageId.value);
+
+      print('\n💳 SETUP INTENT RESPONSE:');
+      print('Response: $response\n');
+
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'];
+
+        // Extract and store setup intent data
+        setupIntentId.value = data['setupIntentId'] ?? '';
+        setupIntentClientSecret.value = data['setupIntentSecret'] ?? '';
+        planPrice.value = (data['amount'] ?? 0).toDouble();
+        planTitle.value = data['planTitle'] ?? '';
+
+        print('═══════════════════════════════════════════════════════');
+        print('✅ SETUP INTENT FETCHED SUCCESSFULLY');
+        print('═══════════════════════════════════════════════════════');
+        print('💳 Setup Intent ID: ${setupIntentId.value}');
+        print('🔐 Client Secret: ${setupIntentClientSecret.value}');
+        print('💰 Plan Price: \$${planPrice.value.toStringAsFixed(2)}');
+        print('📋 Plan Title: ${planTitle.value}');
+        print('═══════════════════════════════════════════════════════\n');
+      } else {
+        print('❌ Failed to fetch setup intent: ${response['message']}\n');
+        throw Exception('Failed to fetch setup intent: ${response['message']}');
+      }
+    } catch (e) {
+      print('❌ Error fetching setup intent: $e\n');
+      rethrow;
     }
   }
 
@@ -799,61 +940,117 @@ class SellPackageController extends GetxController {
   Future<void> confirmPayment() async {
     print('[DEBUG] confirmPayment: Starting payment confirmation');
     try {
-      if (paymentIntentClientSecret.value.isEmpty) {
+      // Check for user data
+      if (userId.value.isEmpty) {
         throw Exception(
-          'Payment intent not initialized. Please submit boat listing first.',
+          'User ID not available. Please ensure login was successful.',
         );
       }
 
-      if (userId.value.isEmpty) {
+      // Check if card details are present from CardField
+      final cardDetails = cardFieldInputDetails.value;
+      print('[DEBUG] Card Details State:');
+      print('[DEBUG]   - cardDetails is null: ${cardDetails == null}');
+      if (cardDetails != null) {
+        print('[DEBUG]   - cardDetails.complete: ${cardDetails.complete}');
+        print('[DEBUG]   - cardDetails.brand: ${cardDetails.brand}');
+      }
+
+      if (cardDetails == null) {
         throw Exception(
-          'User ID not available. Please ensure onboarding was successful.',
+          'Card details are required. Please enter valid card information.',
+        );
+      }
+
+      // Validate card is complete
+      if (!cardDetails.complete) {
+        throw Exception(
+          'Card details are incomplete. Please fill in all required fields.',
         );
       }
 
       isLoading.value = true;
       errorMessage.value = '';
 
-      print('User ID: ${userId.value}');
-      print('Payment Intent Secret: ${paymentIntentClientSecret.value}');
+      // Fetch a fresh setup intent for this payment attempt
+      print('[DEBUG] Fetching fresh setup intent for payment...');
+      await _fetchSetupIntentForPayment();
 
-      // Confirm the setup intent with Stripe
-      final result = await ApiService.confirmPayment(
-        clientSecret: paymentIntentClientSecret.value,
+      // Verify we have a valid setup intent
+      if (setupIntentClientSecret.value.isEmpty) {
+        throw Exception('Failed to initialize payment. Please try again.');
+      }
+
+      if (setupIntentId.value.isEmpty) {
+        throw Exception(
+          'Setup Intent ID not available. Please ensure setup intent was created.',
+        );
+      }
+
+      print('═══════════════════════════════════════════════════════');
+      print('💳 STRIPE PAYMENT PROCESSING');
+      print('═══════════════════════════════════════════════════════');
+      print('User ID: ${userId.value}');
+      print('Setup Intent ID: ${setupIntentId.value}');
+      print('Plan Price: \$${planPrice.value.toStringAsFixed(2)}');
+      print('Plan Title: ${planTitle.value}');
+      print('Card is complete: ${cardDetails.complete}');
+      print('═══════════════════════════════════════════════════════\n');
+
+      // Confirm setup intent with Stripe using CardField data
+      final stripeSuccess = await StripeService.confirmSetupIntent(
+        clientSecret: setupIntentClientSecret.value,
+        cardFieldDetails: cardDetails,
       );
 
-      if (result['success'] == true) {
+      if (stripeSuccess) {
+        print('\n✅ SETUP INTENT CONFIRMED WITH STRIPE SUCCESSFULLY\n');
         Get.snackbar(
           'Success',
-          'Payment method confirmed successfully!',
+          'Payment processed! Your subscription is now being activated.',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
 
-        // Fetch subscription confirmation
+        // Clear card fields after successful payment
+        cardFieldInputDetails.value = null;
+
+        // Clear setup intent so it can't be reused
+        setupIntentId.value = '';
+        setupIntentClientSecret.value = '';
+
+        // Give a moment for the backend to process the payment
+        await Future.delayed(const Duration(seconds: 2));
+
+        // Fetch subscription confirmation from backend
         print('[DEBUG] confirmPayment: Fetching subscription confirmation');
         await fetchSubscriptionConfirmation();
       } else {
-        errorMessage.value = result['message'] ?? 'Payment confirmation failed';
+        errorMessage.value =
+            'Setup intent confirmation failed. Please try again.';
+        print('\n❌ Setup intent confirmation failed: ${errorMessage.value}\n');
         Get.snackbar(
           'Error',
           errorMessage.value,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
       }
     } catch (e) {
-      errorMessage.value = 'Payment error: $e';
+      errorMessage.value = '$e';
+      print('\n❌ Payment error: $e\n');
       Get.snackbar(
         'Error',
-        errorMessage.value,
+        errorMessage.value.isNotEmpty ? errorMessage.value : 'Payment failed',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
       );
-      print('Payment error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -873,7 +1070,9 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      print('[DEBUG] fetchSubscriptionConfirmation: Fetching confirmation for User ID = $userIdValue');
+      print(
+        '[DEBUG] fetchSubscriptionConfirmation: Fetching confirmation for User ID = $userIdValue',
+      );
 
       final response = await ApiService.getSubscriptionConfirmation(
         userId: userIdValue,
@@ -892,7 +1091,9 @@ class SellPackageController extends GetxController {
         );
 
         // Navigate to home screen after snackbar is shown
-        print('[DEBUG] fetchSubscriptionConfirmation: Navigation - Going to home screen');
+        print(
+          '[DEBUG] fetchSubscriptionConfirmation: Navigation - Going to home screen',
+        );
         await Future.delayed(Duration(seconds: 2));
 
         // Clear the loading state before navigation
@@ -901,27 +1102,26 @@ class SellPackageController extends GetxController {
         try {
           // Navigate to bottom nav bar (home screen)
           await Get.offAllNamed('/bottomNavBar');
-          print('[DEBUG] fetchSubscriptionConfirmation: Successfully navigated to home');
+          print(
+            '[DEBUG] fetchSubscriptionConfirmation: Successfully navigated to home',
+          );
         } catch (navError) {
-          print('[DEBUG] fetchSubscriptionConfirmation: Navigation error - $navError');
-          // Fallback: try navigating to root if route doesn't exist
-          try {
-            await Get.offAllNamed('/');
-          } catch (e) {
-            print('[DEBUG] fetchSubscriptionConfirmation: Fallback navigation also failed - $e');
-          }
+          print(
+            '[DEBUG] fetchSubscriptionConfirmation: Navigation error - $navError',
+          );
         }
       } else {
         errorMessage.value =
-            response?['message'] ?? 'Failed to fetch subscription confirmation';
+            response?['message'] ?? 'Subscription not yet confirmed';
+        print('[DEBUG] fetchSubscriptionConfirmation: Not confirmed yet');
         Get.snackbar(
-          'Error',
+          'Info',
           errorMessage.value,
           snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.orange,
           colorText: Colors.white,
+          duration: const Duration(seconds: 3),
         );
-        isLoading.value = false;
       }
     } catch (e) {
       errorMessage.value = 'Error fetching confirmation: $e';
@@ -932,7 +1132,9 @@ class SellPackageController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: const Duration(seconds: 3),
       );
+    } finally {
       isLoading.value = false;
     }
   }

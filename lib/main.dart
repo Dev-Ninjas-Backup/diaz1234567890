@@ -1,6 +1,7 @@
 import 'package:diaz1234567890/app.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/core/services/socket_manager.dart';
+import 'package:diaz1234567890/core/services/stripe_service.dart';
 import 'package:diaz1234567890/features/auth/login_screen/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,9 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await StorageService.init();
+
+  // Initialize Stripe for payments
+  await StripeService.initialize();
 
   Get.put(LoginController());
   Get.put(SocketManager());

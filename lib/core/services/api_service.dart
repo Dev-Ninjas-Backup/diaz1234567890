@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 
 class ApiService {
   static const String baseUrl =
@@ -52,6 +54,66 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> getSetupIntent(String planId) async {
+    try {
+      print('\n=== Fetching Setup Intent ===');
+      print('URL: ${Endpoints.setupIntent(planId)}');
+
+      // Ensure StorageService is initialized
+      if (!StorageService.isInitialized) {
+        await StorageService.init();
+      }
+
+      final token = StorageService.token;
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token available. Please login first.');
+      }
+
+      print('Authorization: Bearer $token');
+
+      final response = await http
+          .post(
+            Uri.parse(
+              Endpoints.setupIntent(planId),
+            ), // Replace with actual plan ID
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=============================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Failed to get setup intent (${response.statusCode})',
+          );
+        } catch (e) {
+          throw Exception(
+            'Failed to get setup intent (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      print('Error fetching setup intent: $e');
+      throw Exception('Error fetching setup intent: $e');
+    }
+  }
+
+  /// Tokenize card details on the backend to get a PaymentMethod ID
   static Future<dynamic> getSubscriptionConfirmation({
     required String userId,
   }) async {

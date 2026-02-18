@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
+import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
@@ -1177,7 +1178,12 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
               CustomButton(
                 label: "Next →",
                 onPressed: () {
-                  Get.toNamed('/packageScreenStep3');
+                  // Skip Step 3 if user is already logged in
+                  if (StorageService.hasToken()) {
+                    Get.toNamed('/packageScreenStep4');
+                  } else {
+                    Get.toNamed('/packageScreenStep3');
+                  }
                 },
                 width: double.infinity,
               ),
