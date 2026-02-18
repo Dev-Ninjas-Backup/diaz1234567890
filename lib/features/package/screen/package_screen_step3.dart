@@ -1,13 +1,31 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step4.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
+import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 
-class PackageScreenStep3 extends StatelessWidget {
+class PackageScreenStep3 extends StatefulWidget {
   const PackageScreenStep3({super.key});
+
+  @override
+  State<PackageScreenStep3> createState() => _PackageScreenStep3State();
+}
+
+class _PackageScreenStep3State extends State<PackageScreenStep3> {
+  @override
+  void initState() {
+    super.initState();
+    // Skip this page if user is already logged in
+    if (StorageService.hasToken()) {
+      Future.microtask(() {
+        Get.off(() => PackageScreenStep4());
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
