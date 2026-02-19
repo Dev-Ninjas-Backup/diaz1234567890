@@ -5,8 +5,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 class StripeService {
   // Live Stripe Public Key
   static const String livePublicKey =
-      //'pk_live_51SkFIS45xKlHxaXnHw8Zs3fX38b1MOlUTyMbGSlTt630eKwA7Z5hUy7J8Bx0RZyiznA6KGDsqQAHQKwbrZY6kU8H00hJuSnyzp';
-      'pk_test_51RlFNRQNJ9V9C9o5Rz8lIUhKRJ7foy4WRfQR4z05Oy41puNBooAmZE0KuBy2K55iGVHrioX1CY3KotwYxwIyxHR800J4o3qINh';
+      'pk_live_51SkFIS45xKlHxaXnHw8Zs3fX38b1MOlUTyMbGSlTt630eKwA7Z5hUy7J8Bx0RZyiznA6KGDsqQAHQKwbrZY6kU8H00hJuSnyzp';
+  //'pk_test_51RlFNRQNJ9V9C9o5Rz8lIUhKRJ7foy4WRfQR4z05Oy41puNBooAmZE0KuBy2K55iGVHrioX1CY3KotwYxwIyxHR800J4o3qINh';
 
   /// Initialize Stripe with the live public key
   static Future<void> initialize() async {
@@ -18,6 +18,9 @@ class StripeService {
 
       Stripe.publishableKey = livePublicKey;
 
+      // Initialize Stripe instance to ensure Android PaymentConfiguration is set up
+      await Stripe.instance.applySettings();
+
       print('✅ Stripe initialized successfully');
       print('═══════════════════════════════════════════════════════\n');
     } catch (e) {
@@ -27,7 +30,7 @@ class StripeService {
   }
 
   /// Confirm a setup intent with Stripe using CardField data
-  /// Let Stripe handle payment method creation and confirmation internally
+  /// Automatically handles 3D Secure authentication when required
   static Future<bool> confirmSetupIntent({
     required String clientSecret,
     required CardFieldInputDetails cardFieldDetails,
@@ -38,19 +41,23 @@ class StripeService {
       print('═══════════════════════════════════════════════════════');
       print('Setup Intent Client Secret: $clientSecret');
       print('Card Complete: ${cardFieldDetails.complete}');
+      print('Card Brand: ${cardFieldDetails.brand}');
       print('═══════════════════════════════════════════════════════\n');
 
-      // Validate card details
-      if (!cardFieldDetails.complete) {
-        throw Exception(
-          'Card details are incomplete. Please fill in all required fields.',
-        );
+      // Note: CardField validation might not always work perfectly
+      // Let Stripe handle the validation on the backend
+      // Check if we have at least a card brand (indicating card number was entered)
+      if (cardFieldDetails.brand == null) {
+        throw Exception('Please enter a valid card number.');
       }
 
-      print('✅ Card validation passed\n');
-      print('Confirming setup intent with Stripe...');
+      print('✅ Card validation passed (Brand: ${cardFieldDetails.brand})\n');
+      print(
+        'Confirming setup intent with Stripe (3D Secure may be required)...',
+      );
 
       // Stripe handles PaymentMethod creation internally
+      // This automatically handles 3D Secure authentication when required
       final setupIntent = await Stripe.instance.confirmSetupIntent(
         paymentIntentClientSecret: clientSecret,
         params: PaymentMethodParams.card(
@@ -69,13 +76,43 @@ class StripeService {
 
       // Check if setup intent was successful (case-insensitive)
       final status = setupIntent.status.toLowerCase();
-      return status == 'succeeded';
+      if (status == 'succeeded') {
+        print('✅ Payment successfully processed!');
+        return true;
+      } else if (status == 'processing') {
+        print('⏳ Payment is processing...');
+        return true;
+      } else {
+        print('⚠️ Setup intent status: $status');
+        return false;
+      }
     } on StripeException catch (e) {
       print('\n❌ STRIPE ERROR:');
       print('Error Code: ${e.error.code}');
       print('Error Message: ${e.error.message}');
       print('Setup Intent ClientSecret used: $clientSecret');
       print('═══════════════════════════════════════════════════════\n');
+
+      // Check if it's an authentication required error (3D Secure)
+      if (e.error.message?.contains('authentication_required') == true ||
+          e.error.message?.contains('authenticate') == true) {
+        print('⚠️ 3D Secure authentication required.');
+        print('⚠️ The cardholder must complete the authentication challenge.');
+        print('═══════════════════════════════════════════════════════\n');
+      }
+
+      // Check if it's a card details incomplete error
+      if (e.error.message?.contains('complete') == true ||
+          e.error.message?.contains('Card') == true) {
+        print('⚠️ Card details are incomplete or invalid.');
+        print('⚠️ Please ensure:');
+        print(
+          '   1. Card number is valid (e.g., 4242424242424242 for testing)',
+        );
+        print('   2. Expiry date is in MM/YY format and valid');
+        print('   3. CVC is 3-4 digits');
+        print('═══════════════════════════════════════════════════════\n');
+      }
 
       // Check if it's a setup intent not found error
       if (e.error.message?.contains('No such setupintent') == true) {

@@ -30,6 +30,8 @@ class _YachtHomePageState extends State<YachtHomePage> {
       YachtSearchListingController(),
       tag: 'home_search',
     );
+    // Set FLORIDA as default site
+    _homeController.selectedFeaturedSite.value = 'FLORIDA';
   }
 
   @override
@@ -88,21 +90,7 @@ class _YachtHomePageState extends State<YachtHomePage> {
                         ),
                         Obx(
                           () => TextButton(
-                            onPressed: _searchController_.isLoading.value
-                                ? null
-                                : () async {
-                                    if (_searchController.text.isNotEmpty) {
-                                      final query = _searchController.text;
-                                      await _searchController_
-                                          .naturalLanguageSearch(query);
-                                      Get.to(
-                                        () => AiSearchResultsScreen(
-                                          query: query,
-                                          controller: _searchController_,
-                                        ),
-                                      );
-                                    }
-                                  },
+                            onPressed: () => Get.to(() => const AiChatScreen()),
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 10,
@@ -194,41 +182,6 @@ class _YachtHomePageState extends State<YachtHomePage> {
                       }),
                     ),
                   ),
-                  // Show featured site selector only when Featured Yacht tab is selected
-                  if (_homeController.selectedTab.value == 1)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Site:',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(width: 12),
-                          DropdownButton<String>(
-                            value: _homeController.selectedFeaturedSite.value,
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'JUPITER',
-                                child: Text('JUPITER'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'FLORIDA',
-                                child: Text('FLORIDA'),
-                              ),
-                            ],
-                            onChanged: (val) {
-                              if (val == null) return;
-                              _homeController.selectedFeaturedSite.value = val;
-                              _homeController.fetchFeaturedBoats(site: val);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               ),
             ),

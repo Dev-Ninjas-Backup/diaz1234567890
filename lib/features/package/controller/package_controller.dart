@@ -142,6 +142,9 @@ class SellPackageController extends GetxController {
   final sellerConfirmPasswordController = TextEditingController();
   final sellerZipController = TextEditingController();
 
+  // Card Form Controller
+  final cardFormEditController = CardFormEditController();
+
   // Specifications
   var selectedBuildYear = RxnString();
   var selectedMake = RxnString();
@@ -467,28 +470,29 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Check if user is logged in
+      // Check if user is already logged in
       final isLoggedIn = StorageService.hasToken();
-      print('[DEBUG] User is logged in: $isLoggedIn');
+      print('[DEBUG] User logged in: $isLoggedIn');
 
-      // Validate required fields
+      // Validate required boat information fields (for both logged in and new users)
       print('[DEBUG] submitBoatOnboarding: Validating required fields');
       if (nameController.text.isEmpty) {
         throw Exception('Boat name is required');
       }
       print('[DEBUG] Boat name: ${nameController.text}');
-      if (selectedPackageId.value.isEmpty) {
+
+      // Only require package selection for new users (not logged in)
+      if (!isLoggedIn && selectedPackageId.value.isEmpty) {
         throw Exception('Please select a package first');
       }
-      print('[DEBUG] Selected Package ID: ${selectedPackageId.value}');
 
-      // Only validate seller fields if user is NOT logged in
       if (!isLoggedIn) {
-        if (sellerEmailController.text.isEmpty) {
-          throw Exception('Seller email is required');
-        }
-        print('[DEBUG] Seller email: ${sellerEmailController.text}');
+        print('[DEBUG] Selected Package ID: ${selectedPackageId.value}');
+      } else {
+        print('[DEBUG] Logged-in user: skipping package selection requirement');
       }
+
+      // Validate common boat details for both user types
       if (boatCityController.text.trim().isEmpty) {
         throw Exception('Boat city is required');
       }
@@ -523,6 +527,48 @@ class SellPackageController extends GetxController {
 
       // Dimensions validation
       _validateBoatDimensions();
+
+      // If user is not logged in, check if seller information is filled
+      if (!isLoggedIn) {
+        // If seller email is empty, user hasn't filled Step 3 yet - navigate there
+        if (sellerEmailController.text.isEmpty) {
+          print(
+            '[DEBUG] Non-logged-in user: navigating to Step 3 for seller information',
+          );
+          isLoading.value = false;
+          Get.toNamed('/packageScreenStep3');
+          return;
+        }
+
+        // Seller email is filled, validate remaining seller info before submission
+        if (sellerNameController.text.isEmpty) {
+          throw Exception('Seller name is required');
+        }
+        if (sellerPhoneController.text.isEmpty) {
+          throw Exception('Seller phone is required');
+        }
+        if (sellerUsernameController.text.isEmpty) {
+          throw Exception('Seller username is required');
+        }
+        if (sellerPasswordController.text.isEmpty) {
+          throw Exception('Seller password is required');
+        }
+        if (selectedCountry.value == null || selectedCountry.value!.isEmpty) {
+          throw Exception('Country is required');
+        }
+        if (selectedCity.value == null || selectedCity.value!.isEmpty) {
+          throw Exception('City is required');
+        }
+        if (selectedState.value == null || selectedState.value!.isEmpty) {
+          throw Exception('State is required');
+        }
+
+        print(
+          '[DEBUG] All seller information is complete. Proceeding with submission...',
+        );
+      }
+
+      // For logged-in users or non-logged-in users with complete seller info, proceed with submission
 
       // Build boat info
       final boatInfo = {
@@ -606,35 +652,37 @@ class SellPackageController extends GetxController {
       print('[DEBUG] Gallery Images: $galleryPaths');
       print('[DEBUG] =========================================\n');
 
+      // For logged-in users, use empty planId since they already have subscription
+      final planIdToUse = isLoggedIn ? '' : selectedPackageId.value;
+
       // Try simple JSON approach first (without file uploads)
       print('[DEBUG] Attempting submission without file uploads first...');
       try {
-        final response = await ApiService.createBoatOnboardingSimple(
-          boatInfo: boatInfo,
-          sellerInfo: sellerInfo,
-          planId: selectedPackageId.value,
-        );
+        final response = isLoggedIn
+            ? await ApiService.createListing(
+                boatInfo: boatInfo,
+                planId: planIdToUse,
+              )
+            : await ApiService.createBoatOnboardingSimple(
+                boatInfo: boatInfo,
+                sellerInfo: sellerInfo,
+                planId: selectedPackageId.value,
+              );
 
         print('[DEBUG] submitBoatOnboarding: Response received - $response');
 
         if (response['success'] == true) {
-          // Store payment intent data
+          // Store listing and payment data from response
           final data = response['data'];
           if (data != null) {
-            paymentIntentId.value = data['paymentIntentId'] ?? '';
-            paymentIntentClientSecret.value =
-                data['paymentIntentClientSecret'] ?? '';
+            // Extract listing ID (directly in data, not nested)
+            listingId.value = data['listingId'] ?? data['id'] ?? '';
             userId.value = data['userId'] ?? '';
 
-            if (data['listingPreview'] != null) {
-              listingId.value = data['listingPreview']['listingId'] ?? '';
-            }
-
-            print('\n=== Onboarding Success ===');
+            print('\n=== Listing Created Successfully ===');
             print('Listing ID: ${listingId.value}');
-            print('Payment Intent ID: ${paymentIntentId.value}');
             print('User ID: ${userId.value}');
-            print('========================\n');
+            print('====================================\n');
           }
 
           Get.snackbar(
@@ -643,27 +691,57 @@ class SellPackageController extends GetxController {
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
             colorText: Colors.white,
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 3),
           );
 
-          // Only perform login if user is not already logged in
+          // Only perform hidden login if user is NOT already logged in
           if (!isLoggedIn) {
             await performHiddenLogin(
               email: sellerEmailController.text.trim(),
               password: sellerPasswordController.text,
             );
-          } else {
-            // User is already logged in, just fetch setup intent
-            print('[DEBUG] User already logged in, fetching setup intent...');
-            userId.value = StorageService.userId ?? '';
-            await _fetchSetupIntentForPayment();
           }
 
-          // TODO: Navigate to payment screen with payment intent
-          // Get.toNamed('/payment', arguments: {
-          //   'clientSecret': paymentIntentClientSecret.value,
-          //   'listingId': listingId.value,
-          // });
+          // Fetch setup intent for payment before navigating to Step 4
+          // If user already has an active subscription, this will fail gracefully
+          print('[DEBUG] Fetching setup intent for payment...');
+          try {
+            await _fetchSetupIntentForPayment();
+          } catch (setupIntentError) {
+            final errorMsg = setupIntentError.toString();
+            if (errorMsg.contains('already has an active subscription')) {
+              print(
+                '[DEBUG] User already has active subscription - skipping payment',
+              );
+              Get.snackbar(
+                'Info',
+                'You already have an active subscription. Your listing is now live!',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.blue,
+                colorText: Colors.white,
+                duration: const Duration(seconds: 4),
+              );
+            } else {
+              print('[DEBUG] Setup intent error: $setupIntentError');
+              // Show error but still navigate - user can retry payment later
+              Get.snackbar(
+                'Payment Note',
+                'Listing created but payment couldn\'t be initialized. Please try again.',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.orange,
+                colorText: Colors.white,
+              );
+            }
+          }
+
+          // Navigate to home for logged-in users, or Step 4 for new users
+          Future.delayed(Duration(seconds: 2), () {
+            if (isLoggedIn) {
+              Get.offAllNamed('/bottomNavBar');
+            } else {
+              Get.toNamed('/packageScreenStep4');
+            }
+          });
 
           return;
         } else {
@@ -700,53 +778,67 @@ class SellPackageController extends GetxController {
       }
 
       // If simple approach fails or doesn't work, try with files
-      final response = await ApiService.createBoatOnboarding(
-        boatInfo: boatInfo,
-        sellerInfo: sellerInfo,
-        planId: selectedPackageId.value,
-        coverPaths: coverPaths,
-        galleryPaths: galleryPaths,
-      );
+      final response = isLoggedIn
+          ? await ApiService.createListingWithFiles(
+              boatInfo: boatInfo,
+              planId: planIdToUse,
+              coverPaths: coverPaths,
+              galleryPaths: galleryPaths,
+            )
+          : await ApiService.createBoatOnboarding(
+              boatInfo: boatInfo,
+              sellerInfo: sellerInfo,
+              planId: selectedPackageId.value,
+              coverPaths: coverPaths,
+              galleryPaths: galleryPaths,
+            );
 
       print('[DEBUG] submitBoatOnboarding: File upload response - $response');
 
       if (response['success'] == true) {
-        // Store payment intent data
+        // Store listing and payment data from response
         final data = response['data'];
         if (data != null) {
-          paymentIntentId.value = data['paymentIntentId'] ?? '';
-          paymentIntentClientSecret.value =
-              data['paymentIntentClientSecret'] ?? '';
+          // Extract listing ID (directly in data, not nested)
+          listingId.value = data['listingId'] ?? data['id'] ?? '';
           userId.value = data['userId'] ?? '';
 
-          if (data['listingPreview'] != null) {
-            listingId.value = data['listingPreview']['listingId'] ?? '';
-          }
+          print('\n=== Listing Created Successfully ===');
+          print('Listing ID: ${listingId.value}');
+          print('User ID: ${userId.value}');
+          print('====================================\n');
         }
 
         Get.snackbar(
           'Success',
-          'Boat listing created successfully with images! Listing ID: ${listingId.value}',
+          'Boat listing created successfully! Listing ID: ${listingId.value}',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
-          duration: const Duration(seconds: 5),
+          duration: const Duration(seconds: 3),
         );
 
-        // Only perform login if user is not already logged in
+        // Only perform hidden login if user is NOT already logged in
         if (!isLoggedIn) {
           await performHiddenLogin(
             email: sellerEmailController.text.trim(),
             password: sellerPasswordController.text,
           );
-        } else {
-          // User is already logged in, just fetch setup intent
-          print('[DEBUG] User already logged in, fetching setup intent...');
-          userId.value = StorageService.userId ?? '';
-          await _fetchSetupIntentForPayment();
-        }
 
-        // Navigate to payment or success screen
+          // Fetch setup intent for payment before navigating to Step 4 (only for new users)
+          print('[DEBUG] Fetching setup intent for payment...');
+          await _fetchSetupIntentForPayment();
+
+          // Navigate to Step 4 (payment section)
+          Future.delayed(Duration(seconds: 1), () {
+            Get.toNamed('/packageScreenStep4');
+          });
+        } else {
+          // For logged-in users, navigate directly to home
+          Future.delayed(Duration(seconds: 1), () {
+            Get.offAllNamed('/bottomNavBar');
+          });
+        }
       } else {
         errorMessage.value = response['message'] ?? 'Failed to create listing';
         Get.snackbar(
@@ -947,13 +1039,14 @@ class SellPackageController extends GetxController {
         );
       }
 
-      // Check if card details are present from CardField
-      final cardDetails = cardFieldInputDetails.value;
+      // Get card details from the CardFormEditController
+      final cardDetails = cardFormEditController.details;
       print('[DEBUG] Card Details State:');
       print('[DEBUG]   - cardDetails is null: ${cardDetails == null}');
       if (cardDetails != null) {
         print('[DEBUG]   - cardDetails.complete: ${cardDetails.complete}');
         print('[DEBUG]   - cardDetails.brand: ${cardDetails.brand}');
+        print('[DEBUG]   - cardDetails.last4: ${cardDetails.last4}');
       }
 
       if (cardDetails == null) {
@@ -962,11 +1055,11 @@ class SellPackageController extends GetxController {
         );
       }
 
-      // Validate card is complete
-      if (!cardDetails.complete) {
-        throw Exception(
-          'Card details are incomplete. Please fill in all required fields.',
-        );
+      // Note: CardField SDK sometimes reports complete=false even with valid card
+      // We'll let Stripe validate the full card details on the backend
+      // Just check that a card brand was recognized (meaning card number is entered)
+      if (cardDetails.brand == null) {
+        throw Exception('Please enter a valid card number.');
       }
 
       isLoading.value = true;
@@ -1015,7 +1108,7 @@ class SellPackageController extends GetxController {
         );
 
         // Clear card fields after successful payment
-        cardFieldInputDetails.value = null;
+        // The card form will remain visible but the controller can be reused
 
         // Clear setup intent so it can't be reused
         setupIntentId.value = '';
@@ -1164,6 +1257,7 @@ class SellPackageController extends GetxController {
     sellerPasswordController.dispose();
     sellerConfirmPasswordController.dispose();
     sellerZipController.dispose();
+    cardFormEditController.dispose();
     boatCityController.dispose();
     boatStateController.dispose();
     boatZipController.dispose();
