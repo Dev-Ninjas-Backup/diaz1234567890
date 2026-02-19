@@ -32,4 +32,6 @@ class Endpoints {
       '$baseUrl/api/auth/notification/mark-all-as-read';
   static String setupIntent(String planId) =>
       '$baseUrl/api/payment/seller/setup-intent/$planId';
+  static String onboarding = '$baseUrl/api/boats/seller/onboarding';
+  static String createListing = '$baseUrl/api/boats/seller/create-listing';
 }

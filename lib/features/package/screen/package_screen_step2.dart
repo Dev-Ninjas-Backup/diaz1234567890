@@ -1175,17 +1175,19 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 ],
               ),
               SizedBox(height: 40),
-              CustomButton(
-                label: "Next →",
-                onPressed: () {
-                  // Skip Step 3 if user is already logged in
-                  if (StorageService.hasToken()) {
-                    Get.toNamed('/packageScreenStep4');
-                  } else {
-                    Get.toNamed('/packageScreenStep3');
-                  }
-                },
-                width: double.infinity,
+              Obx(
+                () => CustomButton(
+                  label: controller.isLoading.value
+                      ? "Submitting..."
+                      : "Next →",
+                  onPressed: controller.isLoading.value
+                      ? () {} // Empty callback to prevent double clicks
+                      : () {
+                          // Submit boat listing directly
+                          controller.submitBoatOnboarding();
+                        },
+                  width: double.infinity,
+                ),
               ),
             ],
           ),

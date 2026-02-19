@@ -303,77 +303,59 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
 
   Widget _buildPaymentForm() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+        color: const Color(0xFFF5F6FA),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Card Details',
-            style: TextStyle(
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+
+          // ✅ IMPORTANT: No small fixed height
+          CardFormField(
+            controller: controller.cardFormEditController,
+            style: CardFormStyle(
+              backgroundColor: Colors.white,
+              borderColor: Colors.grey.shade300,
+              borderRadius: 12,
+              borderWidth: 1,
+              textColor: Colors.black,
+              placeholderColor: Colors.grey.shade500,
               fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
             ),
-          ),
-          SizedBox(height: 16),
-          // Card Number Field
-          Text(
-            'Card Number',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade700,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 6),
-          CardField(
+            // onFormComplete: () {
+            //   print("✅ Card form complete");
+            // },
             onCardChanged: (card) {
-              print('[CardField] Card changed: complete=${card?.complete}');
-              print('[CardField] Card brand: ${card?.brand}');
-              controller.cardFieldInputDetails.value = card;
+              print("Brand: ${card?.brand}");
             },
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.credit_card, color: Colors.blue),
-              hintText: '0000 0000 0000 0000',
-              hintStyle: TextStyle(color: Colors.grey.shade400),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.blue, width: 2),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
-              ),
-            ),
           ),
-          SizedBox(height: 16),
+
+          const SizedBox(height: 16),
+
+          // 🔒 Security Box
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
-              border: Border.all(color: Colors.blue.shade200),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.blue.shade100),
             ),
             child: Row(
               children: [
-                Icon(Icons.lock_outline, color: Colors.blue, size: 18),
-                SizedBox(width: 8),
+                const Icon(Icons.lock, size: 18, color: Colors.blue),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Your payment information is secured with Stripe encryption',
-                    style: TextStyle(fontSize: 11, color: Colors.blue.shade900),
+                    style: TextStyle(fontSize: 12, color: Colors.blue.shade700),
                   ),
                 ),
               ],

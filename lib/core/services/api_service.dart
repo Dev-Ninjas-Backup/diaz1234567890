@@ -238,7 +238,7 @@ class ApiService {
       };
 
       print('\n=== Simple JSON Request (No Files) ===');
-      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('URL: ${Endpoints.onboarding}');
       print('\\nBoat Info Keys: ${boatInfo.keys.toList()}');
       print('\\nBoat Info:');
       boatInfo.forEach((key, value) {
@@ -249,7 +249,7 @@ class ApiService {
 
       final response = await http
           .post(
-            Uri.parse('$baseUrl/api/boats/seller/onboarding'),
+            Uri.parse(Endpoints.onboarding),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
@@ -300,7 +300,7 @@ class ApiService {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('$baseUrl/api/boats/seller/onboarding'),
+        Uri.parse(Endpoints.onboarding),
       );
 
       // Remove covers and galleries from boatInfo before sending
@@ -314,7 +314,7 @@ class ApiService {
       request.fields['planId'] = planId;
 
       print('\n=== API Multipart Request ===');
-      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('URL: ${Endpoints.onboarding}');
       print('boatInfo: ${json.encode(boatInfoCopy)}');
       print('sellerInfo: ${json.encode(sellerInfo)}');
       print('planId: $planId');
@@ -423,6 +423,216 @@ class ApiService {
     }
   }
 
+  /// Create listing for authenticated users (without file uploads)
+  static Future<dynamic> createListing({
+    required Map<String, dynamic> boatInfo,
+    required String planId,
+  }) async {
+    try {
+      // Ensure StorageService is initialized and we have a token
+      if (!StorageService.isInitialized) {
+        await StorageService.init();
+      }
+
+      final token = StorageService.token;
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token available. User must be logged in.');
+      }
+
+      final requestBody = {'boatInfo': boatInfo, 'planId': planId};
+
+      print('\n=== Create Listing Request (Authenticated User) ===');
+      print('URL: ${Endpoints.createListing}');
+      print('Authorization: Bearer $token');
+      print('Body: ${json.encode(requestBody)}');
+      print('====================================================\n');
+
+      final response = await http
+          .post(
+            Uri.parse(Endpoints.createListing),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Server error (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Server error (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } on SocketException catch (e) {
+      throw Exception(
+        'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException catch (e) {
+      throw Exception(
+        'Connection error: ${e.message}. The server may be unavailable.',
+      );
+    } catch (e) {
+      throw Exception('Error creating boat listing: $e');
+    }
+  }
+
+  /// Create listing for authenticated users (with file uploads)
+  static Future<dynamic> createListingWithFiles({
+    required Map<String, dynamic> boatInfo,
+    required String planId,
+    List<String>? coverPaths,
+    List<String>? galleryPaths,
+  }) async {
+    try {
+      // Ensure StorageService is initialized and we have a token
+      if (!StorageService.isInitialized) {
+        await StorageService.init();
+      }
+
+      final token = StorageService.token;
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token available. User must be logged in.');
+      }
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(Endpoints.createListing),
+      );
+
+      // Add authorization header
+      request.headers['Authorization'] = 'Bearer $token';
+
+      // Remove covers and galleries from boatInfo before sending
+      final boatInfoCopy = Map<String, dynamic>.from(boatInfo);
+      boatInfoCopy.remove('covers');
+      boatInfoCopy.remove('galleries');
+
+      // Add text fields
+      request.fields['boatInfo'] = json.encode(boatInfoCopy);
+      request.fields['planId'] = planId;
+
+      print('\n=== Create Listing with Files Request (Authenticated User) ===');
+      print('URL: ${Endpoints.createListing}');
+      print('Authorization: Bearer $token');
+      print('boatInfo: ${json.encode(boatInfoCopy)}');
+      print('planId: $planId');
+
+      // Add cover image
+      if (coverPaths != null && coverPaths.isNotEmpty) {
+        for (var path in coverPaths) {
+          if (path.isNotEmpty) {
+            var file = File(path);
+            if (await file.exists()) {
+              var fileSize = await file.length();
+              var filename = path.split('/').last;
+              var mediaType = _getMediaType(filename);
+
+              var stream = http.ByteStream(file.openRead());
+              var multipartFile = http.MultipartFile(
+                'covers',
+                stream,
+                fileSize,
+                filename: filename,
+                contentType: mediaType,
+              );
+              request.files.add(multipartFile);
+              print('Added cover: $filename');
+            }
+          }
+        }
+      }
+
+      // Add gallery images
+      if (galleryPaths != null && galleryPaths.isNotEmpty) {
+        for (var path in galleryPaths) {
+          if (path.isNotEmpty) {
+            var file = File(path);
+            if (await file.exists()) {
+              var fileSize = await file.length();
+              var filename = path.split('/').last;
+              var mediaType = _getMediaType(filename);
+
+              var stream = http.ByteStream(file.openRead());
+              var multipartFile = http.MultipartFile(
+                'galleries',
+                stream,
+                fileSize,
+                filename: filename,
+                contentType: mediaType,
+              );
+              request.files.add(multipartFile);
+              print('Added gallery: $filename');
+            }
+          }
+        }
+      }
+
+      print('Total files: ${request.files.length}');
+      print('Sending request...');
+      print(
+        '================================================================\n',
+      );
+
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 120),
+        onTimeout: () =>
+            throw Exception('Upload timeout - files may be too large'),
+      );
+
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('\n=== API Response ===');
+      print('Status Code: ${response.statusCode}');
+      print('Body: ${response.body}');
+      print('===================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Server error (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Server error (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } on SocketException catch (e) {
+      throw Exception(
+        'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException catch (e) {
+      throw Exception(
+        'Connection error: ${e.message}. The server may be unavailable or files are too large.',
+      );
+    } catch (e) {
+      throw Exception('Error creating boat listing: $e');
+    }
+  }
+
   /// Test endpoint with minimal payload to debug 500 errors
   static Future<dynamic> createBoatOnboardingMinimal({
     required String boatName,
@@ -461,13 +671,13 @@ class ApiService {
       };
 
       print('\n=== Minimal Test Request ===');
-      print('URL: $baseUrl/api/boats/seller/onboarding');
+      print('URL: ${Endpoints.onboarding}');
       print('Body: ${json.encode(requestBody)}');
       print('=============================\n');
 
       final response = await http
           .post(
-            Uri.parse('$baseUrl/api/boats/seller/onboarding'),
+            Uri.parse(Endpoints.onboarding),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
