@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'dart:convert';
+import 'dart:io';
 
+import '../../../core/endpoints/endpoints.dart';
 import '../../../core/services/api_service.dart';
 import '../../../core/services/firebase/storage_service.dart';
 import '../../../core/services/stripe_service.dart';
@@ -34,10 +39,34 @@ class SellPackageController extends GetxController {
   var cardFieldInputDetails = Rx<CardFieldInputDetails?>(null);
   var isCardValid = false.obs;
 
+  // Edit Mode
+  var isEditMode = false.obs;
+  var editingBoatId = ''.obs;
+  var imagesToDelete = <String>[].obs; // Track images to delete during update
+
   // Helpers
   bool _isValidUrl(String url) {
     final uri = Uri.tryParse(url);
     return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
+  }
+
+  String _getMimeType(String filename) {
+    final ext = filename.split('.').last.toLowerCase();
+    switch (ext) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'heic':
+        return 'image/heic';
+      default:
+        return 'application/octet-stream';
+    }
   }
 
   String _normalizeClassValue(String? value) {
@@ -166,6 +195,18 @@ class SellPackageController extends GetxController {
   var coverImage = Rxn<XFile>();
   var galleryImages = <XFile>[].obs;
 
+  // Existing images from API (for edit mode)
+  var existingCoverImages = <Map<String, String>>[].obs; // List of {id, url}
+  var existingGalleryImages = <Map<String, String>>[].obs; // List of {id, url}
+
+  // Equipment arrays (for edit mode)
+  var boatElectronics = <String>[].obs;
+  var boatInsideEquipment = <String>[].obs;
+  var boatOutsideEquipment = <String>[].obs;
+  var boatElectricalEquipment = <String>[].obs;
+  var boatCovers = <String>[].obs;
+  var boatAdditionalEquipment = <String>[].obs;
+
   final List<String> year = [
     '2018',
     '2019',
@@ -202,10 +243,6 @@ class SellPackageController extends GetxController {
 
   void selectBuildYear(String? value) {
     selectedBuildYear.value = value;
-  }
-
-  void selectBoatType(String? type) {
-    selectedBuildYear.value = type;
   }
 
   void selectMake(String? value) {
@@ -318,7 +355,59 @@ class SellPackageController extends GetxController {
 
   final List<String> countries = ['USA', 'Canada', 'UK'];
   final List<String> cities = ['New York', 'Los Angeles', 'Toronto'];
-  final List<String> states = ['California', 'New York', 'Ontario'];
+  final List<String> states = [
+    'Alabama',
+    'Alaska',
+    'Arizona',
+    'Arkansas',
+    'California',
+    'Colorado',
+    'Connecticut',
+    'Delaware',
+    'Florida',
+    'Georgia',
+    'Hawaii',
+    'Idaho',
+    'Illinois',
+    'Indiana',
+    'Iowa',
+    'Kansas',
+    'Kentucky',
+    'Louisiana',
+    'Maine',
+    'Maryland',
+    'Massachusetts',
+    'Michigan',
+    'Minnesota',
+    'Mississippi',
+    'Missouri',
+    'Montana',
+    'Nebraska',
+    'Nevada',
+    'New Hampshire',
+    'New Jersey',
+    'New Mexico',
+    'New York',
+    'North Carolina',
+    'North Dakota',
+    'Ohio',
+    'Oklahoma',
+    'Ontario',
+    'Oregon',
+    'Pennsylvania',
+    'Rhode Island',
+    'South Carolina',
+    'South Dakota',
+    'Tennessee',
+    'Texas',
+    'Utah',
+    'Vermont',
+    'Virginia',
+    'Washington',
+    'West Virginia',
+    'Wisconsin',
+    'Wyoming',
+  ];
 
   void selectCountry(String? value) {
     selectedCountry.value = value;
@@ -354,67 +443,25 @@ class SellPackageController extends GetxController {
     sellerPasswordController.clear();
     boatCityController.clear();
     boatZipController.clear();
-  }
 
-  void prefillTestData() {
-    // Boat Info
-    nameController.text = 'Sapphire';
-    priceController.text = '125000.5';
-    modelController.text = 'Oceanis 38';
-    descriptionController.text = 'Beautiful yacht with all amenities';
-    videoURLController.text = 'https://www.youtube.com/watch?v=8eZu8K5W0mM';
+    // Clear image lists
+    coverImage.value = null;
+    galleryImages.clear();
+    existingCoverImages.clear();
+    existingGalleryImages.clear();
+    imagesToDelete.clear();
 
-    // Dimensions
-    lengthFeetController.text = '36';
-    lengthInchesController.text = '6';
-    beamFeetController.text = '12';
-    beamInchesController.text = '6';
-    draftFeetController.text = '3';
-    draftInchesController.text = '2';
-
-    // Engine Info
-    engineHoursController.text = '1200';
-    engineMakeController.text = 'Mercury';
-    engineModelController.text = 'Verado 350';
-    engineHorsepowerController.text = '350';
-
-    // Location
-    boatCityController.text = 'Miami';
-    boatZipController.text = '33101';
-
-    // Seller Info - Use unique values to avoid duplicate user errors
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    sellerNameController.text = 'John Doe';
-    sellerEmailController.text = 'seller$timestamp@example.com';
-    sellerUsernameController.text = 'seller_$timestamp';
-    sellerPasswordController.text = 'strongPassword123!';
-    sellerZipController.text = '33101';
-    sellerPhoneController.text = '+1234567890';
-
-    // Dropdown selections
-    selectedBuildYear.value = '2018';
-    selectedMake.value = 'Beneteau';
-    selectedClass.value = '12';
-    selectedMaterial.value = 'Aluminium';
-    selectedFuelType.value = 'Mercury';
-    selectedCondition.value = 'New';
-    selectedEngineType.value = 'Propeller';
-    selectedPropType.value = 'Propeller';
-    selectedPropMaterial.value = 'Aluminium';
-    selectedNumberOfEngine.value = '2';
-    selectedNumberOfCabin.value = '3';
-    selectedNumberOfHeads.value = '2';
-    selectedBoatState.value = 'Florida';
-    selectedEngineFuelType.value = 'Mercury';
-    selectedPropellerType.value = '12';
-    selectedCountry.value = 'USA';
-    selectedCity.value = 'New York';
-    selectedState.value = 'Florida';
+    // Clear equipment lists
+    boatElectronics.clear();
+    boatInsideEquipment.clear();
+    boatOutsideEquipment.clear();
+    boatElectricalEquipment.clear();
+    boatCovers.clear();
+    boatAdditionalEquipment.clear();
   }
 
   @override
   void onInit() {
-    print('[DEBUG] SellPackageController: onInit called');
     super.onInit();
     clearAllControllers();
     fetchPackages();
@@ -422,43 +469,31 @@ class SellPackageController extends GetxController {
 
   Future<void> fetchPackages() async {
     try {
-      print('[DEBUG] fetchPackages: Starting to fetch packages');
       isLoading.value = true;
       errorMessage.value = '';
 
       final response = await ApiService.getSubscriptionPlans();
-      print('[DEBUG] fetchPackages: API Response received - $response');
 
       if (response['success'] == true && response['data'] != null) {
         final List<dynamic> data = response['data'];
         packages.value = data
             .map((item) => PackageModel.fromJson(item as Map<String, dynamic>))
             .toList();
-        print('[DEBUG] fetchPackages: Loaded ${packages.length} packages');
-        print('[DEBUG] Packages: $packages');
       } else {
         errorMessage.value = response['message'] ?? 'Failed to load packages';
-        print('[DEBUG] fetchPackages: Error - ${errorMessage.value}');
       }
     } catch (e) {
       errorMessage.value = 'Error loading packages: $e';
-      print('Error fetching packages: $e');
     } finally {
       isLoading.value = false;
-      print('[DEBUG] fetchPackages: Completed, isLoading = ${isLoading.value}');
     }
   }
 
   void selectPackage(String title) {
-    print('[DEBUG] selectPackage: Selected package - $title');
     selectedPackage.value = title;
-    // Find and set the package ID
     final package = packages.firstWhereOrNull((pkg) => pkg.title == title);
     if (package != null) {
       selectedPackageId.value = package.id;
-      print('[DEBUG] selectPackage: Package ID set to ${package.id}');
-    } else {
-      print('[DEBUG] selectPackage: Package not found!');
     }
   }
 
@@ -470,26 +505,14 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Check if user is already logged in
       final isLoggedIn = StorageService.hasToken();
-      print('[DEBUG] User logged in: $isLoggedIn');
 
-      // Validate required boat information fields (for both logged in and new users)
-      print('[DEBUG] submitBoatOnboarding: Validating required fields');
       if (nameController.text.isEmpty) {
         throw Exception('Boat name is required');
       }
-      print('[DEBUG] Boat name: ${nameController.text}');
 
-      // Only require package selection for new users (not logged in)
       if (!isLoggedIn && selectedPackageId.value.isEmpty) {
         throw Exception('Please select a package first');
-      }
-
-      if (!isLoggedIn) {
-        print('[DEBUG] Selected Package ID: ${selectedPackageId.value}');
-      } else {
-        print('[DEBUG] Logged-in user: skipping package selection requirement');
       }
 
       // Validate common boat details for both user types
@@ -614,8 +637,7 @@ class SellPackageController extends GetxController {
         'electricalEquipment': <String>[],
         'insideEquipment': <String>[],
         'outsideEquipment': <String>[],
-        'coversEquipment':
-            <String>[], // This stays as is based on your original code
+        'covers': <String>[],
         'additionalEquipment': <String>[],
         'extraDetails':
             <
@@ -866,55 +888,30 @@ class SellPackageController extends GetxController {
     }
   }
 
-  /// Perform hidden login with seller credentials and fetch setup intent for payment
   Future<void> performHiddenLogin({
     required String email,
     required String password,
   }) async {
     try {
-      print('═══════════════════════════════════════════════════════');
-      print('🔐 HIDDEN LOGIN INITIATED');
-      print('═══════════════════════════════════════════════════════');
-
-      // Ensure StorageService is initialized
       if (!StorageService.isInitialized) {
         await StorageService.init();
       }
 
-      // Call login API
       final response = await ApiService.login(email: email, password: password);
-
-      print('\n📋 LOGIN RESPONSE:');
-      print('Response: $response\n');
 
       if (response['success'] == true && response['data'] != null) {
         final userData = response['data']['user'];
         final String userId = userData['id'];
         final String token = response['data']['token'];
 
-        // Save token to storage
         await StorageService.saveToken(token, userId);
 
-        // Store token in observable
         accessToken.value = token;
         this.userId.value = userId;
 
-        print('═══════════════════════════════════════════════════════');
-        print('✅ HIDDEN LOGIN SUCCESSFUL');
-        print('═══════════════════════════════════════════════════════');
-        print('📧 Email: $email');
-        print('👤 User ID: $userId');
-        print('🔑 Access Token: $token');
-        print('═══════════════════════════════════════════════════════\n');
-
-        // Now fetch the setup intent for payment
-        print('\n🔄 Fetching Setup Intent for Payment...\n');
         await _fetchSetupIntentForPayment();
-      } else {
-        print('❌ Login failed: ${response['message']}\n');
       }
     } catch (e) {
-      print('❌ Hidden login error: $e\n');
       rethrow;
     }
   }
@@ -924,32 +921,17 @@ class SellPackageController extends GetxController {
     try {
       final response = await ApiService.getSetupIntent(selectedPackageId.value);
 
-      print('\n💳 SETUP INTENT RESPONSE:');
-      print('Response: $response\n');
-
       if (response['success'] == true && response['data'] != null) {
         final data = response['data'];
 
-        // Extract and store setup intent data
         setupIntentId.value = data['setupIntentId'] ?? '';
         setupIntentClientSecret.value = data['setupIntentSecret'] ?? '';
         planPrice.value = (data['amount'] ?? 0).toDouble();
         planTitle.value = data['planTitle'] ?? '';
-
-        print('═══════════════════════════════════════════════════════');
-        print('✅ SETUP INTENT FETCHED SUCCESSFULLY');
-        print('═══════════════════════════════════════════════════════');
-        print('💳 Setup Intent ID: ${setupIntentId.value}');
-        print('🔐 Client Secret: ${setupIntentClientSecret.value}');
-        print('💰 Plan Price: \$${planPrice.value.toStringAsFixed(2)}');
-        print('📋 Plan Title: ${planTitle.value}');
-        print('═══════════════════════════════════════════════════════\n');
       } else {
-        print('❌ Failed to fetch setup intent: ${response['message']}\n');
         throw Exception('Failed to fetch setup intent: ${response['message']}');
       }
     } catch (e) {
-      print('❌ Error fetching setup intent: $e\n');
       rethrow;
     }
   }
@@ -1039,25 +1021,8 @@ class SellPackageController extends GetxController {
         );
       }
 
-      // Get card details from the CardFormEditController
       final cardDetails = cardFormEditController.details;
-      print('[DEBUG] Card Details State:');
-      print('[DEBUG]   - cardDetails is null: ${cardDetails == null}');
-      if (cardDetails != null) {
-        print('[DEBUG]   - cardDetails.complete: ${cardDetails.complete}');
-        print('[DEBUG]   - cardDetails.brand: ${cardDetails.brand}');
-        print('[DEBUG]   - cardDetails.last4: ${cardDetails.last4}');
-      }
 
-      if (cardDetails == null) {
-        throw Exception(
-          'Card details are required. Please enter valid card information.',
-        );
-      }
-
-      // Note: CardField SDK sometimes reports complete=false even with valid card
-      // We'll let Stripe validate the full card details on the backend
-      // Just check that a card brand was recognized (meaning card number is entered)
       if (cardDetails.brand == null) {
         throw Exception('Please enter a valid card number.');
       }
@@ -1065,8 +1030,6 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Fetch a fresh setup intent for this payment attempt
-      print('[DEBUG] Fetching fresh setup intent for payment...');
       await _fetchSetupIntentForPayment();
 
       // Verify we have a valid setup intent
@@ -1226,6 +1189,470 @@ class SellPackageController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Fetch boat details for editing
+  Future<void> fetchBoatDetailsForEdit(String boatId) async {
+    try {
+      print(
+        '[DEBUG] fetchBoatDetailsForEdit: Starting to fetch boat ID: $boatId',
+      );
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final token = StorageService.token;
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final uri = Uri.parse(Endpoints.getBoatById(boatId));
+      final response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        print('[DEBUG] Boat details response: ${response.body}');
+
+        if (jsonBody['success'] == true && jsonBody['data'] is Map) {
+          final boatData = jsonBody['data'] as Map<String, dynamic>;
+          populateFormFromBoatData(boatData);
+          editingBoatId.value = boatId;
+          isEditMode.value = true;
+          print('[DEBUG] Boat details loaded and form populated for editing');
+        } else {
+          errorMessage.value =
+              jsonBody['message']?.toString() ?? 'Failed to load boat details';
+          Get.snackbar(
+            'Error',
+            errorMessage.value,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      } else {
+        errorMessage.value = 'Failed to load boat (${response.statusCode})';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Network error: $e';
+      print('[DEBUG] fetchBoatDetailsForEdit: Error - $e');
+      Get.snackbar(
+        'Error',
+        'Failed to load boat details: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Populate form fields from boat data
+  void populateFormFromBoatData(Map<String, dynamic> data) {
+    try {
+      // Basic Info
+      nameController.text = data['name'] ?? '';
+      priceController.text = (data['price'] ?? 0).toString();
+      modelController.text = data['model'] ?? '';
+      descriptionController.text = data['description'] ?? '';
+      videoURLController.text = data['videoURL'] ?? '';
+
+      // Dimensions
+      final dimensions = data['boatDimensions'] as Map<String, dynamic>?;
+      if (dimensions != null) {
+        lengthFeetController.text = (dimensions['lengthFeet'] ?? 0).toString();
+        lengthInchesController.text = (dimensions['lengthInches'] ?? 0)
+            .toString();
+        beamFeetController.text = (dimensions['beamFeet'] ?? 0).toString();
+        beamInchesController.text = (dimensions['beamInches'] ?? 0).toString();
+        draftFeetController.text = (dimensions['draftFeet'] ?? 0).toString();
+        draftInchesController.text = (dimensions['draftInches'] ?? 0)
+            .toString();
+      }
+
+      // Specifications
+      selectedBuildYear.value = (data['buildYear'] ?? '').toString();
+      selectedMake.value = data['make'];
+      selectedClass.value = data['class'];
+      selectedMaterial.value = data['material'];
+      selectedFuelType.value = data['fuelType'];
+      selectedCondition.value = data['condition'];
+      selectedEngineType.value = data['engineType'];
+      selectedPropType.value = data['propType'];
+      selectedPropMaterial.value = data['propMaterial'];
+      selectedNumberOfEngine.value = (data['enginesNumber'] ?? 1).toString();
+      selectedNumberOfCabin.value = (data['cabinsNumber'] ?? 1).toString();
+      selectedNumberOfHeads.value = (data['headsNumber'] ?? 1).toString();
+
+      // Location
+      boatCityController.text = data['city'] ?? '';
+      selectedBoatState.value = data['state'];
+      boatZipController.text = data['zip'] ?? '';
+
+      // Engine Info
+      final engines = data['engines'] as List<dynamic>?;
+      if (engines != null && engines.isNotEmpty) {
+        final engine = engines[0] as Map<String, dynamic>;
+        engineHoursController.text = (engine['hours'] ?? 0).toString();
+        engineMakeController.text = engine['make'] ?? '';
+        engineModelController.text = engine['model'] ?? '';
+        engineHorsepowerController.text = (engine['horsepower'] ?? 0)
+            .toString();
+        selectedEngineFuelType.value = engine['fuelType'];
+        selectedPropellerType.value = engine['propellerType'];
+      }
+
+      // Load existing images from API response
+      existingCoverImages.clear();
+      existingGalleryImages.clear();
+
+      // Try multiple field names for cover images
+      final coverImages =
+          (data['coverImages'] ??
+                  data['cover_images'] ??
+                  data['covers'] ??
+                  data['images'])
+              as List<dynamic>?;
+
+      if (coverImages != null && coverImages.isNotEmpty) {
+        for (final img in coverImages) {
+          if (img is Map<String, dynamic>) {
+            final imageUrl = img['url'] as String?;
+            final imageId = img['id'] as String?;
+            if (imageUrl != null && imageUrl.isNotEmpty && imageId != null) {
+              existingCoverImages.add({'id': imageId, 'url': imageUrl});
+              print('[DEBUG] Loaded cover image: $imageUrl');
+            }
+          }
+        }
+      }
+
+      // Try multiple field names for gallery images
+      final galleryImgs =
+          (data['galleryImages'] ??
+                  data['gallery_images'] ??
+                  data['photos'] ??
+                  (data['images'] is List &&
+                          (data['coverImages'] != null ||
+                              data['covers'] != null)
+                      ? []
+                      : null))
+              as List<dynamic>?;
+
+      if (galleryImgs != null && galleryImgs.isNotEmpty) {
+        for (final img in galleryImgs) {
+          if (img is Map<String, dynamic>) {
+            final imageUrl = img['url'] as String?;
+            final imageId = img['id'] as String?;
+            if (imageUrl != null && imageUrl.isNotEmpty && imageId != null) {
+              existingGalleryImages.add({'id': imageId, 'url': imageUrl});
+              print('[DEBUG] Loaded gallery image: $imageUrl');
+            }
+          }
+        }
+      }
+
+      // Load equipment arrays
+      final electronics =
+          (data['electronics'] as List<dynamic>?)?.cast<String>() ?? [];
+      final insideEquipment =
+          (data['insideEquipment'] as List<dynamic>?)?.cast<String>() ?? [];
+      final outsideEquipment =
+          (data['outsideEquipment'] as List<dynamic>?)?.cast<String>() ?? [];
+      final electricalEquipment =
+          (data['electricalEquipment'] as List<dynamic>?)?.cast<String>() ?? [];
+      final covers = (data['covers'] as List<dynamic>?)?.cast<String>() ?? [];
+      final additionalEquipment =
+          (data['additionalEquipment'] as List<dynamic>?)?.cast<String>() ?? [];
+
+      boatElectronics.assignAll(electronics);
+      boatInsideEquipment.assignAll(insideEquipment);
+      boatOutsideEquipment.assignAll(outsideEquipment);
+      boatElectricalEquipment.assignAll(electricalEquipment);
+      boatCovers.assignAll(covers);
+      boatAdditionalEquipment.assignAll(additionalEquipment);
+
+      print('[DEBUG] Form populated successfully from boat data');
+      print(
+        '[DEBUG] Loaded ${existingCoverImages.length} cover images and ${existingGalleryImages.length} gallery images',
+      );
+    } catch (e) {
+      print('[DEBUG] Error populating form: $e');
+      Get.snackbar(
+        'Warning',
+        'Some fields could not be loaded',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  /// Update boat listing
+  Future<void> updateBoatListing() async {
+    try {
+      print(
+        '[DEBUG] updateBoatListing: Starting update for boat ID: ${editingBoatId.value}',
+      );
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      // Validate required fields
+      if (nameController.text.isEmpty) {
+        throw Exception('Boat name is required');
+      }
+      if (boatCityController.text.trim().isEmpty) {
+        throw Exception('Boat city is required');
+      }
+      if ((selectedBoatState.value ?? '').trim().isEmpty) {
+        throw Exception('Boat state is required');
+      }
+
+      final zip = boatZipController.text.trim();
+      if (zip.isEmpty || !RegExp(r'^\d{3,10}$').hasMatch(zip)) {
+        throw Exception('Boat ZIP/postal code must be numeric (3-10 digits)');
+      }
+
+      final priceVal = double.tryParse(priceController.text) ?? 0.0;
+      if (priceVal <= 0) {
+        throw Exception('Price must be greater than 0');
+      }
+
+      if (videoURLController.text.trim().isNotEmpty &&
+          !_isValidUrl(videoURLController.text.trim())) {
+        throw Exception('Video URL must start with http or https');
+      }
+
+      _validateBoatDimensions();
+
+      // Build boat info
+      final boatInfo = {
+        'name': nameController.text,
+        'price': priceVal,
+        'model': modelController.text,
+        'make': selectedMake.value ?? '',
+        'buildYear': int.tryParse(selectedBuildYear.value ?? '') ?? 0,
+        'boatClass': _normalizeClassValue(selectedClass.value),
+        'material': selectedMaterial.value ?? '',
+        'fuelType': selectedFuelType.value ?? '',
+        'condition': selectedCondition.value ?? 'Used',
+        'engineType': selectedEngineType.value ?? '',
+        'propType': selectedPropType.value ?? '',
+        'propMaterial': selectedPropMaterial.value ?? '',
+        'enginesNumber': int.tryParse(selectedNumberOfEngine.value ?? '1') ?? 1,
+        'cabinsNumber': int.tryParse(selectedNumberOfCabin.value ?? '1') ?? 1,
+        'headsNumber': int.tryParse(selectedNumberOfHeads.value ?? '1') ?? 1,
+        'description': descriptionController.text,
+        'videoURL': videoURLController.text,
+        'city': boatCityController.text.trim(),
+        'state': selectedBoatState.value ?? '',
+        'zip': boatZipController.text,
+        'boatDimensions': {
+          'lengthFeet': int.tryParse(lengthFeetController.text) ?? 0,
+          'lengthInches': int.tryParse(lengthInchesController.text) ?? 0,
+          'beamFeet': int.tryParse(beamFeetController.text) ?? 0,
+          'beamInches': int.tryParse(beamInchesController.text) ?? 0,
+          'draftFeet': int.tryParse(draftFeetController.text) ?? 0,
+          'draftInches': int.tryParse(draftInchesController.text) ?? 0,
+        },
+        'engines': [
+          {
+            'hours': int.tryParse(engineHoursController.text) ?? 0,
+            'horsepower': int.tryParse(engineHorsepowerController.text) ?? 0,
+            'make': engineMakeController.text,
+            'model': engineModelController.text,
+            'fuelType': selectedEngineFuelType.value ?? '',
+            'propellerType': selectedPropellerType.value ?? '',
+          },
+        ],
+        'electronics': boatElectronics.toList(),
+        'electricalEquipment': boatElectricalEquipment.toList(),
+        'insideEquipment': boatInsideEquipment.toList(),
+        'outsideEquipment': boatOutsideEquipment.toList(),
+        'covers': boatCovers.toList(),
+        'additionalEquipment': boatAdditionalEquipment.toList(),
+        'extraDetails': <Map<String, dynamic>>[],
+        'imagesToDelete': imagesToDelete.toList(),
+      };
+
+      // Prepare file paths
+      final List<String> coverPaths = coverImage.value != null
+          ? [coverImage.value!.path]
+          : [];
+      final List<String> galleryPaths = galleryImages
+          .map((image) => image.path)
+          .toList();
+
+      print('[DEBUG] Boat Info: $boatInfo');
+      print('[DEBUG] Equipment Status:');
+      print('[DEBUG]   - Electronics: ${boatElectronics.toList()}');
+      print('[DEBUG]   - Inside Equipment: ${boatInsideEquipment.toList()}');
+      print('[DEBUG]   - Outside Equipment: ${boatOutsideEquipment.toList()}');
+      print(
+        '[DEBUG]   - Electrical Equipment: ${boatElectricalEquipment.toList()}',
+      );
+      print('[DEBUG]   - Covers: ${boatCovers.toList()}');
+      print(
+        '[DEBUG]   - Additional Equipment: ${boatAdditionalEquipment.toList()}',
+      );
+      print('[DEBUG] New Cover Images: $coverPaths');
+      print('[DEBUG] New Gallery Images: $galleryPaths');
+      print(
+        '[DEBUG] Existing Cover Images: ${existingCoverImages.map((img) => img['url']).toList()}',
+      );
+      print(
+        '[DEBUG] Existing Gallery Images: ${existingGalleryImages.map((img) => img['url']).toList()}',
+      );
+      print('[DEBUG] Images to Delete: ${imagesToDelete.toList()}');
+
+      // Make PATCH request as multipart/form-data
+      final token = StorageService.token;
+      final uri = Uri.parse(Endpoints.updateListing(editingBoatId.value));
+
+      print('[DEBUG] PATCH Request to: $uri');
+
+      // Create multipart request
+      final request = http.MultipartRequest('PATCH', uri);
+
+      // Add authorization header
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+
+      // Add boatInfo as JSON string field
+      request.fields['boatInfo'] = jsonEncode(boatInfo);
+
+      // Add covers (actual file uploads using ByteStream)
+      for (int i = 0; i < coverPaths.length; i++) {
+        try {
+          final file = File(coverPaths[i]);
+          if (await file.exists()) {
+            final fileSize = await file.length();
+            final filename = coverPaths[i].split('/').last;
+            final mimeType = _getMimeType(filename);
+
+            print(
+              '[DEBUG] Adding cover file: $filename (mime: $mimeType, size: $fileSize)',
+            );
+
+            final stream = http.ByteStream(file.openRead());
+            final multipartFile = http.MultipartFile(
+              'covers',
+              stream,
+              fileSize,
+              filename: filename,
+              contentType: MediaType.parse(mimeType),
+            );
+            request.files.add(multipartFile);
+          } else {
+            print('[DEBUG] Cover file not found: ${coverPaths[i]}');
+          }
+        } catch (e) {
+          print('[DEBUG] Error reading cover file: $e');
+        }
+      }
+
+      // Add galleries (actual file uploads using ByteStream)
+      for (int i = 0; i < galleryPaths.length; i++) {
+        try {
+          final file = File(galleryPaths[i]);
+          if (await file.exists()) {
+            final fileSize = await file.length();
+            final filename = galleryPaths[i].split('/').last;
+            final mimeType = _getMimeType(filename);
+
+            print(
+              '[DEBUG] Adding gallery file: $filename (mime: $mimeType, size: $fileSize)',
+            );
+
+            final stream = http.ByteStream(file.openRead());
+            final multipartFile = http.MultipartFile(
+              'galleries',
+              stream,
+              fileSize,
+              filename: filename,
+              contentType: MediaType.parse(mimeType),
+            );
+            request.files.add(multipartFile);
+          } else {
+            print('[DEBUG] Gallery file not found: ${galleryPaths[i]}');
+          }
+        } catch (e) {
+          print('[DEBUG] Error reading gallery file: $e');
+        }
+      }
+
+      print('[DEBUG] Total files to upload: ${request.files.length}');
+      print(
+        '[DEBUG] Cover files: ${coverPaths.length}, Gallery files: ${galleryPaths.length}',
+      );
+
+      final response = await request.send();
+      final responseString = await response.stream.bytesToString();
+
+      print('[DEBUG] Update response status: ${response.statusCode}');
+      print('[DEBUG] Update response body: $responseString');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonBody = jsonDecode(responseString);
+
+        if (jsonBody['success'] == true) {
+          Get.snackbar(
+            'Success',
+            'Boat listing updated successfully!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 3),
+          );
+
+          // Navigate back to my listings
+          Future.delayed(Duration(seconds: 1), () {
+            Get.offAllNamed('/bottomNavBar');
+          });
+        } else {
+          errorMessage.value =
+              jsonBody['message']?.toString() ?? 'Failed to update listing';
+          Get.snackbar(
+            'Error',
+            errorMessage.value,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      } else {
+        errorMessage.value = 'Failed to update boat (${response.statusCode})';
+        Get.snackbar(
+          'Error',
+          errorMessage.value,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Error updating boat listing: $e';
+      print('[DEBUG] updateBoatListing: Error - $e');
+      Get.snackbar(
+        'Error',
+        errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
       );
     } finally {
       isLoading.value = false;

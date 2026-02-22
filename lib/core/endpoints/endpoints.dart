@@ -34,4 +34,6 @@ class Endpoints {
       '$baseUrl/api/payment/seller/setup-intent/$planId';
   static String onboarding = '$baseUrl/api/boats/seller/onboarding';
   static String createListing = '$baseUrl/api/boats/seller/create-listing';
+  static String updateListing(String boatId) =>
+      '$baseUrl/api/boats/seller/update-listing/$boatId';
 }
