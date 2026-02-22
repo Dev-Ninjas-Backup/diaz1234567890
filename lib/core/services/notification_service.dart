@@ -39,8 +39,8 @@ class NotificationService {
     String notificationId,
   ) async {
     final uri = Uri.parse(Endpoints.markOneNotificationAsRead(notificationId));
-    if (kDebugMode) print('NotificationService.markOneAsRead: GET $uri');
-    final resp = await http.get(uri, headers: _headers());
+    if (kDebugMode) print('NotificationService.markOneAsRead: PATCH $uri');
+    final resp = await http.patch(uri, headers: _headers());
     if (kDebugMode)
       print(
         'NotificationService.markOneAsRead: status=${resp.statusCode} body=${resp.body}',
@@ -58,8 +58,8 @@ class NotificationService {
   /// Mark all notifications as read
   static Future<void> markAllAsRead() async {
     final uri = Uri.parse(Endpoints.markAllNotificationAsRead);
-    if (kDebugMode) print('NotificationService.markAllAsRead: GET $uri');
-    final resp = await http.get(uri, headers: _headers());
+    if (kDebugMode) print('NotificationService.markAllAsRead: PATCH $uri');
+    final resp = await http.patch(uri, headers: _headers());
     if (kDebugMode)
       print(
         'NotificationService.markAllAsRead: status=${resp.statusCode} body=${resp.body}',

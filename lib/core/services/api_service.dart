@@ -31,28 +31,28 @@ class ApiService {
     }
   }
 
-  static Future<dynamic> confirmPayment({required String clientSecret}) async {
-    try {
-      // This is a client-side confirmation with Stripe
-      // The actual implementation depends on your backend setup
-      // For now, we'll return a success response
-      // In production, you'd use flutter_stripe package to handle this
+  // static Future<dynamic> confirmPayment({required String clientSecret}) async {
+  //   try {
+  //     // This is a client-side confirmation with Stripe
+  //     // The actual implementation depends on your backend setup
+  //     // For now, we'll return a success response
+  //     // In production, you'd use flutter_stripe package to handle this
 
-      print('Confirming payment with clientSecret: $clientSecret');
+  //     print('Confirming payment with clientSecret: $clientSecret');
 
-      return {
-        'success': true,
-        'message': 'Payment method confirmed successfully',
-        'data': {
-          'setupIntentId': 'seti_xxxxx',
-          'setupIntentStatus': 'succeeded',
-          'paymentMethodId': 'pm_xxxxx',
-        },
-      };
-    } catch (e) {
-      throw Exception('Error confirming payment: $e');
-    }
-  }
+  //     return {
+  //       'success': true,
+  //       'message': 'Payment method confirmed successfully',
+  //       'data': {
+  //         'setupIntentId': 'seti_xxxxx',
+  //         'setupIntentStatus': 'succeeded',
+  //         'paymentMethodId': 'pm_xxxxx',
+  //       },
+  //     };
+  //   } catch (e) {
+  //     throw Exception('Error confirming payment: $e');
+  //   }
+  // }
 
   static Future<dynamic> getSetupIntent(String planId) async {
     try {

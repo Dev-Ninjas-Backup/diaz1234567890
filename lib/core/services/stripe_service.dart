@@ -5,8 +5,8 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 class StripeService {
   // Live Stripe Public Key
   static const String livePublicKey =
-      'pk_live_51SkFIS45xKlHxaXnHw8Zs3fX38b1MOlUTyMbGSlTt630eKwA7Z5hUy7J8Bx0RZyiznA6KGDsqQAHQKwbrZY6kU8H00hJuSnyzp';
-  //'pk_test_51RlFNRQNJ9V9C9o5Rz8lIUhKRJ7foy4WRfQR4z05Oy41puNBooAmZE0KuBy2K55iGVHrioX1CY3KotwYxwIyxHR800J4o3qINh';
+      //'pk_live_51SkFIS45xKlHxaXnHw8Zs3fX38b1MOlUTyMbGSlTt630eKwA7Z5hUy7J8Bx0RZyiznA6KGDsqQAHQKwbrZY6kU8H00hJuSnyzp';
+      'pk_test_51RlFNRQNJ9V9C9o5Rz8lIUhKRJ7foy4WRfQR4z05Oy41puNBooAmZE0KuBy2K55iGVHrioX1CY3KotwYxwIyxHR800J4o3qINh';
 
   /// Initialize Stripe with the live public key
   static Future<void> initialize() async {
