@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/profile/my_listing/model/boat.dart';
 import 'package:diaz1234567890/features/profile/my_listing/controller/my_listing_controller.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,10 @@ import 'package:diaz1234567890/routes/app_routes.dart';
 class MyListingContainer extends StatelessWidget {
   final Boat? boat;
 
-  const MyListingContainer({super.key, this.boat});
+  MyListingContainer({super.key, this.boat});
+  final SellPackageController sellPackageController = Get.put(
+    SellPackageController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +212,13 @@ class MyListingContainer extends StatelessWidget {
                 ),
                 SizedBox(width: 6),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed(
+                      AppRoute.packageScreenStep2,
+                      arguments: boat?.id,
+                    );
+                    print('Edit button pressed for boat ID: ${boat?.id}');
+                  },
                   icon: Icon(Icons.edit, color: Color(0xFF00AC9D), size: 20),
                 ),
                 Spacer(),
