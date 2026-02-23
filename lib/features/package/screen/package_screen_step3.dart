@@ -177,7 +177,7 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                   SizedBox(height: 6),
                   Container(
                     padding: EdgeInsets.only(left: 10),
-                    height: 36,
+                    //height: 36,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
@@ -224,7 +224,7 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                       SizedBox(height: 6),
                       Container(
                         padding: EdgeInsets.only(left: 10),
-                        height: 36,
+                        //height: 36,
                         width: 98,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
@@ -253,7 +253,6 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                       ),
                     ],
                   ),
-                  Spacer(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -268,7 +267,7 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                       SizedBox(height: 6),
                       Container(
                         padding: EdgeInsets.only(left: 10),
-                        height: 36,
+                        //height: 36,
                         width: 98,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
@@ -297,7 +296,6 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                       ),
                     ],
                   ),
-                  Spacer(),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -312,7 +310,7 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                       SizedBox(height: 6),
                       Container(
                         padding: EdgeInsets.only(left: 10),
-                        height: 36,
+                        //height: 36,
                         width: 98,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),

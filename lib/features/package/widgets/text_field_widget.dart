@@ -44,7 +44,7 @@ class TextFieldWidget extends StatelessWidget {
             SizedBox(height: 6),
             Container(
               padding: EdgeInsets.only(left: 10),
-              height: 36,
+              //height: 36,
               width: 155,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
@@ -84,7 +84,7 @@ class TextFieldWidget extends StatelessWidget {
             SizedBox(height: 6),
             Container(
               padding: EdgeInsets.only(left: 10),
-              height: 36,
+              //height: 36,
               width: 155,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
