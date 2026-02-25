@@ -18,20 +18,82 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
   void initState() {
     super.initState();
     final controller = Get.find<SellPackageController>();
-
-    // Check if this is an edit request (boat argument passed)
     final boatId = Get.arguments;
 
     if (boatId is String && boatId.isNotEmpty) {
-      // Edit mode: Load boat details
       print('[DEBUG] PackageScreenStep2: Edit mode for boat ID: $boatId');
       controller.fetchBoatDetailsForEdit(boatId);
     } else {
-      // Create mode: Clear all form controllers
       print('[DEBUG] PackageScreenStep2: Create mode - clearing form');
       controller.clearAllControllers();
       controller.isEditMode.value = false;
     }
+  }
+
+  Widget _buildProgressStep(String label, bool isCompleted, bool isCurrent) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 62,
+          height: 6,
+          decoration: BoxDecoration(
+            color: isCompleted ? Colors.blue : Colors.grey,
+            borderRadius: BorderRadius.circular(100),
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(label, style: TextStyle(fontSize: 8, color: Colors.grey)),
+      ],
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required String? value,
+    required String hint,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        SizedBox(height: 6),
+        Container(
+          padding: EdgeInsets.only(left: 10),
+          height: 36,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              hint: Text(hint, style: TextStyle(color: Colors.grey)),
+              isExpanded: true,
+              items: items
+                  .map(
+                    (type) => DropdownMenuItem<String>(
+                      value: type,
+                      child: Text(type),
+                    ),
+                  )
+                  .toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -47,13 +109,12 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
               : 'Register Your Boat',
         ),
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
           child: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Only show progress indicator in create mode
                 if (!controller.isEditMode.value)
                   Row(
                     children: [
@@ -79,81 +140,13 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 62,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Select Package",
-                            style: TextStyle(fontSize: 8, color: Colors.grey),
-                          ),
-                        ],
-                      ),
+                      _buildProgressStep("Select Package", true, false),
                       SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 62,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Boat Information",
-                            style: TextStyle(fontSize: 8, color: Colors.grey),
-                          ),
-                        ],
-                      ),
+                      _buildProgressStep("Boat Information", true, true),
                       SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 62,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Seller Information",
-                            style: TextStyle(fontSize: 8, color: Colors.grey),
-                          ),
-                        ],
-                      ),
+                      _buildProgressStep("Seller Information", false, false),
                       SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 62,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "Pay & Post",
-                            style: TextStyle(fontSize: 8, color: Colors.grey),
-                          ),
-                        ],
-                      ),
+                      _buildProgressStep("Pay & Post", false, false),
                     ],
                   ),
                 if (!controller.isEditMode.value) Divider(),
@@ -197,80 +190,50 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'State: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'State: *',
+                          value: controller.selectedBoatState.value,
+                          hint: 'Select',
+                          items: controller.states,
+                          onChanged: controller.selectBoatState,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Zip: *',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedBoatState.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.states.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectBoatState,
+                          SizedBox(height: 6),
+                          Container(
+                            padding: EdgeInsets.only(left: 10),
+                            height: 36,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            child: TextField(
+                              controller: controller.boatZipController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: '33101',
+                                hintStyle: TextStyle(color: Colors.grey),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Zip: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: TextField(
-                            controller: controller.boatZipController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: '33101',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -278,91 +241,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Condition: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Condition: *',
+                          value: controller.selectedCondition.value,
+                          hint: 'Select',
+                          items: controller.conditions,
+                          onChanged: controller.selectCondition,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedCondition.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.conditions.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectCondition,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Prop Material: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Prop Material: *',
+                          value: controller.selectedPropMaterial.value,
+                          hint: 'Select',
+                          items: controller.propMaterials,
+                          onChanged: controller.selectPropMaterial,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedPropMaterial.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.propMaterials.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectPropMaterial,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -501,7 +401,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                                     right: 8,
                                     child: GestureDetector(
                                       onTap: () {
-                                        // Mark existing cover for deletion
                                         final imageId =
                                             controller
                                                 .existingCoverImages[0]['id'] ??
@@ -653,7 +552,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                         ),
                         itemCount: totalCount,
                         itemBuilder: (context, index) {
-                          // Check if this is an existing image or new image
                           final isExisting =
                               index < controller.existingGalleryImages.length;
 
@@ -694,7 +592,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                                 child: GestureDetector(
                                   onTap: () {
                                     if (isExisting) {
-                                      // Mark existing image for deletion
                                       final imageId =
                                           controller
                                               .existingGalleryImages[index]['id'] ??
@@ -706,7 +603,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                                         index,
                                       );
                                     } else {
-                                      // Remove new gallery image
                                       controller.removeGalleryImage(
                                         index -
                                             controller
@@ -771,91 +667,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Build Year: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Build Year: *',
+                          value: controller.selectedBuildYear.value,
+                          hint: 'Select',
+                          items: controller.year,
+                          onChanged: controller.selectBuildYear,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedBuildYear.value,
-                                hint: Text(
-                                  'Select',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.year.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectBuildYear,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Make: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Make: *',
+                          value: controller.selectedMake.value,
+                          hint: 'Select',
+                          items: controller.make,
+                          onChanged: controller.selectMake,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedMake.value,
-                                hint: Text(
-                                  'Select',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.make.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectMake,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -863,91 +696,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Class: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Class: *',
+                          value: controller.selectedClass.value,
+                          hint: 'Select',
+                          items: controller.boatClass,
+                          onChanged: controller.selectClass,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedClass.value,
-                                hint: Text(
-                                  'Select',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.boatClass.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectClass,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Material: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Material: *',
+                          value: controller.selectedMaterial.value,
+                          hint: 'Select',
+                          items: controller.material,
+                          onChanged: controller.selectMaterial,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedMaterial.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.material.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectMaterial,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -955,91 +725,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Fuel Type: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Fuel Type: *',
+                          value: controller.selectedFuelType.value,
+                          hint: 'Select',
+                          items: controller.fuelType,
+                          onChanged: controller.selectFuelType,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedFuelType.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.fuelType.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectFuelType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Number of Engine: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Engine: *',
+                          value: controller.selectedNumberOfEngine.value,
+                          hint: 'Select',
+                          items: controller.numberOfEngines,
+                          onChanged: controller.selectNumberOfEngine,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedNumberOfEngine.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.numberOfEngines.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectNumberOfEngine,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -1047,91 +754,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Number of Cabin: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Cabin: *',
+                          value: controller.selectedNumberOfCabin.value,
+                          hint: 'Select',
+                          items: controller.numberOfCabins,
+                          onChanged: controller.selectNumberOfCabin,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedNumberOfCabin.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.numberOfCabins.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectNumberOfCabin,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Number of Heads: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Heads: *',
+                          value: controller.selectedNumberOfHeads.value,
+                          hint: 'Select',
+                          items: controller.numberOfHeads,
+                          onChanged: controller.selectNumberOfHeads,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedNumberOfHeads.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.numberOfHeads.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectNumberOfHeads,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -1149,91 +793,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Engine Type: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Engine Type: *',
+                          value: controller.selectedEngineType.value,
+                          hint: 'Select',
+                          items: controller.engineTypes,
+                          onChanged: controller.selectEngineType,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedEngineType.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.engineTypes.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectEngineType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Prop Type: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Prop Type: *',
+                          value: controller.selectedPropType.value,
+                          hint: 'Select',
+                          items: controller.propTypes,
+                          onChanged: controller.selectPropType,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedPropType.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.propTypes.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectPropType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -1259,91 +840,28 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Fuel Type: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Fuel Type: *',
+                          value: controller.selectedEngineFuelType.value,
+                          hint: 'Select',
+                          items: controller.fuelType,
+                          onChanged: controller.selectEngineFuelType,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedEngineFuelType.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.fuelType.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectEngineFuelType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Propeller Type: *',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                          ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Propeller Type: *',
+                          value: controller.selectedPropellerType.value,
+                          hint: 'Select',
+                          items: controller.propellerTypes,
+                          onChanged: controller.selectPropellerType,
                         ),
-                        SizedBox(height: 6),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          height: 36,
-                          width: 155,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Obx(
-                            () => DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                value: controller.selectedPropellerType.value,
-                                hint: Text(
-                                  'Select',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                isExpanded: true,
-                                items: controller.propellerTypes.map((type) {
-                                  return DropdownMenuItem<String>(
-                                    value: type,
-                                    child: Text(type),
-                                  );
-                                }).toList(),
-                                onChanged: controller.selectPropellerType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -1358,7 +876,7 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                               ? "Update Listing"
                               : "Next →"),
                     onPressed: controller.isLoading.value
-                        ? () {} // Empty callback to prevent double clicks
+                        ? () {}
                         : () {
                             // Submit boat listing or update in edit mode
                             if (controller.isEditMode.value) {

@@ -29,12 +29,13 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Register Your Boat'),
       body: Padding(
-        padding: EdgeInsetsGeometry.only(
-          top: 25,
-          left: 26,
-          right: 26,
-          bottom: 25,
-        ),
+        // padding: EdgeInsetsGeometry.only(
+        //   top: 25,
+        //   left: 26,
+        //   right: 26,
+        //   bottom: 25,
+        // ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

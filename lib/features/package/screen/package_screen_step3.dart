@@ -34,7 +34,7 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Register Your Boat'),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Column(

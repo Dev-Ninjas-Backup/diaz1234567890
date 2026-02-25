@@ -64,7 +64,7 @@ class YachtSearchListingController extends GetxController {
   Future<void> performSearch() async {
     isLoading.value = true;
     try {
-      final params = <String, String>{};
+      final params = <String, String>{'limit': '1000'};
       if (selectedModel.value != null && selectedModel.value!.isNotEmpty) {
         params['model'] = selectedModel.value!;
       }
@@ -78,9 +78,7 @@ class YachtSearchListingController extends GetxController {
         params['priceEnd'] = selectedPrice.value!;
       }
 
-      final uri = Uri.parse(
-        Endpoints.allBoats,
-      ).replace(queryParameters: params.isNotEmpty ? params : null);
+      final uri = Uri.parse(Endpoints.allBoats).replace(queryParameters: params);
       if (kDebugMode) print('Search query: $uri');
       final response = await http.get(uri);
 

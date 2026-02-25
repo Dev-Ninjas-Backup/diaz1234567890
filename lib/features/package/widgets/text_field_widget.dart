@@ -30,85 +30,88 @@ class TextFieldWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title1,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            SizedBox(height: 6),
-            Container(
-              padding: EdgeInsets.only(left: 10),
-              //height: 36,
-              width: 155,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-              ),
-              child: TextField(
-                controller: controller1,
-                keyboardType: isNumeric
-                    ? TextInputType.number
-                    : TextInputType.text,
-                maxLength: maxLength1 ?? (isNumeric ? 3 : null),
-                inputFormatters: isNumeric
-                    ? [FilteringTextInputFormatter.digitsOnly]
-                    : [],
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: hint1,
-                  hintStyle: TextStyle(color: Colors.grey),
-                  counterText: '',
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title1,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 6),
+              Container(
+                padding: EdgeInsets.only(left: 10),
+                //height: 36,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: TextField(
+                  controller: controller1,
+                  keyboardType: isNumeric
+                      ? TextInputType.number
+                      : TextInputType.text,
+                  maxLength: maxLength1 ?? (isNumeric ? 3 : null),
+                  inputFormatters: isNumeric
+                      ? [FilteringTextInputFormatter.digitsOnly]
+                      : [],
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: hint1,
+                    hintStyle: TextStyle(color: Colors.grey),
+                    counterText: '',
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title2,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            SizedBox(height: 6),
-            Container(
-              padding: EdgeInsets.only(left: 10),
-              //height: 36,
-              width: 155,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-              ),
-              child: TextField(
-                controller: controller2,
-                keyboardType: isNumeric
-                    ? TextInputType.number
-                    : TextInputType.text,
-                maxLength: maxLength2 ?? (isNumeric ? 2 : null),
-                inputFormatters: isNumeric
-                    ? [FilteringTextInputFormatter.digitsOnly]
-                    : [],
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: hint2,
-                  hintStyle: TextStyle(color: Colors.grey),
-                  counterText: '',
+        SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title2,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-            ),
-          ],
+              SizedBox(height: 6),
+              Container(
+                padding: EdgeInsets.only(left: 10),
+                //height: 36,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: TextField(
+                  controller: controller2,
+                  keyboardType: isNumeric
+                      ? TextInputType.number
+                      : TextInputType.text,
+                  maxLength: maxLength2 ?? (isNumeric ? 2 : null),
+                  inputFormatters: isNumeric
+                      ? [FilteringTextInputFormatter.digitsOnly]
+                      : [],
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: hint2,
+                    hintStyle: TextStyle(color: Colors.grey),
+                    counterText: '',
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
