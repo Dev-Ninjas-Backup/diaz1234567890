@@ -91,37 +91,49 @@ class DetailsSpecifications extends StatelessWidget {
             ? null
             : Border(bottom: BorderSide(color: Colors.grey.shade300)),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerLeft,
-              height: 30,
-              color: const Color(0xFFEAEAEA),
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                color: const Color(0xFFEAEAEA),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.centerLeft,
-              height: 30,
-              color: const Color(0xFFDBDBDB),
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                value,
-                textAlign: TextAlign.start,
-                style: const TextStyle(color: Colors.black45, fontSize: 13),
+            Expanded(
+              flex: 1,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                color: const Color(0xFFDBDBDB),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8.0,
+                ),
+                child: Text(
+                  value,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(color: Colors.black45, fontSize: 13),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
