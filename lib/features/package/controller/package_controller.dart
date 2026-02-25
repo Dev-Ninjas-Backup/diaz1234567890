@@ -15,6 +15,41 @@ import '../../../core/services/firebase/storage_service.dart';
 import '../../../core/services/stripe_service.dart';
 import '../model/package_model.dart';
 
+// Engine detail model for storing multiple engines
+class EngineDetail {
+  final TextEditingController hoursController;
+  final TextEditingController makeController;
+  final TextEditingController modelController;
+  final TextEditingController horsepowerController;
+  final Rx<String?> fuelTypeValue;
+  final Rx<String?> propellerTypeValue;
+
+  EngineDetail({
+    required this.hoursController,
+    required this.makeController,
+    required this.modelController,
+    required this.horsepowerController,
+    required this.fuelTypeValue,
+    required this.propellerTypeValue,
+  });
+
+  void clear() {
+    hoursController.clear();
+    makeController.clear();
+    modelController.clear();
+    horsepowerController.clear();
+    fuelTypeValue.value = null;
+    propellerTypeValue.value = null;
+  }
+
+  void dispose() {
+    hoursController.dispose();
+    makeController.dispose();
+    modelController.dispose();
+    horsepowerController.dispose();
+  }
+}
+
 class SellPackageController extends GetxController {
   var selectedPackage = ''.obs;
   var selectedPackageId = ''.obs;
@@ -76,6 +111,13 @@ class SellPackageController extends GetxController {
     return match != null ? match.group(1)! : value;
   }
 
+  int _parseEngineCount(String? value) {
+    if (value == null || value.isEmpty) return 1;
+    // Handle '3+' case by extracting just the numeric part
+    final match = RegExp(r'(\d+)').firstMatch(value);
+    return match != null ? int.tryParse(match.group(1)!) ?? 1 : 1;
+  }
+
   void _validateBoatDimensions() {
     // Sanitize inputs: remove non-numeric and enforce max length
     String sanitizeFeet(String text) {
@@ -110,17 +152,10 @@ class SellPackageController extends GetxController {
     final draftFeet = int.tryParse(draftFeetText) ?? 0;
     final draftInches = int.tryParse(draftInchesText) ?? 0;
 
+    // Length is required
     if (lengthFeet <= 0 || lengthFeet > 200) {
       throw Exception(
         'Length (feet) must be between 1 and 200 (got: $lengthFeet)',
-      );
-    }
-    if (beamFeet <= 0 || beamFeet > 50) {
-      throw Exception('Beam (feet) must be between 1 and 50 (got: $beamFeet)');
-    }
-    if (draftFeet < 0 || draftFeet > 30) {
-      throw Exception(
-        'Draft (feet) must be between 0 and 30 (got: $draftFeet)',
       );
     }
     if (lengthInches < 0 || lengthInches > 11) {
@@ -128,12 +163,24 @@ class SellPackageController extends GetxController {
         'Length (inches) must be between 0 and 11 (got: $lengthInches)',
       );
     }
-    if (beamInches < 0 || beamInches > 11) {
+
+    // Beam is optional - only validate if provided
+    if (beamFeetText.isNotEmpty && (beamFeet <= 0 || beamFeet > 50)) {
+      throw Exception('Beam (feet) must be between 1 and 50 (got: $beamFeet)');
+    }
+    if (beamInchesText.isNotEmpty && (beamInches < 0 || beamInches > 11)) {
       throw Exception(
         'Beam (inches) must be between 0 and 11 (got: $beamInches)',
       );
     }
-    if (draftInches < 0 || draftInches > 11) {
+
+    // Draft is optional - only validate if provided
+    if (draftFeetText.isNotEmpty && (draftFeet < 0 || draftFeet > 30)) {
+      throw Exception(
+        'Draft (feet) must be between 0 and 30 (got: $draftFeet)',
+      );
+    }
+    if (draftInchesText.isNotEmpty && (draftInches < 0 || draftInches > 11)) {
       throw Exception(
         'Draft (inches) must be between 0 and 11 (got: $draftInches)',
       );
@@ -156,7 +203,10 @@ class SellPackageController extends GetxController {
   final boatStateController = TextEditingController();
   final boatZipController = TextEditingController();
 
-  // Engine Controllers
+  // Engine Controllers - Dynamic list for multiple engines
+  var engines = <EngineDetail>[].obs;
+
+  // Legacy single engine controllers (kept for edit mode compatibility)
   final engineHoursController = TextEditingController();
   final engineMakeController = TextEditingController();
   final engineModelController = TextEditingController();
@@ -224,7 +274,7 @@ class SellPackageController extends GetxController {
     'Beneteau',
     'Mercury',
   ];
-  final List<String> boatClass = ['12', '14', '16', '18', '20', '22', '24'];
+  var boatClass = <String>[].obs;
   final List<String> material = [
     'Fiberglass',
     'Aluminum',
@@ -263,6 +313,38 @@ class SellPackageController extends GetxController {
 
   void selectNumberOfEngine(String? value) {
     selectedNumberOfEngine.value = value;
+    _initializeEngines(value);
+  }
+
+  void _initializeEngines(String? engineCount) {
+    // Clear existing engines
+    for (var engine in engines) {
+      engine.dispose();
+    }
+    engines.clear();
+
+    // Parse engine count
+    int count = 1;
+    if (engineCount == '2') {
+      count = 2;
+    } else if (engineCount == '3+') {
+      count = 3;
+    }
+
+    // Create new engine details for each engine
+    for (int i = 0; i < count; i++) {
+      final engine = EngineDetail(
+        hoursController: TextEditingController(),
+        makeController: TextEditingController(),
+        modelController: TextEditingController(),
+        horsepowerController: TextEditingController(),
+        fuelTypeValue: RxnString(),
+        propellerTypeValue: RxnString(),
+      );
+      engines.add(engine);
+    }
+
+    print('[DEBUG] Initialized $count engine(s)');
   }
 
   void selectNumberOfCabin(String? value) {
@@ -444,6 +526,12 @@ class SellPackageController extends GetxController {
     boatCityController.clear();
     boatZipController.clear();
 
+    // Clear dynamic engines
+    for (var engine in engines) {
+      engine.clear();
+    }
+    engines.clear();
+
     // Clear image lists
     coverImage.value = null;
     galleryImages.clear();
@@ -465,6 +553,7 @@ class SellPackageController extends GetxController {
     super.onInit();
     clearAllControllers();
     fetchPackages();
+    fetchBoatClasses();
   }
 
   Future<void> fetchPackages() async {
@@ -486,6 +575,23 @@ class SellPackageController extends GetxController {
       errorMessage.value = 'Error loading packages: $e';
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchBoatClasses() async {
+    try {
+      final response = await ApiService.getBoatClasses();
+      if (response['success'] == true && response['items'] != null) {
+        final List<dynamic> items = response['items'];
+        boatClass.value = items.map((item) => item.toString()).toList();
+        print('[DEBUG] Boat classes fetched: ${boatClass.length} items loaded');
+      } else {
+        print(
+          '[DEBUG] Failed to fetch boat classes: ${response['message'] ?? 'Unknown error'}',
+        );
+      }
+    } catch (e) {
+      print('[DEBUG] Error fetching boat classes: $e');
     }
   }
 
@@ -551,6 +657,17 @@ class SellPackageController extends GetxController {
       // Dimensions validation
       _validateBoatDimensions();
 
+      // Cover image is required
+      if (coverImage.value == null && existingCoverImages.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'Cover image is required',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
       // If user is not logged in, check if seller information is filled
       if (!isLoggedIn) {
         // If seller email is empty, user hasn't filled Step 3 yet - navigate there
@@ -607,9 +724,9 @@ class SellPackageController extends GetxController {
         'engineType': selectedEngineType.value ?? '',
         'propType': selectedPropType.value ?? '',
         'propMaterial': selectedPropMaterial.value ?? '',
-        'enginesNumber': int.tryParse(selectedNumberOfEngine.value ?? '1') ?? 1,
-        'cabinsNumber': int.tryParse(selectedNumberOfCabin.value ?? '1') ?? 1,
-        'headsNumber': int.tryParse(selectedNumberOfHeads.value ?? '1') ?? 1,
+        'enginesNumber': _parseEngineCount(selectedNumberOfEngine.value),
+        'cabinsNumber': _parseEngineCount(selectedNumberOfCabin.value),
+        'headsNumber': _parseEngineCount(selectedNumberOfHeads.value),
         'description': descriptionController.text,
         'videoURL': videoURLController.text,
         'city': boatCityController.text.trim(),
@@ -623,16 +740,29 @@ class SellPackageController extends GetxController {
           'draftFeet': int.tryParse(draftFeetController.text) ?? 0,
           'draftInches': int.tryParse(draftInchesController.text) ?? 0,
         },
-        'engines': [
-          {
-            'hours': int.tryParse(engineHoursController.text) ?? 0,
-            'horsepower': int.tryParse(engineHorsepowerController.text) ?? 0,
-            'make': engineMakeController.text,
-            'model': engineModelController.text,
-            'fuelType': selectedEngineFuelType.value ?? '',
-            'propellerType': selectedPropellerType.value ?? '',
-          },
-        ],
+        'engines': engines.isEmpty
+            ? [
+                {
+                  'hours': int.tryParse(engineHoursController.text) ?? 0,
+                  'horsepower':
+                      int.tryParse(engineHorsepowerController.text) ?? 0,
+                  'make': engineMakeController.text,
+                  'model': engineModelController.text,
+                  'fuelType': selectedEngineFuelType.value ?? '',
+                  'propellerType': selectedPropellerType.value ?? '',
+                },
+              ]
+            : engines.map((engine) {
+                return {
+                  'hours': int.tryParse(engine.hoursController.text) ?? 0,
+                  'horsepower':
+                      int.tryParse(engine.horsepowerController.text) ?? 0,
+                  'make': engine.makeController.text,
+                  'model': engine.modelController.text,
+                  'fuelType': engine.fuelTypeValue.value ?? '',
+                  'propellerType': engine.propellerTypeValue.value ?? '',
+                };
+              }).toList(),
         'electronics': <String>[],
         'electricalEquipment': <String>[],
         'insideEquipment': <String>[],
@@ -1451,9 +1581,9 @@ class SellPackageController extends GetxController {
         'engineType': selectedEngineType.value ?? '',
         'propType': selectedPropType.value ?? '',
         'propMaterial': selectedPropMaterial.value ?? '',
-        'enginesNumber': int.tryParse(selectedNumberOfEngine.value ?? '1') ?? 1,
-        'cabinsNumber': int.tryParse(selectedNumberOfCabin.value ?? '1') ?? 1,
-        'headsNumber': int.tryParse(selectedNumberOfHeads.value ?? '1') ?? 1,
+        'enginesNumber': _parseEngineCount(selectedNumberOfEngine.value),
+        'cabinsNumber': _parseEngineCount(selectedNumberOfCabin.value),
+        'headsNumber': _parseEngineCount(selectedNumberOfHeads.value),
         'description': descriptionController.text,
         'videoURL': videoURLController.text,
         'city': boatCityController.text.trim(),
@@ -1467,16 +1597,29 @@ class SellPackageController extends GetxController {
           'draftFeet': int.tryParse(draftFeetController.text) ?? 0,
           'draftInches': int.tryParse(draftInchesController.text) ?? 0,
         },
-        'engines': [
-          {
-            'hours': int.tryParse(engineHoursController.text) ?? 0,
-            'horsepower': int.tryParse(engineHorsepowerController.text) ?? 0,
-            'make': engineMakeController.text,
-            'model': engineModelController.text,
-            'fuelType': selectedEngineFuelType.value ?? '',
-            'propellerType': selectedPropellerType.value ?? '',
-          },
-        ],
+        'engines': engines.isEmpty
+            ? [
+                {
+                  'hours': int.tryParse(engineHoursController.text) ?? 0,
+                  'horsepower':
+                      int.tryParse(engineHorsepowerController.text) ?? 0,
+                  'make': engineMakeController.text,
+                  'model': engineModelController.text,
+                  'fuelType': selectedEngineFuelType.value ?? '',
+                  'propellerType': selectedPropellerType.value ?? '',
+                },
+              ]
+            : engines.map((engine) {
+                return {
+                  'hours': int.tryParse(engine.hoursController.text) ?? 0,
+                  'horsepower':
+                      int.tryParse(engine.horsepowerController.text) ?? 0,
+                  'make': engine.makeController.text,
+                  'model': engine.modelController.text,
+                  'fuelType': engine.fuelTypeValue.value ?? '',
+                  'propellerType': engine.propellerTypeValue.value ?? '',
+                };
+              }).toList(),
         'electronics': boatElectronics.toList(),
         'electricalEquipment': boatElectricalEquipment.toList(),
         'insideEquipment': boatInsideEquipment.toList(),
@@ -1688,6 +1831,12 @@ class SellPackageController extends GetxController {
     boatCityController.dispose();
     boatStateController.dispose();
     boatZipController.dispose();
+
+    // Dispose dynamic engines
+    for (var engine in engines) {
+      engine.dispose();
+    }
+
     super.onClose();
   }
 }
