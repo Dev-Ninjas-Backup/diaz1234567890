@@ -19,7 +19,11 @@ class YachtSearchListingPage extends StatelessWidget {
           style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        //Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        Text(
+          value.substring(0, value.length > 10 ? 10 : value.length),
+          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+        ),
       ],
     );
   }
@@ -42,14 +46,14 @@ class YachtSearchListingPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              Text(
-                "See All",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.blue,
-                ),
-              ),
+              // Text(
+              //   "See All",
+              //   style: TextStyle(
+              //     fontSize: 14,
+              //     fontWeight: FontWeight.w500,
+              //     color: Colors.blue,
+              //   ),
+              // ),
             ],
           ),
         ),

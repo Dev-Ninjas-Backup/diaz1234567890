@@ -64,7 +64,7 @@ class YachtListingController extends GetxController {
   // Fetch boats.
   Future<void> fetchAllBoats() async {
     try {
-      final uri = Uri.parse(Endpoints.allBoats);
+      final uri = Uri.parse(Endpoints.allBoats).replace(queryParameters: {'limit': '1000'});
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -193,7 +193,7 @@ class YachtListingController extends GetxController {
   Future<void> fetchPremiumDeals() async {
     isLoading.value = true;
     try {
-      final uri = Uri.parse(Endpoints.premiumDeals);
+      final uri = Uri.parse(Endpoints.premiumDeals).replace(queryParameters: {'limit': '1000'});
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

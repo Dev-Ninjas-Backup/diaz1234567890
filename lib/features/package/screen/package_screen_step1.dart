@@ -38,7 +38,7 @@ class SellPackageScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
           child: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
             child: Column(
@@ -182,16 +182,21 @@ class SellPackageScreen extends StatelessWidget {
 
                       return Column(
                         children: [
-                          PackageCard(
-                            title: pkg.title,
-                            price: priceString,
-                            features: pkg.benefits,
-                            tag: pkg.tag,
-                            // ignore: deprecated_member_use
-                            color: pkg.color.withOpacity(0.1),
-                            buttonColor: pkg.buttonColor,
-                            isSelected: isSelected,
-                            onTap: () => controller.selectPackage(pkg.title),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 25.0,
+                            ),
+                            child: PackageCard(
+                              title: pkg.title,
+                              price: priceString,
+                              features: pkg.benefits,
+                              tag: pkg.tag,
+                              // ignore: deprecated_member_use
+                              color: pkg.color.withOpacity(0.1),
+                              buttonColor: pkg.buttonColor,
+                              isSelected: isSelected,
+                              onTap: () => controller.selectPackage(pkg.title),
+                            ),
                           ),
                           SizedBox(height: 16),
                         ],

@@ -20,7 +20,11 @@ class YachtListingPage extends StatelessWidget {
           style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        //Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        Text(
+          value.substring(0, value.length > 10 ? 10 : value.length),
+          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+        ),
       ],
     );
   }
