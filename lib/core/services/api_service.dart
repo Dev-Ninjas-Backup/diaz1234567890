@@ -31,29 +31,6 @@ class ApiService {
     }
   }
 
-  // static Future<dynamic> confirmPayment({required String clientSecret}) async {
-  //   try {
-  //     // This is a client-side confirmation with Stripe
-  //     // The actual implementation depends on your backend setup
-  //     // For now, we'll return a success response
-  //     // In production, you'd use flutter_stripe package to handle this
-
-  //     print('Confirming payment with clientSecret: $clientSecret');
-
-  //     return {
-  //       'success': true,
-  //       'message': 'Payment method confirmed successfully',
-  //       'data': {
-  //         'setupIntentId': 'seti_xxxxx',
-  //         'setupIntentStatus': 'succeeded',
-  //         'paymentMethodId': 'pm_xxxxx',
-  //       },
-  //     };
-  //   } catch (e) {
-  //     throw Exception('Error confirming payment: $e');
-  //   }
-  // }
-
   static Future<dynamic> getSetupIntent(String planId) async {
     try {
       print('\n=== Fetching Setup Intent ===');
@@ -222,6 +199,26 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('Error fetching plans: $e');
+    }
+  }
+
+  static Future<dynamic> getBoatClasses() async {
+    try {
+      final response = await http
+          .get(Uri.parse(Endpoints.getclass))
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        throw Exception('Failed to load boat classes: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching boat classes: $e');
     }
   }
 

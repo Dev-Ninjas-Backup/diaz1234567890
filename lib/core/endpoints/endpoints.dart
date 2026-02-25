@@ -36,4 +36,5 @@ class Endpoints {
   static String createListing = '$baseUrl/api/boats/seller/create-listing';
   static String updateListing(String boatId) =>
       '$baseUrl/api/boats/seller/update-listing/$boatId';
+  static String getclass = '$baseUrl/api/boats/specification/list?type=CLASS';
 }

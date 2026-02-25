@@ -96,6 +96,71 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
     );
   }
 
+  Widget _buildEngineSection(int engineIndex, EngineDetail engine) {
+    final controller = Get.find<SellPackageController>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Engine ${engineIndex + 1}',
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 12),
+        TextFieldWidget(
+          title1: 'Hours:',
+          title2: 'Make: *',
+          hint1: 'Type here',
+          hint2: 'Type here',
+          controller1: engine.hoursController,
+          controller2: engine.makeController,
+        ),
+        SizedBox(height: 14),
+        TextFieldWidget(
+          title1: 'Model:',
+          title2: 'Total Power (HP):',
+          hint1: 'Type here',
+          hint2: 'Type here',
+          controller1: engine.modelController,
+          controller2: engine.horsepowerController,
+        ),
+        SizedBox(height: 14),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Obx(
+                () => _buildDropdownField(
+                  label: 'Fuel Type:',
+                  value: engine.fuelTypeValue.value,
+                  hint: 'Select',
+                  items: controller.fuelType,
+                  onChanged: (value) => engine.fuelTypeValue.value = value,
+                ),
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Obx(
+                () => _buildDropdownField(
+                  label: 'Propeller Material:',
+                  value: engine.propellerTypeValue.value,
+                  hint: 'Select',
+                  items: controller.propellerTypes,
+                  onChanged: (value) => engine.propellerTypeValue.value = value,
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SellPackageController>();
@@ -277,15 +342,15 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 ),
                 const SizedBox(height: 24),
                 TextFieldWidget(
-                  title1: 'Length - Feet:',
-                  title2: 'Length - Inches:',
+                  title1: 'Length - Feet: *',
+                  title2: 'Length - Inches: *',
                   hint1: '36',
                   hint2: '6',
                   controller1: controller.lengthFeetController,
                   controller2: controller.lengthInchesController,
                   isNumeric: true,
-                  maxLength1: 2,
-                  maxLength2: 1,
+                  maxLength1: 3,
+                  maxLength2: 2,
                 ),
                 SizedBox(height: 14),
                 TextFieldWidget(
@@ -296,8 +361,8 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   controller1: controller.beamFeetController,
                   controller2: controller.beamInchesController,
                   isNumeric: true,
-                  maxLength1: 2,
-                  maxLength2: 1,
+                  maxLength1: 3,
+                  maxLength2: 2,
                 ),
                 SizedBox(height: 14),
                 TextFieldWidget(
@@ -308,8 +373,8 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   controller1: controller.draftFeetController,
                   controller2: controller.draftInchesController,
                   isNumeric: true,
-                  maxLength1: 1,
-                  maxLength2: 1,
+                  maxLength1: 3,
+                  maxLength2: 2,
                 ),
                 SizedBox(height: 30),
                 Text(
@@ -480,7 +545,7 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Gallery Images: *',
+                      'Gallery Images:',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 11,
@@ -711,7 +776,7 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                     Expanded(
                       child: Obx(
                         () => _buildDropdownField(
-                          label: 'Material: *',
+                          label: 'Material:',
                           value: controller.selectedMaterial.value,
                           hint: 'Select',
                           items: controller.material,
@@ -789,82 +854,76 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Engine Type: *',
-                          value: controller.selectedEngineType.value,
-                          hint: 'Select',
-                          items: controller.engineTypes,
-                          onChanged: controller.selectEngineType,
+                SizedBox(height: 24),
+                // Dynamic engine details based on number of engines
+                Obx(() {
+                  final showDynamicEngines = controller.engines.isNotEmpty;
+
+                  if (showDynamicEngines) {
+                    // Show dynamic engines
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (int i = 0; i < controller.engines.length; i++)
+                          _buildEngineSection(i, controller.engines[i]),
+                      ],
+                    );
+                  } else {
+                    // Fallback to single engine (legacy)
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFieldWidget(
+                          title1: 'Hours:',
+                          title2: 'Make: *',
+                          hint1: 'Type here',
+                          hint2: 'Type here',
+                          controller1: controller.engineHoursController,
+                          controller2: controller.engineMakeController,
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Prop Type: *',
-                          value: controller.selectedPropType.value,
-                          hint: 'Select',
-                          items: controller.propTypes,
-                          onChanged: controller.selectPropType,
+                        SizedBox(height: 14),
+                        TextFieldWidget(
+                          title1: 'Model:',
+                          title2: 'Total Power (HP):',
+                          hint1: 'Type here',
+                          hint2: 'Type here',
+                          controller1: controller.engineModelController,
+                          controller2: controller.engineHorsepowerController,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                TextFieldWidget(
-                  title1: 'Hours:',
-                  title2: 'Make:',
-                  hint1: 'Type here',
-                  hint2: 'Type here',
-                  controller1: controller.engineHoursController,
-                  controller2: controller.engineMakeController,
-                ),
-                SizedBox(height: 14),
-                TextFieldWidget(
-                  title1: 'Model:',
-                  title2: 'Total Power (HP):',
-                  hint1: 'Type here',
-                  hint2: 'Type here',
-                  controller1: controller.engineModelController,
-                  controller2: controller.engineHorsepowerController,
-                ),
-                SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Fuel Type: *',
-                          value: controller.selectedEngineFuelType.value,
-                          hint: 'Select',
-                          items: controller.fuelType,
-                          onChanged: controller.selectEngineFuelType,
+                        SizedBox(height: 14),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Obx(
+                                () => _buildDropdownField(
+                                  label: 'Fuel Type:',
+                                  value:
+                                      controller.selectedEngineFuelType.value,
+                                  hint: 'Select',
+                                  items: controller.fuelType,
+                                  onChanged: controller.selectEngineFuelType,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Obx(
+                                () => _buildDropdownField(
+                                  label: 'Propeller Material:',
+                                  value: controller.selectedPropellerType.value,
+                                  hint: 'Select',
+                                  items: controller.propellerTypes,
+                                  onChanged: controller.selectPropellerType,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Propeller Type: *',
-                          value: controller.selectedPropellerType.value,
-                          hint: 'Select',
-                          items: controller.propellerTypes,
-                          onChanged: controller.selectPropellerType,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                      ],
+                    );
+                  }
+                }),
                 SizedBox(height: 40),
                 Obx(
                   () => CustomButton(

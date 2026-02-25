@@ -37,17 +37,14 @@ class DetailsSpecifications extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildDetailRow('Brand Make', b?.make ?? ''),
-                    _buildDetailRow(
-                      'Model',
-                      b?.model ?? '',
-                    ),
+                    _buildDetailRow('Model', b?.model ?? ''),
                     _buildDetailRow(
                       'Built Year',
                       b?.buildYear?.toString() ?? '',
                     ),
                     _buildDetailRow('Length', b?.length?.toString() ?? ''),
                     _buildDetailRow(
-                      '',
+                      'Number of Engine',
                       b?.enginesNumber?.toString() ?? '',
                     ),
                     _buildDetailRow('Class', b?.cLass ?? ''),
@@ -60,10 +57,7 @@ class DetailsSpecifications extends StatelessWidget {
                       'Number of Heads',
                       b?.headsNumber?.toString() ?? '',
                     ),
-                    _buildDetailRow(
-                      'Beam Size',
-                      b?.beam?.toString() ?? '',
-                    ),
+                    _buildDetailRow('Beam Size', b?.beam?.toString() ?? ''),
                     _buildDetailRow('Fuel Type', b?.make ?? ''),
                     _buildDetailRow(
                       'Max Draft',
@@ -72,9 +66,7 @@ class DetailsSpecifications extends StatelessWidget {
                     _buildDetailRow('Name', b?.name ?? ''),
                     _buildDetailRow(
                       'Location',
-                      b != null
-                          ? '${b.city ?? ''}, ${b.state ?? ''}'
-                          : '',
+                      b != null ? '${b.city ?? ''}, ${b.state ?? ''}' : '',
                     ),
                     _buildDetailRow('Condition', b?.condition ?? ''),
                     _buildDetailRow(
