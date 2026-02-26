@@ -1,20 +1,22 @@
-import 'package:diaz1234567890/features/details/screen/details_screen.dart';
-import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
-import 'package:diaz1234567890/features/search/model/yacht_model.dart';
+import 'package:diaz1234567890/core/common/style/global_text_style.dart';
+import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
+import 'package:diaz1234567890/core/utils/constants/image_path.dart';
+import 'package:diaz1234567890/features/ai/controller/ai_search_controller.dart';
+import 'package:diaz1234567890/features/home/model/home_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AiSearchResultsScreen extends StatelessWidget {
   final String query;
-  final YachtSearchListingController controller;
+  final List<Yacht> results;
 
   const AiSearchResultsScreen({
     super.key,
     required this.query,
-    required this.controller,
+    required this.results,
   });
 
-  Widget _buildDetail(String label, String value) {
+  static Widget _buildDetail(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -23,255 +25,367 @@ class AiSearchResultsScreen extends StatelessWidget {
           style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
-      ],
-    );
-  }
-
-  Widget _buildYachtCard(Yacht yacht) {
-    return GestureDetector(
-      onTap: () {
-        try {
-          Get.to(() => DetailsScreen(), arguments: yacht.id);
-        } catch (_) {
-          Get.toNamed('/detailsScreen', arguments: yacht.id);
-        }
-      },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
-              ),
-              child: Image.network(
-                yacht.image,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[200],
-                    child: const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[300],
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
-                        size: 48,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Location
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 16,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          yacht.location,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Title
-                  Text(
-                    yacht.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-                  const Divider(),
-                  const SizedBox(height: 8),
-                  // Details
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildDetail("Make", yacht.make),
-                      _buildDetail("Model", yacht.model),
-                      _buildDetail("Year", yacht.year),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Price
-                  Text(
-                    "Price: ${yacht.price}",
-                    style: const TextStyle(
-                      color: Color(0xFF00A3AC),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // View Details Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00A3AC),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        try {
-                          Get.to(() => DetailsScreen(), arguments: yacht.id);
-                        } catch (_) {
-                          Get.toNamed('/detailsScreen', arguments: yacht.id);
-                        }
-                      },
-                      child: const Text(
-                        'View Details',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        Text(
+          value.substring(0, value.length > 10 ? 10 : value.length),
+          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
         ),
-      ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(
+      AiSearchController(initialQuery: query, initialResults: results),
+    );
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5FEFF),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            const Text(
-              'AI Search Results',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
+            // Top Stack Section (Search Bar)
+            Stack(
+              children: [
+                Image.asset(
+                  Imagepath.homeBoat,
+                  height: 244,
+                  width: double.infinity,
+                  fit: BoxFit.fill,
+                ),
+                Positioned(
+                  bottom: 15,
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: controller.toggleLimitSlider,
+                          child: Image.asset(
+                            Iconpath.customTune,
+                            width: 25,
+                            height: 25,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: controller.searchController,
+                            onSubmitted: controller.handleAiSearch,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText:
+                                  "Find me a Viking for sale from 2005 to 2008",
+                              hintStyle: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Obx(
+                          () => TextButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : () => controller.handleAiSearch(
+                                    controller.searchController.text,
+                                  ),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              backgroundColor: Colors.grey[200],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              foregroundColor: Colors.black,
+                              elevation: 0,
+                            ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Row(
+                                    children: [
+                                      Image.asset(
+                                        Iconpath.askAi,
+                                        width: 18,
+                                        height: 18,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 2,
+                                        ),
+                                        child: Text(
+                                          "Ask AI",
+                                          style: getTextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Limit Slider
+            Obx(
+              () => controller.showLimitSlider.value
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Limit:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Expanded(
+                            child: Slider(
+                              value: controller.limit.value,
+                              min: 0,
+                              max: 100,
+                              divisions: 100,
+                              activeColor: const Color(0xFF00A3AC),
+                              label: controller.limit.value.toInt().toString(),
+                              onChanged: controller.setLimit,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 36,
+                            child: Text(
+                              controller.limit.value.toInt().toString(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Results Header
+            Obx(
+              () => Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Search Results',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '${controller.results.length} found',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            Text(
-              'Query: "$query"',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+
+            // Results List
+            Obx(
+              () => controller.results.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search, size: 64, color: Colors.grey[300]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No results found',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.results.length,
+                        itemBuilder: (context, index) {
+                          final yacht = controller.results[index];
+                          return GestureDetector(
+                            onTap: () => controller.navigateToDetails(yacht.id),
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(12),
+                                    ),
+                                    child: Image.network(
+                                      yacht.image,
+                                      width: 120,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, loadingProgress) {
+                                            if (loadingProgress == null)
+                                              return child;
+                                            return Container(
+                                              width: 120,
+                                              height: 120,
+                                              color: Colors.grey[200],
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Image.asset(
+                                              Imagepath.singleBoat,
+                                              width: 120,
+                                              height: 120,
+                                              fit: BoxFit.cover,
+                                            );
+                                          },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            yacht.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                size: 12,
+                                                color: Colors.grey,
+                                              ),
+                                              const SizedBox(width: 2),
+                                              Expanded(
+                                                child: Text(
+                                                  yacht.location,
+                                                  style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: Colors.grey[600],
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              _buildDetail("Make", yacht.make),
+                                              _buildDetail("Year", yacht.year),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            "Price: ${yacht.price}",
+                                            style: const TextStyle(
+                                              color: Color(0xFF00A3AC),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.similarYachts.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.search_off, size: 64, color: Colors.grey[300]),
-                const SizedBox(height: 16),
-                Text(
-                  'No boats found',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Try a different search query',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Results header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${controller.similarYachts.length} Results Found',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Matching your search query',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 20),
-            // Boats list
-            ...controller.similarYachts.map((yacht) => _buildYachtCard(yacht)),
-            const SizedBox(height: 20),
-          ],
-        );
-      }),
     );
   }
 }

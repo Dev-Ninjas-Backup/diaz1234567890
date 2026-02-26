@@ -703,4 +703,49 @@ class ApiService {
       throw Exception('Error with minimal test: $e');
     }
   }
+
+  /// AI Search using natural language query
+  static Future<Map<String, dynamic>> aiSearch({
+    required String userId,
+    required String query,
+    int limit = 10,
+  }) async {
+    try {
+      print('\n=== AI Search ===');
+      print('URL: ${Endpoints.aiSearch}');
+      print('Payload: userId=$userId, query=$query, limit=$limit');
+
+      final requestBody = {'user_id': userId, 'query': query, 'limit': limit};
+
+      final response = await http
+          .post(
+            Uri.parse(Endpoints.aiSearch),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('AI search request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response: ${response.body}');
+      print('=================\n');
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        throw Exception(
+          'AI search failed (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      print('Error in AI search: $e');
+      rethrow;
+    }
+  }
 }
