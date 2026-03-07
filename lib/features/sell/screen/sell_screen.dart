@@ -1,6 +1,10 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step3.dart'
+    as step3;
+import 'package:diaz1234567890/features/package/controller/package_controller.dart';
+import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -43,20 +47,23 @@ class SellScreen extends StatelessWidget {
                       Text(
                         "Register Your Boat",
                         style: getTextStyle(
-                            fontSize: 20, // Smaller size
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                          fontSize: 20, // Smaller size
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         "Join our global network of verified yacht sellers and\nreach high-value buyers worldwide",
                         textAlign: TextAlign.center,
                         style: getTextStyle(
-                            fontSize: 12, color: Colors.white), // Smaller size
+                          fontSize: 12,
+                          color: Colors.white,
+                        ), // Smaller size
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
 
@@ -80,7 +87,19 @@ class SellScreen extends StatelessWidget {
               label: "Create New Listing",
               icon: Icons.add,
               onPressed: () {
-                Get.to(SellPackageScreen());
+                // Initialize controller if not already instantiated
+                if (!Get.isRegistered<SellPackageController>()) {
+                  Get.put(SellPackageController(), permanent: false);
+                }
+
+                // Check if user is logged in
+                if (StorageService.hasToken()) {
+                  // Logged in: go to step 1 (select package)
+                  Get.to(() => PackageScreenStep1());
+                } else {
+                  // Not logged in: go to step 3 (create seller account)
+                  Get.to(() => step3.SellPackageScreen());
+                }
               },
             ),
           ],

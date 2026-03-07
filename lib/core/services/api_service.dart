@@ -90,6 +90,64 @@ class ApiService {
     }
   }
 
+  /// Fetch current user profile to check subscription status
+  static Future<dynamic> getUserProfile() async {
+    try {
+      print('\n=== Fetching User Profile ===');
+      print('URL: ${Endpoints.userMe}');
+
+      // Ensure StorageService is initialized
+      if (!StorageService.isInitialized) {
+        await StorageService.init();
+      }
+
+      final token = StorageService.token;
+      if (token == null || token.isEmpty) {
+        throw Exception('No access token available. Please login first.');
+      }
+
+      print('Authorization: Bearer $token');
+
+      final response = await http
+          .get(
+            Uri.parse(Endpoints.userMe),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=============================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Failed to get user profile (${response.statusCode})',
+          );
+        } catch (e) {
+          throw Exception(
+            'Failed to get user profile (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      print('Error fetching user profile: $e');
+      throw Exception('Error fetching user profile: $e');
+    }
+  }
+
   /// Tokenize card details on the backend to get a PaymentMethod ID
   static Future<dynamic> getSubscriptionConfirmation({
     required String userId,
@@ -202,6 +260,53 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> validatePromoCode(String code) async {
+    try {
+      print('\n=== Validating Promo Code ===');
+      print('URL: ${Endpoints.ApplyPromo}');
+      print('Code: $code');
+
+      final requestBody = {'code': code};
+
+      final response = await http
+          .post(
+            Uri.parse(Endpoints.ApplyPromo),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+      print('=============================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Invalid promo code (${response.statusCode})',
+          );
+        } catch (e) {
+          throw Exception(
+            'Invalid promo code (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } catch (e) {
+      throw Exception('Error validating promo code: $e');
+    }
+  }
+
   static Future<dynamic> getBoatClasses() async {
     try {
       final response = await http
@@ -226,13 +331,23 @@ class ApiService {
     required Map<String, dynamic> boatInfo,
     required Map<String, dynamic> sellerInfo,
     required String planId,
+    bool isNewSeller = true,
+    String promoCode = '',
   }) async {
     try {
-      final requestBody = {
-        'boatInfo': boatInfo,
-        'sellerInfo': sellerInfo,
-        'planId': planId,
-      };
+      // For authenticated users without subscription, don't send sellerInfo
+      final requestBody = isNewSeller
+          ? {
+              'boatInfo': boatInfo,
+              'sellerInfo': sellerInfo,
+              'planId': planId,
+              if (promoCode.isNotEmpty) 'promoCode': promoCode,
+            }
+          : {
+              'boatInfo': boatInfo,
+              'planId': planId,
+              if (promoCode.isNotEmpty) 'promoCode': promoCode,
+            };
 
       print('\n=== Simple JSON Request (No Files) ===');
       print('URL: ${Endpoints.onboarding}');
@@ -241,16 +356,30 @@ class ApiService {
       boatInfo.forEach((key, value) {
         print('  $key: $value (${value.runtimeType})');
       });
+      if (promoCode.isNotEmpty) {
+        print('\\nPromo Code: $promoCode');
+      }
       print('\\nRequest Body: ${json.encode(requestBody)}');
       print('=====================================\n');
+
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      // Add Bearer token for authenticated users (without subscription)
+      if (!isNewSeller) {
+        final token = StorageService.token;
+        if (token != null && token.isNotEmpty) {
+          headers['Authorization'] = 'Bearer $token';
+          print('[DEBUG] Added Bearer token for authenticated user');
+        }
+      }
 
       final response = await http
           .post(
             Uri.parse(Endpoints.onboarding),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
+            headers: headers,
             body: json.encode(requestBody),
           )
           .timeout(
@@ -293,6 +422,8 @@ class ApiService {
     required String planId,
     List<String>? coverPaths,
     List<String>? galleryPaths,
+    bool isNewSeller = true,
+    String promoCode = '',
   }) async {
     try {
       var request = http.MultipartRequest(
@@ -307,13 +438,37 @@ class ApiService {
 
       // Add text fields
       request.fields['boatInfo'] = json.encode(boatInfoCopy);
-      request.fields['sellerInfo'] = json.encode(sellerInfo);
+
+      // For new sellers (registration), include sellerInfo
+      // For authenticated users without subscription, don't include sellerInfo
+      if (isNewSeller) {
+        request.fields['sellerInfo'] = json.encode(sellerInfo);
+      }
+
       request.fields['planId'] = planId;
+
+      // Add promo code if provided
+      if (promoCode.isNotEmpty) {
+        request.fields['promoCode'] = promoCode;
+      }
+
+      // Add Bearer token for authenticated users (without subscription)
+      if (!isNewSeller) {
+        final token = StorageService.token;
+        if (token != null && token.isNotEmpty) {
+          request.headers['Authorization'] = 'Bearer $token';
+          print(
+            '[DEBUG] Added Bearer token for authenticated user on multipart',
+          );
+        }
+      }
 
       print('\n=== API Multipart Request ===');
       print('URL: ${Endpoints.onboarding}');
       print('boatInfo: ${json.encode(boatInfoCopy)}');
-      print('sellerInfo: ${json.encode(sellerInfo)}');
+      if (isNewSeller) {
+        print('sellerInfo: ${json.encode(sellerInfo)}');
+      }
       print('planId: $planId');
 
       // Add cover image
@@ -746,6 +901,84 @@ class ApiService {
     } catch (e) {
       print('Error in AI search: $e');
       rethrow;
+    }
+  }
+
+  /// Register a new seller account (non-logged-in user)
+  /// Required fields: name, phone, country, city, state, zip, email, username, password
+  static Future<dynamic> registerSellerAccount({
+    required String name,
+    required String phone,
+    required String country,
+    required String city,
+    required String state,
+    required String zip,
+    required String email,
+    required String username,
+    required String password,
+  }) async {
+    try {
+      final requestBody = {
+        'name': name,
+        'phone': phone,
+        'country': country,
+        'city': city,
+        'state': state,
+        'zip': zip,
+        'email': email,
+        'username': username,
+        'password': password,
+      };
+
+      print('\n=== Register Seller Account ===');
+      print('URL: ${Endpoints.CreateSellerInfo}');
+      print('Request Body: ${json.encode(requestBody)}');
+      print('===============================\n');
+
+      final response = await http
+          .post(
+            Uri.parse(Endpoints.CreateSellerInfo),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode(requestBody),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw Exception('Request timeout'),
+          );
+
+      print('Status Code: ${response.statusCode}');
+      print('Response: ${response.body}');
+      print('==============================\n');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        return jsonData;
+      } else {
+        try {
+          final errorData = json.decode(response.body);
+          throw Exception(
+            errorData['message'] ??
+                'Server error (${response.statusCode}): ${response.body}',
+          );
+        } catch (e) {
+          throw Exception(
+            'Server error (${response.statusCode}): ${response.body}',
+          );
+        }
+      }
+    } on SocketException catch (e) {
+      throw Exception(
+        'Network error: ${e.message}. Check your internet connection.',
+      );
+    } on http.ClientException catch (e) {
+      throw Exception(
+        'Connection error: ${e.message}. The server may be unavailable.',
+      );
+    } catch (e) {
+      throw Exception('Error registering seller account: $e');
     }
   }
 }

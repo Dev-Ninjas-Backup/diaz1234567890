@@ -169,7 +169,8 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                     onPressed: controller.isLoading.value
                         ? () {}
                         : () async {
-                            await controller.submitBoatOnboarding();
+                            // Boat listing already created in Step 2
+                            // Just show payment form if setup intent is ready
                             if (controller
                                 .setupIntentClientSecret
                                 .value
@@ -177,6 +178,36 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                               setState(() {
                                 _showPaymentSection = true;
                               });
+                            } else {
+                              // Setup intent not available, try to fetch it
+                              controller.isLoading.value = true;
+                              try {
+                                await controller.fetchSetupIntentForPayment();
+                                if (controller
+                                    .setupIntentClientSecret
+                                    .value
+                                    .isNotEmpty) {
+                                  setState(() {
+                                    _showPaymentSection = true;
+                                  });
+                                } else {
+                                  Get.snackbar(
+                                    'Payment Setup Failed',
+                                    'Could not initialize payment. Please try again.',
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white,
+                                  );
+                                }
+                              } catch (e) {
+                                Get.snackbar(
+                                  'Payment Setup Failed',
+                                  'Error: $e',
+                                  backgroundColor: Colors.red,
+                                  colorText: Colors.white,
+                                );
+                              } finally {
+                                controller.isLoading.value = false;
+                              }
                             }
                           },
                     width: double.infinity,
@@ -254,6 +285,10 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
           _summaryRow('Plan Amount', _getPlanPrice(), isBold: true),
           Divider(height: 16),
           _summaryRow('Listing ID', controller.listingId.value),
+          if (controller.promoCode.value.isNotEmpty) ...[
+            Divider(height: 16),
+            _summaryRow('Promo Code', controller.promoCode.value, isBold: true),
+          ],
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
-import 'package:diaz1234567890/features/package/screen/package_screen_step4.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/material.dart';
@@ -8,21 +8,21 @@ import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 
-class PackageScreenStep3 extends StatefulWidget {
-  const PackageScreenStep3({super.key});
+class SellPackageScreen extends StatefulWidget {
+  const SellPackageScreen({super.key});
 
   @override
-  State<PackageScreenStep3> createState() => _PackageScreenStep3State();
+  State<SellPackageScreen> createState() => _SellPackageScreenState();
 }
 
-class _PackageScreenStep3State extends State<PackageScreenStep3> {
+class _SellPackageScreenState extends State<SellPackageScreen> {
   @override
   void initState() {
     super.initState();
     // Skip this page if user is already logged in
     if (StorageService.hasToken()) {
       Future.microtask(() {
-        Get.off(() => PackageScreenStep4());
+        Get.off(() => SellPackageScreen());
       });
     }
   }
@@ -40,102 +40,6 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    "Listing Progress",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
-                  Text(
-                    "Step 3",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Select Package",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Boat Information",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Seller Information",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Pay & Post",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Divider(),
-              SizedBox(height: 32),
               Text(
                 'Your Contact Details',
                 style: TextStyle(
@@ -360,12 +264,18 @@ class _PackageScreenStep3State extends State<PackageScreenStep3> {
                 obscureText: true,
               ),
               SizedBox(height: 40),
-              CustomButton(
-                label: "Next →",
-                onPressed: () {
-                  Get.toNamed("/packageScreenStep4");
-                },
-                width: double.infinity,
+              Obx(
+                () => CustomButton(
+                  label: controller.isLoading.value
+                      ? "Registering..."
+                      : "Next →",
+                  onPressed: controller.isLoading.value
+                      ? () {}
+                      : () {
+                          controller.registerSellerAccount();
+                        },
+                  width: double.infinity,
+                ),
               ),
             ],
           ),

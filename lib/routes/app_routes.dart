@@ -1,6 +1,7 @@
 import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:diaz1234567890/features/details/screen/details_screen.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step2.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step3.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step4.dart';
@@ -19,8 +20,9 @@ class AppRoute {
   static String privacyPolicyScreen = "/privacyPolicyScreen";
   static String myListingScreen = "/myListingScreen";
   static String detailsScreen = "/detailsScreen";
+  static String packageScreenStep1 = "/packageScreenStep1";
   static String packageScreenStep2 = "/packageScreenStep2";
-  static String packageScreenStep3 = "/packageScreenStep3";
+  static String sellPackageScreen = "/sellPackageScreen";
   static String packageScreenStep4 = "/packageScreenStep4";
   static String loginScreen = "/loginScreen";
   static String notificationsScreen = "/notifications";
@@ -32,8 +34,9 @@ class AppRoute {
   static String getPrivacyPolicyScreen() => privacyPolicyScreen;
   static String getMyListingScreen() => myListingScreen;
   static String getDetailsScreen() => detailsScreen;
+  static String getPackageScreenStep1() => packageScreenStep1;
   static String getPackageScreenStep2() => packageScreenStep2;
-  static String getPackageScreenStep3() => packageScreenStep3;
+  static String getSellPackageScreen() => sellPackageScreen;
   static String getPackageScreenStep4() => packageScreenStep4;
   static String getLoginScreen() => loginScreen;
   static String getNotificationsScreen() => notificationsScreen;
@@ -49,8 +52,9 @@ class AppRoute {
     GetPage(name: myListingScreen, page: () => MyListingScreen()),
     GetPage(name: notificationsScreen, page: () => NotificationScreen()),
     GetPage(name: detailsScreen, page: () => DetailsScreen()),
+    GetPage(name: packageScreenStep1, page: () => PackageScreenStep1()),
     GetPage(name: packageScreenStep2, page: () => PackageScreenStep2()),
-    GetPage(name: packageScreenStep3, page: () => PackageScreenStep3()),
+    GetPage(name: sellPackageScreen, page: () => SellPackageScreen()),
     GetPage(name: packageScreenStep4, page: () => PackageScreenStep4()),
     GetPage(name: loginScreen, page: () => LoginScreen()),
     GetPage(name: sellScreen, page: () => SellScreen()),

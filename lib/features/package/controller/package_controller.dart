@@ -14,6 +14,7 @@ import '../../../core/services/api_service.dart';
 import '../../../core/services/firebase/storage_service.dart';
 import '../../../core/services/stripe_service.dart';
 import '../model/package_model.dart';
+import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 
 // Engine detail model for storing multiple engines
 class EngineDetail {
@@ -63,6 +64,13 @@ class SellPackageController extends GetxController {
   var listingId = ''.obs;
   var userId = ''.obs;
   var accessToken = ''.obs; // Store access token after hidden login
+
+  // Promo Code Data
+  var promoCode = ''.obs;
+  var promoCodeInput = TextEditingController();
+  var isPromoValid = false.obs;
+  var promoFreeDays = 0.obs;
+  var promoErrorMessage = ''.obs;
 
   // Setup Intent Data (for Stripe payment)
   var setupIntentId = ''.obs;
@@ -603,6 +611,213 @@ class SellPackageController extends GetxController {
     }
   }
 
+  Future<void> applyPromoCode() async {
+    try {
+      final code = promoCodeInput.text.trim();
+
+      if (code.isEmpty) {
+        promoErrorMessage.value = 'Please enter a promo code';
+        return;
+      }
+
+      isLoading.value = true;
+      promoErrorMessage.value = '';
+      isPromoValid.value = false;
+
+      final response = await ApiService.validatePromoCode(code);
+
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'];
+
+        if (data['isValid'] == true) {
+          promoCode.value = code;
+          promoFreeDays.value = data['freeDays'] ?? 0;
+          isPromoValid.value = true;
+          promoErrorMessage.value = '';
+
+          print(
+            '[DEBUG] Promo code valid: $code, Free days: ${promoFreeDays.value}',
+          );
+
+          Get.snackbar(
+            'Success',
+            'Promo code applied successfully!',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } else {
+          promoErrorMessage.value = 'Promo code is not valid';
+          isPromoValid.value = false;
+        }
+      } else {
+        promoErrorMessage.value =
+            response['message'] ?? 'Failed to validate promo code';
+        isPromoValid.value = false;
+      }
+    } catch (e) {
+      promoErrorMessage.value = e.toString().replaceFirst('Exception: ', '');
+      isPromoValid.value = false;
+
+      print('[DEBUG] Promo validation error: $e');
+
+      Get.snackbar(
+        'Error',
+        promoErrorMessage.value,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> registerSellerAccount() async {
+    try {
+      print('[DEBUG] registerSellerAccount: Starting seller registration');
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      // Validate required fields
+      if (sellerNameController.text.isEmpty) {
+        throw Exception('Name is required');
+      }
+      if (sellerPhoneController.text.isEmpty) {
+        throw Exception('Phone number is required');
+      }
+      if (sellerEmailController.text.isEmpty) {
+        throw Exception('Email is required');
+      }
+      if (selectedCountry.value == null || selectedCountry.value!.isEmpty) {
+        throw Exception('Country is required');
+      }
+      if (selectedCity.value == null || selectedCity.value!.isEmpty) {
+        throw Exception('City is required');
+      }
+      if (selectedState.value == null || selectedState.value!.isEmpty) {
+        throw Exception('State is required');
+      }
+      if (sellerZipController.text.isEmpty) {
+        throw Exception('ZIP code is required');
+      }
+      if (sellerUsernameController.text.isEmpty) {
+        throw Exception('Username is required');
+      }
+      if (sellerPasswordController.text.isEmpty) {
+        throw Exception('Password is required');
+      }
+      if (sellerConfirmPasswordController.text.isEmpty) {
+        throw Exception('Confirm password is required');
+      }
+
+      // Validate passwords match
+      if (sellerPasswordController.text !=
+          sellerConfirmPasswordController.text) {
+        throw Exception('Passwords do not match');
+      }
+
+      final sellerEmail = sellerEmailController.text.trim();
+      final sellerPassword = sellerPasswordController.text;
+
+      // Call API to register seller
+      final response = await ApiService.registerSellerAccount(
+        name: sellerNameController.text.trim(),
+        phone: sellerPhoneController.text.trim(),
+        country: selectedCountry.value ?? '',
+        city: selectedCity.value ?? '',
+        state: selectedState.value ?? '',
+        zip: sellerZipController.text.trim(),
+        email: sellerEmail,
+        username: sellerUsernameController.text.trim(),
+        password: sellerPassword,
+      );
+
+      if (response['success'] == true) {
+        print('[DEBUG] Seller registration successful: $sellerEmail');
+        print('[DEBUG] Performing hidden login with email: $sellerEmail');
+
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Seller account created successfully!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: Duration(seconds: 2),
+        );
+
+        // Wait a moment for the snackbar to show
+        await Future.delayed(Duration(milliseconds: 500));
+
+        // Perform hidden login with registered credentials
+        try {
+          final loginResponse = await http.post(
+            Uri.parse(Endpoints.login),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'email': sellerEmail,
+              'password': sellerPassword,
+            }),
+          );
+
+          print('[DEBUG] Login response status: ${loginResponse.statusCode}');
+
+          if (loginResponse.statusCode == 201 ||
+              loginResponse.statusCode == 200) {
+            final loginData = json.decode(loginResponse.body);
+            if (loginData['success'] == true) {
+              final token = loginData['data']['token'];
+              final userId = loginData['data']['user']['id'];
+
+              print('[DEBUG] Hidden login successful, token received');
+
+              // Save token and user ID
+              await StorageService.saveToken(token, userId);
+              accessToken.value = token;
+              this.userId.value = userId;
+
+              // Navigate to Package Selection (Step 1)
+              print('[DEBUG] Navigating to PackageScreenStep1');
+              Get.off(() => PackageScreenStep1());
+            } else {
+              throw Exception('Login failed: ${loginData['message']}');
+            }
+          } else {
+            throw Exception(
+              'Login failed with status ${loginResponse.statusCode}',
+            );
+          }
+        } catch (loginError) {
+          print('[DEBUG] Hidden login error: $loginError');
+          // Even if login fails, navigate to package step - user can login manually
+          Get.off(() => PackageScreenStep1());
+        }
+      } else {
+        throw Exception(
+          response['message'] ?? 'Failed to register seller account',
+        );
+      }
+    } on SocketException catch (e) {
+      Get.snackbar(
+        'Network Error',
+        'Check your internet connection: ${e.message}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      print('[DEBUG] Network error: $e');
+    } catch (e) {
+      Get.snackbar(
+        'Registration Error',
+        e.toString().replaceFirst('Exception: ', ''),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      print('[DEBUG] Registration error: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> submitBoatOnboarding() async {
     try {
       print(
@@ -676,7 +891,7 @@ class SellPackageController extends GetxController {
             '[DEBUG] Non-logged-in user: navigating to Step 3 for seller information',
           );
           isLoading.value = false;
-          Get.toNamed('/packageScreenStep3');
+          Get.toNamed('/sellPackageScreen');
           return;
         }
 
@@ -804,21 +1019,61 @@ class SellPackageController extends GetxController {
       print('[DEBUG] Gallery Images: $galleryPaths');
       print('[DEBUG] =========================================\n');
 
-      // For logged-in users, use empty planId since they already have subscription
-      final planIdToUse = isLoggedIn ? '' : selectedPackageId.value;
+      // Determine which endpoint to use
+      bool useOnboardingEndpoint = !isLoggedIn;
+      String planIdToUse = selectedPackageId.value;
+
+      // If user is logged in, check if they have an active subscription
+      if (isLoggedIn) {
+        try {
+          print('[DEBUG] User is logged in. Checking subscription status...');
+          final profileResponse = await ApiService.getUserProfile();
+
+          if (profileResponse['success'] == true) {
+            final profileData = profileResponse['data'];
+            final currentPlanId = profileData['currentPlanId'];
+
+            print('[DEBUG] currentPlanId: $currentPlanId');
+
+            // If no active subscription, use onboarding endpoint
+            if (currentPlanId == null || currentPlanId.toString().isEmpty) {
+              print(
+                '[DEBUG] No active subscription. Using onboarding endpoint.',
+              );
+              useOnboardingEndpoint = true;
+              // Need to get seller info from controllers for onboarding submission
+              // This is a newly registered seller without subscription
+            } else {
+              print(
+                '[DEBUG] User has active subscription. Using create-listing endpoint.',
+              );
+              useOnboardingEndpoint = false;
+              planIdToUse = ''; // Empty planId for authenticated users
+            }
+          }
+        } catch (e) {
+          print('[DEBUG] Error checking subscription status: $e');
+          // Default to subscription-required endpoint if check fails
+          useOnboardingEndpoint = false;
+          planIdToUse = '';
+        }
+      }
 
       // Try simple JSON approach first (without file uploads)
       print('[DEBUG] Attempting submission without file uploads first...');
       try {
-        final response = isLoggedIn
-            ? await ApiService.createListing(
-                boatInfo: boatInfo,
-                planId: planIdToUse,
-              )
-            : await ApiService.createBoatOnboardingSimple(
+        final response = useOnboardingEndpoint
+            ? await ApiService.createBoatOnboardingSimple(
                 boatInfo: boatInfo,
                 sellerInfo: sellerInfo,
-                planId: selectedPackageId.value,
+                planId: planIdToUse,
+                isNewSeller:
+                    !isLoggedIn, // Only send sellerInfo for non-logged-in users
+                promoCode: promoCode.value,
+              )
+            : await ApiService.createListing(
+                boatInfo: boatInfo,
+                planId: planIdToUse,
               );
 
         print('[DEBUG] submitBoatOnboarding: Response received - $response');
@@ -827,9 +1082,17 @@ class SellPackageController extends GetxController {
           // Store listing and payment data from response
           final data = response['data'];
           if (data != null) {
-            // Extract listing ID (directly in data, not nested)
-            listingId.value = data['listingId'] ?? data['id'] ?? '';
-            userId.value = data['userId'] ?? '';
+            // Extract listing ID from listingPreview (nested structure)
+            final listingPreview = data['listingPreview'];
+            if (listingPreview != null) {
+              listingId.value =
+                  listingPreview['listingId'] ?? listingPreview['id'] ?? '';
+              userId.value = listingPreview['userId'] ?? '';
+            } else {
+              // Fallback for different response structure
+              listingId.value = data['listingId'] ?? data['id'] ?? '';
+              userId.value = data['userId'] ?? '';
+            }
 
             print('\n=== Listing Created Successfully ===');
             print('Listing ID: ${listingId.value}');
@@ -858,7 +1121,7 @@ class SellPackageController extends GetxController {
           // If user already has an active subscription, this will fail gracefully
           print('[DEBUG] Fetching setup intent for payment...');
           try {
-            await _fetchSetupIntentForPayment();
+            await fetchSetupIntentForPayment();
           } catch (setupIntentError) {
             final errorMsg = setupIntentError.toString();
             if (errorMsg.contains('already has an active subscription')) {
@@ -886,12 +1149,16 @@ class SellPackageController extends GetxController {
             }
           }
 
-          // Navigate to home for logged-in users, or Step 4 for new users
+          // Navigate to product based on subscription status
           Future.delayed(Duration(seconds: 2), () {
-            if (isLoggedIn) {
-              Get.offAllNamed('/bottomNavBar');
-            } else {
+            // Go to payment if user is new or doesn't have subscription
+            if (!isLoggedIn || useOnboardingEndpoint) {
+              print('[DEBUG] User needs payment setup. Going to Step 4...');
               Get.toNamed('/packageScreenStep4');
+            } else {
+              // User has active subscription - go to home
+              print('[DEBUG] User has subscription. Going to home...');
+              Get.offAllNamed('/bottomNavBar');
             }
           });
 
@@ -930,17 +1197,20 @@ class SellPackageController extends GetxController {
       }
 
       // If simple approach fails or doesn't work, try with files
-      final response = isLoggedIn
-          ? await ApiService.createListingWithFiles(
+      final response = useOnboardingEndpoint
+          ? await ApiService.createBoatOnboarding(
               boatInfo: boatInfo,
+              sellerInfo: sellerInfo,
               planId: planIdToUse,
               coverPaths: coverPaths,
               galleryPaths: galleryPaths,
+              isNewSeller:
+                  !isLoggedIn, // Only send sellerInfo for non-logged-in users
+              promoCode: promoCode.value,
             )
-          : await ApiService.createBoatOnboarding(
+          : await ApiService.createListingWithFiles(
               boatInfo: boatInfo,
-              sellerInfo: sellerInfo,
-              planId: selectedPackageId.value,
+              planId: planIdToUse,
               coverPaths: coverPaths,
               galleryPaths: galleryPaths,
             );
@@ -951,9 +1221,17 @@ class SellPackageController extends GetxController {
         // Store listing and payment data from response
         final data = response['data'];
         if (data != null) {
-          // Extract listing ID (directly in data, not nested)
-          listingId.value = data['listingId'] ?? data['id'] ?? '';
-          userId.value = data['userId'] ?? '';
+          // Extract listing ID from listingPreview (nested structure)
+          final listingPreview = data['listingPreview'];
+          if (listingPreview != null) {
+            listingId.value =
+                listingPreview['listingId'] ?? listingPreview['id'] ?? '';
+            userId.value = listingPreview['userId'] ?? '';
+          } else {
+            // Fallback for different response structure
+            listingId.value = data['listingId'] ?? data['id'] ?? '';
+            userId.value = data['userId'] ?? '';
+          }
 
           print('\n=== Listing Created Successfully ===');
           print('Listing ID: ${listingId.value}');
@@ -979,17 +1257,35 @@ class SellPackageController extends GetxController {
 
           // Fetch setup intent for payment before navigating to Step 4 (only for new users)
           print('[DEBUG] Fetching setup intent for payment...');
-          await _fetchSetupIntentForPayment();
+          await fetchSetupIntentForPayment();
 
           // Navigate to Step 4 (payment section)
           Future.delayed(Duration(seconds: 1), () {
             Get.toNamed('/packageScreenStep4');
           });
         } else {
-          // For logged-in users, navigate directly to home
-          Future.delayed(Duration(seconds: 1), () {
-            Get.offAllNamed('/bottomNavBar');
-          });
+          // For logged-in users, check if they need to set up payment
+          if (useOnboardingEndpoint) {
+            // No active subscription - fetch setup intent and go to payment
+            print(
+              '[DEBUG] Logged-in user without subscription. Going to payment setup...',
+            );
+            try {
+              await fetchSetupIntentForPayment();
+            } catch (e) {
+              print('[DEBUG] Error fetching setup intent: $e');
+            }
+
+            Future.delayed(Duration(seconds: 1), () {
+              Get.toNamed('/packageScreenStep4');
+            });
+          } else {
+            // Has active subscription - go to home
+            print('[DEBUG] Logged-in user with subscription. Going to home...');
+            Future.delayed(Duration(seconds: 1), () {
+              Get.offAllNamed('/bottomNavBar');
+            });
+          }
         }
       } else {
         errorMessage.value = response['message'] ?? 'Failed to create listing';
@@ -1039,7 +1335,7 @@ class SellPackageController extends GetxController {
         accessToken.value = token;
         this.userId.value = userId;
 
-        await _fetchSetupIntentForPayment();
+        await fetchSetupIntentForPayment();
       }
     } catch (e) {
       rethrow;
@@ -1047,7 +1343,7 @@ class SellPackageController extends GetxController {
   }
 
   /// Fetch setup intent data from backend for Stripe payment
-  Future<void> _fetchSetupIntentForPayment() async {
+  Future<void> fetchSetupIntentForPayment() async {
     try {
       final response = await ApiService.getSetupIntent(selectedPackageId.value);
 
@@ -1160,7 +1456,7 @@ class SellPackageController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      await _fetchSetupIntentForPayment();
+      await fetchSetupIntentForPayment();
 
       // Verify we have a valid setup intent
       if (setupIntentClientSecret.value.isEmpty) {

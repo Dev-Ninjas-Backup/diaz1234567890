@@ -33,9 +33,12 @@ class Endpoints {
       '$baseUrl/api/auth/notification/mark-all-as-read';
   static String setupIntent(String planId) =>
       '$baseUrl/api/payment/seller/setup-intent/$planId';
-  static String onboarding = '$baseUrl/api/boats/seller/onboarding';
+  static String onboarding = '$baseUrl/api/boats/seller/onboarding/boat';
   static String createListing = '$baseUrl/api/boats/seller/create-listing';
   static String updateListing(String boatId) =>
       '$baseUrl/api/boats/seller/update-listing/$boatId';
   static String getclass = '$baseUrl/api/boats/specification/list?type=CLASS';
+  static String CreateSellerInfo =
+      '$baseUrl/api/boats/seller/onboarding/seller-info';
+  static String ApplyPromo = '$baseUrl/api/subscription/promo/validate';
 }

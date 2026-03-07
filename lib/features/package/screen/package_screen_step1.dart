@@ -6,8 +6,8 @@ import '../../../core/common/widget/custom_button.dart';
 import '../controller/package_controller.dart';
 import '../widgets/package_card.dart';
 
-class SellPackageScreen extends StatelessWidget {
-  const SellPackageScreen({super.key});
+class PackageScreenStep1 extends StatelessWidget {
+  const PackageScreenStep1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +146,40 @@ class SellPackageScreen extends StatelessWidget {
                 ),
                 Divider(),
                 SizedBox(height: 24),
+                Obx(() {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: controller.promoCodeInput,
+                          decoration: InputDecoration(
+                            labelText: 'Use Promo Code',
+                            hintText: 'Enter code',
+                            border: OutlineInputBorder(),
+                            errorText:
+                                controller.promoErrorMessage.value.isNotEmpty
+                                ? controller.promoErrorMessage.value
+                                : null,
+                            suffixIcon: controller.isPromoValid.value
+                                ? Icon(Icons.check_circle, color: Colors.green)
+                                : null,
+                          ),
+                          readOnly: controller.isPromoValid.value,
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: controller.isLoading.value
+                            ? () {}
+                            : () => controller.applyPromoCode(),
+                        child: Text(
+                          controller.isLoading.value ? 'Applying...' : 'Apply',
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+                SizedBox(height: 24),
                 Text(
                   'Select a Package',
                   style: TextStyle(
@@ -208,6 +242,32 @@ class SellPackageScreen extends StatelessWidget {
                 CustomButton(
                   label: "Next →",
                   onPressed: () {
+                    // Check if a package is selected
+                    if (controller.selectedPackage.value.isEmpty) {
+                      Get.snackbar(
+                        'Error',
+                        'Please select a package first',
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      return;
+                    }
+
+                    // Check if promo code was entered but not validated
+                    if (controller.promoCodeInput.text.isNotEmpty &&
+                        !controller.isPromoValid.value) {
+                      Get.snackbar(
+                        'Error',
+                        'Please apply a valid promo code or clear the field',
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                      return;
+                    }
+
+                    // All validations passed, navigate to next step
                     Get.toNamed('/packageScreenStep2');
                   },
                   width: double.infinity,
