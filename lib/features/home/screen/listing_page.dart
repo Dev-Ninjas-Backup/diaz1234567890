@@ -173,6 +173,8 @@ class YachtListingPage extends StatelessWidget {
                               const Spacer(),
                               Text(
                                 "Price: ${yacht.price}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: Color(0xFF00A3AC),
                                   fontWeight: FontWeight.w600,
