@@ -118,11 +118,12 @@ class YachtListingPage extends StatelessWidget {
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              Imagepath.singleBoat,
-                              height: 150,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                            return Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 150,
+                                color: Colors.grey[400],
+                              ),
                             );
                           },
                         ),

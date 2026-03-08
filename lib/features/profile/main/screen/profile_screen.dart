@@ -61,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
                     height: 56,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Get.offAll(() => LoginScreen());
+                        Get.to(() => LoginScreen());
                       },
                       icon: const Icon(Icons.login, size: 20),
                       label: Text(
@@ -81,17 +81,17 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: Text(
-                      "Continue as Guest",
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(height: 16),
+                  // TextButton(
+                  //   onPressed: () => Get.back(),
+                  //   child: Text(
+                  //     "Continue as Guest",
+                  //     style: TextStyle(
+                  //       color: Colors.grey.shade600,
+                  //       fontSize: 15,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

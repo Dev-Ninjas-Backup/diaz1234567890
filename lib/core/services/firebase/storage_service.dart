@@ -75,16 +75,4 @@ class StorageService {
   /// Returns the initial route for the app depending on whether a token is
   /// present. This keeps the auth/startup decision centralized in the
   /// storage service where token state is managed.
-  static String getInitialRoute() {
-    // Use the same route strings used across the app. Keep literals here to
-    // avoid importing route files and creating import cycles.
-    const bottomNavBar = '/bottomNavBar';
-    const loginScreen = '/loginScreen';
-
-    try {
-      return hasToken() ? bottomNavBar : loginScreen;
-    } catch (_) {
-      return loginScreen;
-    }
-  }
 }

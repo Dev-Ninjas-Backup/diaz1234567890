@@ -27,7 +27,7 @@ class Diaz extends StatelessWidget {
           builder: EasyLoading.init(),
           // Choose initial route based on persisted auth token via
           // StorageService (centralized in storage layer).
-          initialRoute: StorageService.getInitialRoute(),
+          initialRoute: '/bottomNavBar',
           getPages: AppRoute.routes,
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,

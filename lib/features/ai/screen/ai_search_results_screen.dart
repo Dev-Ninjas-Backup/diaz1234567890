@@ -303,11 +303,12 @@ class AiSearchResultsScreen extends StatelessWidget {
                                           },
                                       errorBuilder:
                                           (context, error, stackTrace) {
-                                            return Image.asset(
-                                              Imagepath.singleBoat,
-                                              width: 120,
-                                              height: 120,
-                                              fit: BoxFit.cover,
+                                            return Center(
+                                              child: Icon(
+                                                Icons.broken_image,
+                                                size: 50,
+                                                color: Colors.grey[400],
+                                              ),
                                             );
                                           },
                                     ),
