@@ -16,6 +16,23 @@ class LoginScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
+        centerTitle: true,
+        title: Text(
+          'Login',
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
@@ -23,18 +40,7 @@ class LoginScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: screenHeight * 0.09),
-                Center(
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 30,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.05),
+                SizedBox(height: screenHeight * 0.02),
                 Text(
                   'Email',
                   style: getTextStyle(
@@ -151,31 +157,31 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  height: screenHeight * 0.065,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      controller.loginAsGuest();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0C2C70),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: Text(
-                      'Guest Account',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: screenHeight * 0.022,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
 
+                // SizedBox(height: 30),
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: screenHeight * 0.065,
+                //   child: ElevatedButton(
+                //     onPressed: () async {
+                //       controller.loginAsGuest();
+                //     },
+                //     style: ElevatedButton.styleFrom(
+                //       backgroundColor: Color(0xFF0C2C70),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(14),
+                //       ),
+                //     ),
+                //     child: Text(
+                //       'Guest Account',
+                //       style: TextStyle(
+                //         color: Colors.white,
+                //         fontSize: screenHeight * 0.022,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: screenHeight * 0.03),
               ],
             ),
