@@ -94,25 +94,25 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                       ),
                     ],
                   ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Seller Information",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                  // SizedBox(width: 12),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     Container(
+                  //       width: 62,
+                  //       height: 6,
+                  //       decoration: BoxDecoration(
+                  //         color: Colors.blue,
+                  //         borderRadius: BorderRadius.circular(100),
+                  //       ),
+                  //     ),
+                  //     SizedBox(height: 5),
+                  //     Text(
+                  //       "Seller Information",
+                  //       style: TextStyle(fontSize: 8, color: Colors.grey),
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
