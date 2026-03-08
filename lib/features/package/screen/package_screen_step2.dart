@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
+import 'package:diaz1234567890/features/package/widgets/text_field_widget2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
@@ -146,7 +149,7 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
             Expanded(
               child: Obx(
                 () => _buildDropdownField(
-                  label: 'Propeller Material:',
+                  label: 'Propeller Type:',
                   value: engine.propellerTypeValue.value,
                   hint: 'Select',
                   items: controller.propellerTypes,
@@ -209,8 +212,8 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                       SizedBox(width: 12),
                       _buildProgressStep("Boat Information", true, true),
                       SizedBox(width: 12),
-                      _buildProgressStep("Seller Information", false, false),
-                      SizedBox(width: 12),
+                      // _buildProgressStep("Seller Information", false, false),
+                      // SizedBox(width: 12),
                       _buildProgressStep("Pay & Post", false, false),
                     ],
                   ),
@@ -244,12 +247,12 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                 ),
                 SizedBox(height: 14),
                 TextFieldWidget(
-                  title1: 'Video URL:',
-                  title2: 'City: *',
-                  hint1: 'YouTube URL',
-                  hint2: 'e.g., Miami',
-                  controller1: controller.videoURLController,
-                  controller2: controller.boatCityController,
+                  title1: 'City: *',
+                  title2: 'Zip: *',
+                  hint1: 'e.g., Miami',
+                  hint2: '33101',
+                  controller1: controller.boatCityController,
+                  controller2: controller.boatZipController,
                 ),
                 SizedBox(height: 14),
                 Row(
@@ -268,36 +271,14 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                     ),
                     SizedBox(width: 16),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Zip: *',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          SizedBox(height: 6),
-                          Container(
-                            padding: EdgeInsets.only(left: 10),
-                            height: 36,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.white,
-                            ),
-                            child: TextField(
-                              controller: controller.boatZipController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: '33101',
-                                hintStyle: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Condition: *',
+                          value: controller.selectedCondition.value,
+                          hint: 'Select',
+                          items: controller.conditions,
+                          onChanged: controller.selectCondition,
+                        ),
                       ),
                     ),
                   ],
@@ -309,18 +290,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                     Expanded(
                       child: Obx(
                         () => _buildDropdownField(
-                          label: 'Condition: *',
-                          value: controller.selectedCondition.value,
-                          hint: 'Select',
-                          items: controller.conditions,
-                          onChanged: controller.selectCondition,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
                           label: 'Prop Material: *',
                           value: controller.selectedPropMaterial.value,
                           hint: 'Select',
@@ -329,6 +298,8 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                         ),
                       ),
                     ),
+                    SizedBox(width: 16),
+                    Expanded(child: Container()),
                   ],
                 ),
                 SizedBox(height: 30),
@@ -376,16 +347,231 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   maxLength1: 3,
                   maxLength2: 2,
                 ),
-                SizedBox(height: 30),
+
+                const SizedBox(height: 24),
+
                 Text(
-                  'Media',
+                  'Specifications',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Build Year: *',
+                          value: controller.selectedBuildYear.value,
+                          hint: 'Select',
+                          items: controller.year,
+                          onChanged: controller.selectBuildYear,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Make: *',
+                          value: controller.selectedMake.value,
+                          hint: 'Select',
+                          items: controller.make,
+                          onChanged: controller.selectMake,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Class: *',
+                          value: controller.selectedClass.value,
+                          hint: 'Select',
+                          items: controller.boatClass,
+                          onChanged: controller.selectClass,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Material:',
+                          value: controller.selectedMaterial.value,
+                          hint: 'Select',
+                          items: controller.material,
+                          onChanged: controller.selectMaterial,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Fuel Type: *',
+                          value: controller.selectedFuelType.value,
+                          hint: 'Select',
+                          items: controller.fuelType,
+                          onChanged: controller.selectFuelType,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Engine: *',
+                          value: controller.selectedNumberOfEngine.value,
+                          hint: 'Select',
+                          items: controller.numberOfEngines,
+                          onChanged: controller.selectNumberOfEngine,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Cabin: *',
+                          value: controller.selectedNumberOfCabin.value,
+                          hint: 'Select',
+                          items: controller.numberOfCabins,
+                          onChanged: controller.selectNumberOfCabin,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Obx(
+                        () => _buildDropdownField(
+                          label: 'Number of Heads: *',
+                          value: controller.selectedNumberOfHeads.value,
+                          hint: 'Select',
+                          items: controller.numberOfHeads,
+                          onChanged: controller.selectNumberOfHeads,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+                Text(
+                  'Engine',
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.black,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
+                // Dynamic engine details based on number of engines
+                Obx(() {
+                  final showDynamicEngines = controller.engines.isNotEmpty;
+
+                  if (showDynamicEngines) {
+                    // Show dynamic engines
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (int i = 0; i < controller.engines.length; i++)
+                          _buildEngineSection(i, controller.engines[i]),
+                      ],
+                    );
+                  } else {
+                    // Fallback to single engine (legacy)
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextFieldWidget(
+                          title1: 'Hours:',
+                          title2: 'Make: *',
+                          hint1: 'Type here',
+                          hint2: 'Type here',
+                          controller1: controller.engineHoursController,
+                          controller2: controller.engineMakeController,
+                        ),
+                        SizedBox(height: 14),
+                        TextFieldWidget(
+                          title1: 'Model:',
+                          title2: 'Total Power (HP):',
+                          hint1: 'Type here',
+                          hint2: 'Type here',
+                          controller1: controller.engineModelController,
+                          controller2: controller.engineHorsepowerController,
+                        ),
+                        SizedBox(height: 14),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Obx(
+                                () => _buildDropdownField(
+                                  label: 'Fuel Type:',
+                                  value:
+                                      controller.selectedEngineFuelType.value,
+                                  hint: 'Select',
+                                  items: controller.fuelType,
+                                  onChanged: controller.selectEngineFuelType,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Obx(
+                                () => _buildDropdownField(
+                                  label: 'Propeller Type:',
+                                  value: controller.selectedPropellerType.value,
+                                  hint: 'Select',
+                                  items: controller.propellerTypes,
+                                  onChanged: controller.selectPropellerType,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                }),
+                SizedBox(height: 30),
+                Text(
+                  'Media & Gallery',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFieldWidget2(
+                  title1: 'Video URL:',
+
+                  hint1: 'YouTube URL',
+
+                  controller1: controller.videoURLController,
+                ),
+                SizedBox(height: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -720,211 +906,6 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
                   ],
                 ),
                 SizedBox(height: 30),
-                Text(
-                  'Specifications',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Build Year: *',
-                          value: controller.selectedBuildYear.value,
-                          hint: 'Select',
-                          items: controller.year,
-                          onChanged: controller.selectBuildYear,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Make: *',
-                          value: controller.selectedMake.value,
-                          hint: 'Select',
-                          items: controller.make,
-                          onChanged: controller.selectMake,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Class: *',
-                          value: controller.selectedClass.value,
-                          hint: 'Select',
-                          items: controller.boatClass,
-                          onChanged: controller.selectClass,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Material:',
-                          value: controller.selectedMaterial.value,
-                          hint: 'Select',
-                          items: controller.material,
-                          onChanged: controller.selectMaterial,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Fuel Type: *',
-                          value: controller.selectedFuelType.value,
-                          hint: 'Select',
-                          items: controller.fuelType,
-                          onChanged: controller.selectFuelType,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Number of Engine: *',
-                          value: controller.selectedNumberOfEngine.value,
-                          hint: 'Select',
-                          items: controller.numberOfEngines,
-                          onChanged: controller.selectNumberOfEngine,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Number of Cabin: *',
-                          value: controller.selectedNumberOfCabin.value,
-                          hint: 'Select',
-                          items: controller.numberOfCabins,
-                          onChanged: controller.selectNumberOfCabin,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Obx(
-                        () => _buildDropdownField(
-                          label: 'Number of Heads: *',
-                          value: controller.selectedNumberOfHeads.value,
-                          hint: 'Select',
-                          items: controller.numberOfHeads,
-                          onChanged: controller.selectNumberOfHeads,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-                Text(
-                  'Engine',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 24),
-                // Dynamic engine details based on number of engines
-                Obx(() {
-                  final showDynamicEngines = controller.engines.isNotEmpty;
-
-                  if (showDynamicEngines) {
-                    // Show dynamic engines
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (int i = 0; i < controller.engines.length; i++)
-                          _buildEngineSection(i, controller.engines[i]),
-                      ],
-                    );
-                  } else {
-                    // Fallback to single engine (legacy)
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextFieldWidget(
-                          title1: 'Hours:',
-                          title2: 'Make: *',
-                          hint1: 'Type here',
-                          hint2: 'Type here',
-                          controller1: controller.engineHoursController,
-                          controller2: controller.engineMakeController,
-                        ),
-                        SizedBox(height: 14),
-                        TextFieldWidget(
-                          title1: 'Model:',
-                          title2: 'Total Power (HP):',
-                          hint1: 'Type here',
-                          hint2: 'Type here',
-                          controller1: controller.engineModelController,
-                          controller2: controller.engineHorsepowerController,
-                        ),
-                        SizedBox(height: 14),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Obx(
-                                () => _buildDropdownField(
-                                  label: 'Fuel Type:',
-                                  value:
-                                      controller.selectedEngineFuelType.value,
-                                  hint: 'Select',
-                                  items: controller.fuelType,
-                                  onChanged: controller.selectEngineFuelType,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            Expanded(
-                              child: Obx(
-                                () => _buildDropdownField(
-                                  label: 'Propeller Material:',
-                                  value: controller.selectedPropellerType.value,
-                                  hint: 'Select',
-                                  items: controller.propellerTypes,
-                                  onChanged: controller.selectPropellerType,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  }
-                }),
-                SizedBox(height: 40),
                 Obx(
                   () => CustomButton(
                     label: controller.isLoading.value

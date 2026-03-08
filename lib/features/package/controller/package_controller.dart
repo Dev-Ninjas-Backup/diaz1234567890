@@ -297,7 +297,13 @@ class SellPackageController extends GetxController {
   final List<String> engineTypes = ['Outboard', 'Inboard', 'Propeller'];
   final List<String> propTypes = ['Propeller', 'Fixed', 'Folding'];
   final List<String> propMaterials = ['Aluminium', 'Bronze', 'Stainless Steel'];
-  final List<String> propellerTypes = ['12', '13', '14', '15'];
+  final List<String> propellerTypes = [
+    '2 Blade',
+    '3 Blade',
+    '4 Blade',
+    '5 Blade',
+    '6 Blade',
+  ];
 
   void selectBuildYear(String? value) {
     selectedBuildYear.value = value;
