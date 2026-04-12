@@ -68,7 +68,7 @@ class AiSearchController extends GetxController {
       }
 
       final response = await ApiService.aiSearch(
-        userId: userId,
+        //userId: userId,
         query: query,
         limit: limit.value.toInt(),
       );
