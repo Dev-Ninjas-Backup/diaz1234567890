@@ -1,35 +1,18 @@
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
-import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
-import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 
-class SellPackageScreen extends StatefulWidget {
+class SellPackageScreen extends StatelessWidget {
   const SellPackageScreen({super.key});
-
-  @override
-  State<SellPackageScreen> createState() => _SellPackageScreenState();
-}
-
-class _SellPackageScreenState extends State<SellPackageScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Skip this page if user is already logged in
-    if (StorageService.hasToken()) {
-      Future.microtask(() {
-        Get.off(() => SellPackageScreen());
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<SellPackageController>();
+    controller.scheduleSellPackageScreenEntryCheck();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Register Your Boat'),
