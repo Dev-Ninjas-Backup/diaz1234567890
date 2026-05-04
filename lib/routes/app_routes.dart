@@ -11,6 +11,7 @@ import 'package:diaz1234567890/features/profile/my_listing/screen/my_listing_scr
 import 'package:diaz1234567890/features/profile/privacy_policy/screen/privacy_policy_screen.dart';
 import 'package:diaz1234567890/features/notifications/screen/notification_screen.dart';
 import 'package:diaz1234567890/features/sell/screen/sell_screen.dart';
+import 'package:diaz1234567890/features/terms_&_condition/screen/terms_&_condition_screen.dart';
 import 'package:get/get.dart';
 
 class AppRoute {
@@ -27,6 +28,7 @@ class AppRoute {
   static String loginScreen = "/loginScreen";
   static String notificationsScreen = "/notifications";
   static String sellScreen = "/sellScreen";
+  static String termsConditionScreen = "/termsConditionScreen";
 
   static String getBottomNavBar() => bottomNavBar;
   static String getProfileScreen() => profileScreen;
@@ -41,6 +43,7 @@ class AppRoute {
   static String getLoginScreen() => loginScreen;
   static String getNotificationsScreen() => notificationsScreen;
   static String getSellScreen() => sellScreen;
+  static String getTermsConditionScreen() => termsConditionScreen;
 
   // ...existing code...
 
@@ -58,5 +61,6 @@ class AppRoute {
     GetPage(name: packageScreenStep4, page: () => PackageScreenStep4()),
     GetPage(name: loginScreen, page: () => LoginScreen()),
     GetPage(name: sellScreen, page: () => SellScreen()),
+    GetPage(name: termsConditionScreen, page: () => TermsConditionScreen()),
   ];
 }
