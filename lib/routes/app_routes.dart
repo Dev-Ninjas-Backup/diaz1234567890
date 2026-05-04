@@ -2,6 +2,7 @@ import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.da
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 import 'package:diaz1234567890/features/faq/screen/faq_screen.dart';
+import 'package:diaz1234567890/features/need_help/screen/need_help_screen.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step1.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step2.dart';
 import 'package:diaz1234567890/features/package/screen/package_screen_step3.dart';
@@ -31,6 +32,7 @@ class AppRoute {
   static String sellScreen = "/sellScreen";
   static String termsConditionScreen = "/termsConditionScreen";
   static String faqScreen = "/faqScreen";
+  static String needHelpScreen = "/needHelpScreen";
 
 
 
@@ -50,9 +52,9 @@ class AppRoute {
   static String getSellScreen() => sellScreen;
   static String getTermsConditionScreen() => termsConditionScreen;
   static String getFaqScreen() => faqScreen;
-  // ...existing code...
+  static String getNeedHelpScreen() => needHelpScreen;
 
-  
+
 
   static List<GetPage> routes = [
     GetPage(name: bottomNavBar, page: () => BottomNavbarScreen()),
@@ -70,5 +72,6 @@ class AppRoute {
     GetPage(name: sellScreen, page: () => SellScreen()),
     GetPage(name: termsConditionScreen, page: () => TermsConditionScreen()),
     GetPage(name: faqScreen, page: () => FaqScreen()),
+    GetPage(name: needHelpScreen, page: () => NeedHelpScreen()),
   ];
 }

@@ -68,81 +68,79 @@ class ProfileScreen extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.account_circle_outlined,
-                    size: 100,
-                    color: Colors.grey.shade400,
-                  ),
-                  const SizedBox(height: 32),
-                  Text(
-                    "Guest Mode",
-                    style: getTextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "You are currently using a guest account.\n"
-                    "Log in to access your profile, listings,\n"
-                    "notifications, and personalized features.",
-                    textAlign: TextAlign.center,
-                    style: getTextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Get.to(() => LoginScreen());
-                      },
-                      icon: const Icon(Icons.login, size: 20),
-                      label: Text(
-                        "Log In",
-                        style: getTextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_circle_outlined,
+                          size: 100,
+                          color: Colors.grey.shade400,
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0C2C70),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        const SizedBox(height: 32),
+                        Text(
+                          "Guest Mode",
+                          style: getTextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
-                        elevation: 3,
-                      ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "You are currently using a guest account.\n"
+                          "Log in to access your profile, listings,\n"
+                          "notifications, and personalized features.",
+                          textAlign: TextAlign.center,
+                          style: getTextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 48),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Get.to(() => LoginScreen());
+                            },
+                            icon: const Icon(Icons.login, size: 20),
+                            label: Text(
+                              "Log In",
+                              style: getTextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0C2C70),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 3,
+                            ),
+                          ),
+                        ),
+                        // const SizedBox(height: 16),
+                        // TextButton(
+                        //   onPressed: () => Get.back(),
+                        //   child: Text(
+                        //     "Continue as Guest",
+                        //     style: TextStyle(
+                        //       color: Colors.grey.shade600,
+                        //       fontSize: 15,
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
                   ),
-                  // const SizedBox(height: 16),
-                  // TextButton(
-                  //   onPressed: () => Get.back(),
-                  //   child: Text(
-                  //     "Continue as Guest",
-                  //     style: TextStyle(
-                  //       color: Colors.grey.shade600,
-                  //       fontSize: 15,
-                  //     ),
-                  //   ),
-                  // ),
-                ],
-              ),
                 ),
               ),
-              ),
             ],
-          
-     
           ),
         );
       }
@@ -195,324 +193,329 @@ class ProfileScreen extends StatelessWidget {
             ),
             Expanded(
               child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Column(
-                children: [
-                  Obx(() {
-                    final avatar = profileController.avatarUrl.value;
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: [
+                        Obx(() {
+                          final avatar = profileController.avatarUrl.value;
 
-                    return GestureDetector(
-                      onTap: () async {
-                        if (!profileController.notificationToggle.value) {
-                          Get.snackbar(
-                            'Notifications disabled',
-                            'Enable notifications to view them',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
-                          return;
-                        }
-                        await profileController.loadNotifications();
-                        Get.toNamed(AppRoute.notificationsScreen);
-                      },
-                      child: Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: avatar != null && avatar.isNotEmpty
-                                ? Image.network(
-                                    avatar,
-                                    width: 120,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Icons.account_circle_outlined,
-                                    size: 120,
-                                    color: Colors.grey.shade400,
-                                  ),
-                          ),
+                          return GestureDetector(
+                            onTap: () async {
+                              if (!profileController.notificationToggle.value) {
+                                Get.snackbar(
+                                  'Notifications disabled',
+                                  'Enable notifications to view them',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                                return;
+                              }
+                              await profileController.loadNotifications();
+                              Get.toNamed(AppRoute.notificationsScreen);
+                            },
+                            child: Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: avatar != null && avatar.isNotEmpty
+                                      ? Image.network(
+                                          avatar,
+                                          width: 120,
+                                          height: 120,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Icon(
+                                          Icons.account_circle_outlined,
+                                          size: 120,
+                                          color: Colors.grey.shade400,
+                                        ),
+                                ),
 
-                          /// 🔴 Notification badge
-                          Obx(() {
-                            if (!profileController.notificationToggle.value) {
-                              return const SizedBox.shrink();
-                            }
+                                /// 🔴 Notification badge
+                                Obx(() {
+                                  if (!profileController
+                                      .notificationToggle
+                                      .value) {
+                                    return const SizedBox.shrink();
+                                  }
 
-                            final unread = profileController.notifications
-                                .where((n) => n['read'] == false)
-                                .length;
+                                  final unread = profileController.notifications
+                                      .where((n) => n['read'] == false)
+                                      .length;
 
-                            if (unread == 0) return const SizedBox.shrink();
+                                  if (unread == 0)
+                                    return const SizedBox.shrink();
 
-                            return Positioned(
-                              right: 6,
-                              top: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  unread.toString(),
-                                  style: getTextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
-                      ),
-                    );
-                  }),
-
-                  SizedBox(height: 30),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.settings_outlined,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Account & Settings",
-                        style: getTextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  SettingsButton(
-                    icon: Icons.person_outline_outlined,
-                    title: 'Profile Info',
-                    subtitle: 'Email, Phone',
-                    onTap: () {
-                      Get.toNamed('/editProfileScreen');
-                    },
-                  ),
-                  SettingsButton(
-                    icon: Icons.list,
-                    title: 'My Listing',
-                    subtitle: 'See All Publish Listing',
-                    onTap: () {
-                      Get.toNamed('/myListingScreen');
-                    },
-                  ),
-                  // SettingsButton(
-                  //   icon: Icons.assignment_outlined,
-                  //   title: 'Report',
-                  //   subtitle: 'Generate Report',
-                  //   onTap: () {},
-                  // ),
-                  SettingsButton(
-                    icon: Icons.notifications_outlined,
-                    title: 'Notifications',
-                    subtitle: 'Enable Push Notification',
-                    toggleValue: profileController.notificationToggle,
-                    onToggle: profileController.toggleNotification,
-                    // trailing: Obx(() {
-                    //   final unread = profileController.notifications
-                    //       .where((n) => n['read'] == false)
-                    //       .length;
-                    //   if (unread == 0) return const SizedBox.shrink();
-                    //   return Container(
-                    //     padding: const EdgeInsets.symmetric(
-                    //       horizontal: 8,
-                    //       vertical: 4,
-                    //     ),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.red,
-                    //       borderRadius: BorderRadius.circular(12),
-                    //     ),
-                    //     child: Text(
-                    //       unread.toString(),
-                    //       style: getTextStyle(
-                    //         color: Colors.white,
-                    //         fontSize: 10,
-                    //         fontWeight: FontWeight.w600,
-                    //       ),
-                    //     ),
-                    //   );
-                    // }),
-                    onTap: () async {
-                      await profileController.loadNotifications();
-                      //Get.toNamed(AppRoute.notificationsScreen);
-                    },
-                  ),
-                  SettingsButton(
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy Policy',
-                    subtitle: 'Data Protection Info',
-                    onTap: () {
-                      Get.toNamed(AppRoute.privacyPolicyScreen);
-                    },
-                  ),
-                  SettingsButton(
-                    icon: Icons.description_outlined,
-                    title: 'Terms & Conditions',
-                    subtitle: 'User agreement',
-                    onTap: () {
-                      Get.toNamed(AppRoute.termsConditionScreen);
-                    },
-                  ),
-                  SettingsButton(
-                    icon: Icons.help_outline_outlined,
-                    title: 'FAQ',
-                    subtitle: 'Frequently Asked Questions',
-                    onTap: () {
-                      Get.toNamed(AppRoute.faqScreen);
-                    },
-                  ),
-                  SizedBox(height: 23),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      margin: EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: AppColors.profileButtonColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            Iconpath.headphoneLogo,
-                            height: 24,
-                            width: 24,
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Need Help?",
-                                style: getTextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10,
-                                ),
-                              ),
-                              Text(
-                                "Contact Support",
-                                style: getTextStyle(
-                                  color: AppColors.subTitle,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      margin: EdgeInsets.only(bottom: 14),
-                      decoration: BoxDecoration(
-                        color: AppColors.profileButtonColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                Iconpath.accountUser,
-                                height: 40,
-                                width: 40,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                "Account Management",
-                                style: getTextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                onPressed: () async {
-                                  // Remove stored token and user id, update reactive
-                                  // state, then navigate to login screen.
-                                  await StorageService.logoutUser();
-                                  loginController.isGuest.value = true;
-                                  Get.offAll(LoginScreen());
-                                },
-                                icon: Icon(
-                                  Icons.logout,
-                                  color: Colors.blue,
-                                  size: 20,
-                                ),
-                              ),
-                              Text(
-                                'Logout',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(width: 14),
-                              IconButton(
-                                onPressed: () {
-                                  Get.snackbar(
-                                    'Delete',
-                                    'Account delete successfully',
+                                  return Positioned(
+                                    right: 6,
+                                    top: 6,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        unread.toString(),
+                                        style: getTextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
                                   );
-                                  Get.offAll(LoginScreen());
-                                },
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
+                                }),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        SizedBox(height: 30),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.settings_outlined,
+                              color: Colors.black,
+                              size: 24,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Account & Settings",
+                              style: getTextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
                               ),
-                              Text(
-                                'Delete Account',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 10,
-                                  color: Colors.red,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        SettingsButton(
+                          icon: Icons.person_outline_outlined,
+                          title: 'Profile Info',
+                          subtitle: 'Email, Phone',
+                          onTap: () {
+                            Get.toNamed('/editProfileScreen');
+                          },
+                        ),
+                        SettingsButton(
+                          icon: Icons.list,
+                          title: 'My Listing',
+                          subtitle: 'See All Publish Listing',
+                          onTap: () {
+                            Get.toNamed('/myListingScreen');
+                          },
+                        ),
+                        // SettingsButton(
+                        //   icon: Icons.assignment_outlined,
+                        //   title: 'Report',
+                        //   subtitle: 'Generate Report',
+                        //   onTap: () {},
+                        // ),
+                        SettingsButton(
+                          icon: Icons.notifications_outlined,
+                          title: 'Notifications',
+                          subtitle: 'Enable Push Notification',
+                          toggleValue: profileController.notificationToggle,
+                          onToggle: profileController.toggleNotification,
+                          // trailing: Obx(() {
+                          //   final unread = profileController.notifications
+                          //       .where((n) => n['read'] == false)
+                          //       .length;
+                          //   if (unread == 0) return const SizedBox.shrink();
+                          //   return Container(
+                          //     padding: const EdgeInsets.symmetric(
+                          //       horizontal: 8,
+                          //       vertical: 4,
+                          //     ),
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.red,
+                          //       borderRadius: BorderRadius.circular(12),
+                          //     ),
+                          //     child: Text(
+                          //       unread.toString(),
+                          //       style: getTextStyle(
+                          //         color: Colors.white,
+                          //         fontSize: 10,
+                          //         fontWeight: FontWeight.w600,
+                          //       ),
+                          //     ),
+                          //   );
+                          // }),
+                          onTap: () async {
+                            await profileController.loadNotifications();
+                            //Get.toNamed(AppRoute.notificationsScreen);
+                          },
+                        ),
+                        SettingsButton(
+                          icon: Icons.privacy_tip_outlined,
+                          title: 'Privacy Policy',
+                          subtitle: 'Data Protection Info',
+                          onTap: () {
+                            Get.toNamed(AppRoute.privacyPolicyScreen);
+                          },
+                        ),
+                        SettingsButton(
+                          icon: Icons.description_outlined,
+                          title: 'Terms & Conditions',
+                          subtitle: 'User agreement',
+                          onTap: () {
+                            Get.toNamed(AppRoute.termsConditionScreen);
+                          },
+                        ),
+                        SettingsButton(
+                          icon: Icons.help_outline_outlined,
+                          title: 'FAQ',
+                          subtitle: 'Frequently Asked Questions',
+                          onTap: () {
+                            Get.toNamed(AppRoute.faqScreen);
+                          },
+                        ),
+                        SizedBox(height: 23),
+                        GestureDetector(
+                          onTap: () {
+                            Get.toNamed(AppRoute.needHelpScreen);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            margin: EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              color: AppColors.profileButtonColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Image.asset(
+                                  Iconpath.headphoneLogo,
+                                  height: 24,
+                                  width: 24,
                                 ),
-                              ),
-                            ],
+                                SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Need Help?",
+                                      style: getTextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Contact Support",
+                                      style: getTextStyle(
+                                        color: AppColors.subTitle,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            margin: EdgeInsets.only(bottom: 14),
+                            decoration: BoxDecoration(
+                              color: AppColors.profileButtonColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      Iconpath.accountUser,
+                                      height: 40,
+                                      width: 40,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Account Management",
+                                      style: getTextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () async {
+                                        // Remove stored token and user id, update reactive
+                                        // state, then navigate to login screen.
+                                        await StorageService.logoutUser();
+                                        loginController.isGuest.value = true;
+                                        Get.offAll(LoginScreen());
+                                      },
+                                      icon: Icon(
+                                        Icons.logout,
+                                        color: Colors.blue,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Logout',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 10,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    SizedBox(width: 14),
+                                    IconButton(
+                                      onPressed: () {
+                                        Get.snackbar(
+                                          'Delete',
+                                          'Account delete successfully',
+                                        );
+                                        Get.offAll(LoginScreen());
+                                      },
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.red,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Delete Account',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 10,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-              ),
-            ),
-            ),
-          ]
+          ],
         ),
       );
     });
