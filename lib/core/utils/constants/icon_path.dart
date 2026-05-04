@@ -15,4 +15,12 @@ class Iconpath {
   static const String headphoneLogo = 'assets/icons/headphoneLogo.png';
   static const String accountUser = 'assets/icons/accountUser.png';
   static const String askAiIcon = 'assets/icons/askAiButton.png';
+
+  static const String twitterIcon = "assets/icons/X.png";
+  static const String linkedinIcon = "assets/icons/LinkedIn.png";
+  static const String youtubeIcon = "assets/icons/Youtube.png";
+  static const String facebookIcon = "assets/icons/Facebook.png";
+  static const String instagramIcon = "assets/icons/Instagram.png";
+
+  static const String supportIcon = "assets/icons/support.png";
 }
