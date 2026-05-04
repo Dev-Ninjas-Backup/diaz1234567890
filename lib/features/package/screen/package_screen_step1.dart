@@ -241,35 +241,7 @@ class PackageScreenStep1 extends StatelessWidget {
                 SizedBox(height: 20),
                 CustomButton(
                   label: "Next →",
-                  onPressed: () {
-                    // Check if a package is selected
-                    if (controller.selectedPackage.value.isEmpty) {
-                      Get.snackbar(
-                        'Error',
-                        'Please select a package first',
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                      return;
-                    }
-
-                    // Check if promo code was entered but not validated
-                    if (controller.promoCodeInput.text.isNotEmpty &&
-                        !controller.isPromoValid.value) {
-                      Get.snackbar(
-                        'Error',
-                        'Please apply a valid promo code or clear the field',
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                      return;
-                    }
-
-                    // All validations passed, navigate to next step
-                    Get.toNamed('/packageScreenStep2');
-                  },
+                  onPressed: controller.handleStep1Next,
                   width: double.infinity,
                 ),
               ],
