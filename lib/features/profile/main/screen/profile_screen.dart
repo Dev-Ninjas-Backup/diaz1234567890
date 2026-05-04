@@ -220,12 +220,12 @@ class ProfileScreen extends StatelessWidget {
                       Get.toNamed('/myListingScreen');
                     },
                   ),
-                  SettingsButton(
-                    icon: Icons.assignment_outlined,
-                    title: 'Report',
-                    subtitle: 'Generate Report',
-                    onTap: () {},
-                  ),
+                  // SettingsButton(
+                  //   icon: Icons.assignment_outlined,
+                  //   title: 'Report',
+                  //   subtitle: 'Generate Report',
+                  //   onTap: () {},
+                  // ),
                   SettingsButton(
                     icon: Icons.notifications_outlined,
                     title: 'Notifications',
