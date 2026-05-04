@@ -61,7 +61,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
       }
 
       final response = await ApiService.aiSearch(
-        userId: userId,
+        //userId: userId,
         query: query,
         limit: _limit.toInt(),
       );

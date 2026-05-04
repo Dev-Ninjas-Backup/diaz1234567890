@@ -154,6 +154,8 @@ class YachtListingPage extends StatelessWidget {
                               const SizedBox(height: 6),
                               Text(
                                 yacht.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 15,

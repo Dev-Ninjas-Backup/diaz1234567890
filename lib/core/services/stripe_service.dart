@@ -1,20 +1,34 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class StripeService {
-  // Live Stripe Public Key
-  static const String livePublicKey =
-      //'pk_live_51SkFIS45xKlHxaXnHw8Zs3fX38b1MOlUTyMbGSlTt630eKwA7Z5hUy7J8Bx0RZyiznA6KGDsqQAHQKwbrZY6kU8H00hJuSnyzp';
-      'pk_test_51RlFNRQNJ9V9C9o5Rz8lIUhKRJ7foy4WRfQR4z05Oy41puNBooAmZE0KuBy2K55iGVHrioX1CY3KotwYxwIyxHR800J4o3qINh';
+  // Env variable name that stores the live Stripe public key
+  static const String _envKey = 'LIVE_STRIPE_PUBLIC_KEY';
 
   /// Initialize Stripe with the live public key
   static Future<void> initialize() async {
     try {
+      // Load env if not already loaded (assumes lib/.env)
+      if (dotenv.env.isEmpty) {
+        try {
+          await dotenv.load(fileName: 'lib/.env');
+        } catch (_) {
+          print('⚠️ Could not load lib/.env (it may not exist yet)');
+        }
+      }
+
+      final livePublicKey = dotenv.env[_envKey] ?? '';
+      if (livePublicKey.isEmpty) {
+        throw Exception(
+          'Environment variable $_envKey not found. Add it to lib/.env',
+        );
+      }
       print('\n═══════════════════════════════════════════════════════');
       print('🔵 INITIALIZING STRIPE');
       print('═══════════════════════════════════════════════════════');
-      print('Public Key: $livePublicKey');
+      print('Public Key loaded from env');
 
       Stripe.publishableKey = livePublicKey;
 

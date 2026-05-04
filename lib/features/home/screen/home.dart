@@ -73,7 +73,7 @@ class _YachtHomePageState extends State<YachtHomePage> {
 
       // Call AI search API
       final response = await ApiService.aiSearch(
-        userId: userId,
+        //userId: userId,
         query: query,
         limit: _limit.toInt(),
       );

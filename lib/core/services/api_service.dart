@@ -861,16 +861,16 @@ class ApiService {
 
   /// AI Search using natural language query
   static Future<Map<String, dynamic>> aiSearch({
-    required String userId,
+    //required String userId,
     required String query,
     int limit = 10,
   }) async {
     try {
       print('\n=== AI Search ===');
       print('URL: ${Endpoints.aiSearch}');
-      print('Payload: userId=$userId, query=$query, limit=$limit');
+      //print('Payload: userId=$userId, query=$query, limit=$limit');
 
-      final requestBody = {'user_id': userId, 'query': query, 'limit': limit};
+      final requestBody = {'query': query, 'limit': limit};
 
       final response = await http
           .post(

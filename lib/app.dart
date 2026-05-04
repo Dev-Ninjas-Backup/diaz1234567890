@@ -4,7 +4,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'core/bindings/controller_binder.dart';
-import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 
 class Diaz extends StatelessWidget {
   const Diaz({super.key});
