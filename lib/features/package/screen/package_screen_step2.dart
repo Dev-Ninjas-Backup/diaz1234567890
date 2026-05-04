@@ -80,7 +80,7 @@ class _PackageScreenStep2State extends State<PackageScreenStep2> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: value,
+              value: items.contains(value) ? value : null,
               hint: Text(hint, style: TextStyle(color: Colors.grey)),
               isExpanded: true,
               items: items
