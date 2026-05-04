@@ -273,7 +273,9 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
                     subtitle: 'User agreement',
-                    onTap: () {},
+                    onTap: () {
+                      Get.toNamed(AppRoute.termsConditionScreen);
+                    },
                   ),
                   SizedBox(height: 23),
                   GestureDetector(
