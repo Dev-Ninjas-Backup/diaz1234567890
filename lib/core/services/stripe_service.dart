@@ -10,19 +10,19 @@ class StripeService {
   /// Initialize Stripe with the live public key
   static Future<void> initialize() async {
     try {
-      // Load env if not already loaded (assumes lib/.env)
+      // Load env if not already loaded (assumes .env)
       if (dotenv.env.isEmpty) {
         try {
-          await dotenv.load(fileName: 'lib/.env');
+          await dotenv.load(fileName: '.env');
         } catch (_) {
-          print('⚠️ Could not load lib/.env (it may not exist yet)');
+          print('⚠️ Could not load .env (it may not exist yet)');
         }
       }
 
       final livePublicKey = dotenv.env[_envKey] ?? '';
       if (livePublicKey.isEmpty) {
         throw Exception(
-          'Environment variable $_envKey not found. Add it to lib/.env',
+          'Environment variable $_envKey not found. Add it to .env',
         );
       }
       print('\n═══════════════════════════════════════════════════════');
