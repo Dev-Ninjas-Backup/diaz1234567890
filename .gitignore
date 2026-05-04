@@ -46,3 +46,4 @@ temp_interactive_push.bat
 .gitignore
 .env
 .vscode
+pubspec.lock
