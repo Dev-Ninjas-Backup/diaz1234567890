@@ -3,151 +3,139 @@ import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/listing_preview_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 
-class PackageScreenStep4 extends StatefulWidget {
+class PackageScreenStep4 extends StatelessWidget {
   const PackageScreenStep4({super.key});
 
   @override
-  State<PackageScreenStep4> createState() => _PackageScreenStep4State();
-}
-
-class _PackageScreenStep4State extends State<PackageScreenStep4> {
-  late SellPackageController controller;
-  bool _showPaymentSection = false;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = Get.find<SellPackageController>();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(title: 'Register Your Boat'),
-      body: Padding(
-        // padding: EdgeInsetsGeometry.only(
-        //   top: 25,
-        //   left: 26,
-        //   right: 26,
-        //   bottom: 25,
-        // ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "Listing Progress",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Spacer(),
-                  Text(
-                    "Step 4",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              SizedBox(height: 14),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
+    final controller = Get.find<SellPackageController>();
+
+    return Obx(
+      () => Scaffold(
+        appBar: CustomAppBar(title: 'Register Your Boat'),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Listing Progress",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Select Package",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
+                    ),
+                    Spacer(),
+                    Text(
+                      "Step 4",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Boat Information",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                  // SizedBox(width: 12),
-                  // Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     Container(
-                  //       width: 62,
-                  //       height: 6,
-                  //       decoration: BoxDecoration(
-                  //         color: Colors.blue,
-                  //         borderRadius: BorderRadius.circular(100),
-                  //       ),
-                  //     ),
-                  //     SizedBox(height: 5),
-                  //     Text(
-                  //       "Seller Information",
-                  //       style: TextStyle(fontSize: 8, color: Colors.grey),
-                  //     ),
-                  //   ],
-                  // ),
-                  SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 62,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Pay & Post",
-                        style: TextStyle(fontSize: 8, color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Divider(),
-              Text(
-                _showPaymentSection ? 'Complete Payment' : 'Preview Listing',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w700,
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 25),
-              if (!_showPaymentSection) ...[
-                // Listing Preview Section
-                Obx(
-                  () => Center(
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Select Package",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Boat Information",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    // SizedBox(width: 12),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.center,
+                    //   children: [
+                    //     Container(
+                    //       width: 62,
+                    //       height: 6,
+                    //       decoration: BoxDecoration(
+                    //         color: Colors.blue,
+                    //         borderRadius: BorderRadius.circular(100),
+                    //       ),
+                    //     ),
+                    //     SizedBox(height: 5),
+                    //     Text(
+                    //       "Seller Information",
+                    //       style: TextStyle(fontSize: 8, color: Colors.grey),
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 62,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "Pay & Post",
+                          style: TextStyle(fontSize: 8, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Divider(),
+                Text(
+                  controller.showPaymentSection.value
+                      ? 'Complete Payment'
+                      : 'Preview Listing',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 25),
+                if (!controller.showPaymentSection.value) ...[
+                  Center(
                     child: ListingPreviewCard(
                       boatName: controller.nameController.text,
                       boatYear: controller.selectedBuildYear.value,
@@ -159,70 +147,24 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                       coverImagePath: controller.coverImage.value?.path,
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Obx(
-                  () => CustomButton(
+                  SizedBox(height: 20),
+                  CustomButton(
                     label: controller.isLoading.value
                         ? "Processing..."
                         : "Continue to payment →",
                     onPressed: controller.isLoading.value
                         ? () {}
-                        : () async {
-                            // Boat listing already created in Step 2
-                            // Just show payment form if setup intent is ready
-                            if (controller
-                                .setupIntentClientSecret
-                                .value
-                                .isNotEmpty) {
-                              setState(() {
-                                _showPaymentSection = true;
-                              });
-                            } else {
-                              // Setup intent not available, try to fetch it
-                              controller.isLoading.value = true;
-                              try {
-                                await controller.fetchSetupIntentForPayment();
-                                if (controller
-                                    .setupIntentClientSecret
-                                    .value
-                                    .isNotEmpty) {
-                                  setState(() {
-                                    _showPaymentSection = true;
-                                  });
-                                } else {
-                                  Get.snackbar(
-                                    'Payment Setup Failed',
-                                    'Could not initialize payment. Please try again.',
-                                    backgroundColor: Colors.red,
-                                    colorText: Colors.white,
-                                  );
-                                }
-                              } catch (e) {
-                                Get.snackbar(
-                                  'Payment Setup Failed',
-                                  'Error: $e',
-                                  backgroundColor: Colors.red,
-                                  colorText: Colors.white,
-                                );
-                              } finally {
-                                controller.isLoading.value = false;
-                              }
-                            }
-                          },
+                        : controller.continueToPaymentSection,
                     width: double.infinity,
                   ),
-                ),
-              ] else ...[
-                // Payment Section
-                _buildPaymentSummary(),
-                SizedBox(height: 20),
-                _buildPaymentForm(),
-                SizedBox(height: 20),
-                Column(
-                  children: [
-                    Obx(
-                      () => CustomButton(
+                ] else ...[
+                  _buildPaymentSummary(controller),
+                  SizedBox(height: 20),
+                  _buildPaymentForm(controller),
+                  SizedBox(height: 20),
+                  Column(
+                    children: [
+                      CustomButton(
                         label: controller.isLoading.value
                             ? "Processing..."
                             : "Confirm Payment →",
@@ -233,28 +175,24 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
                               },
                         width: double.infinity,
                       ),
-                    ),
-                    SizedBox(height: 12),
-                    CustomButton(
-                      label: "Back",
-                      onPressed: () {
-                        setState(() {
-                          _showPaymentSection = false;
-                        });
-                      },
-                      width: double.infinity,
-                    ),
-                  ],
-                ),
+                      SizedBox(height: 12),
+                      CustomButton(
+                        label: "Back",
+                        onPressed: controller.resetPaymentSection,
+                        width: double.infinity,
+                      ),
+                    ],
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildPaymentSummary() {
+  Widget _buildPaymentSummary(SellPackageController controller) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -282,7 +220,11 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
             isBold: true,
           ),
           Divider(height: 16),
-          _summaryRow('Plan Amount', _getPlanPrice(), isBold: true),
+          _summaryRow(
+            'Plan Amount',
+            controller.getSelectedPlanPrice(),
+            isBold: true,
+          ),
           Divider(height: 16),
           _summaryRow('Listing ID', controller.listingId.value),
           if (controller.promoCode.value.isNotEmpty) ...[
@@ -292,24 +234,6 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
         ],
       ),
     );
-  }
-
-  String _getPlanPrice() {
-    try {
-      final selectedId = controller.selectedPackageId.value;
-      if (selectedId.isEmpty) return '-';
-
-      final package = controller.packages.firstWhereOrNull(
-        (pkg) => pkg.id == selectedId,
-      );
-
-      if (package != null) {
-        return '\$${package.price.toStringAsFixed(2)}';
-      }
-      return '-';
-    } catch (e) {
-      return '-';
-    }
   }
 
   Widget _summaryRow(String label, String value, {bool isBold = false}) {
@@ -337,7 +261,7 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
     );
   }
 
-  Widget _buildPaymentForm() {
+  Widget _buildPaymentForm(SellPackageController controller) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -369,9 +293,6 @@ class _PackageScreenStep4State extends State<PackageScreenStep4> {
             // onFormComplete: () {
             //   print("✅ Card form complete");
             // },
-            onCardChanged: (card) {
-              print("Brand: ${card?.brand}");
-            },
           ),
 
           const SizedBox(height: 16),
