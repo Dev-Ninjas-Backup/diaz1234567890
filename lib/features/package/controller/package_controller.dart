@@ -86,6 +86,10 @@ class SellPackageController extends GetxController {
   var isEditMode = false.obs;
   var editingBoatId = ''.obs;
   var imagesToDelete = <String>[].obs; // Track images to delete during update
+  var showPaymentSection = false.obs;
+
+  String? _step2EntryKey;
+  bool _sellPackageScreenEntryHandled = false;
 
   // Helpers
   bool _isValidUrl(String url) {
@@ -393,6 +397,125 @@ class SellPackageController extends GetxController {
     selectedBoatState.value = value;
   }
 
+  void handleStep1Next() {
+    if (selectedPackage.value.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please select a package first',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    if (promoCodeInput.text.isNotEmpty && !isPromoValid.value) {
+      Get.snackbar(
+        'Error',
+        'Please apply a valid promo code or clear the field',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    resetStep2EntryState();
+    Get.toNamed('/packageScreenStep2');
+  }
+
+  void scheduleStep2Initialization(dynamic boatId) {
+    final normalizedBoatId = boatId is String ? boatId : '';
+    final entryKey = normalizedBoatId.isNotEmpty
+        ? 'edit:$normalizedBoatId'
+        : 'create';
+
+    if (_step2EntryKey == entryKey) return;
+    _step2EntryKey = entryKey;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_step2EntryKey != entryKey) return;
+
+      if (normalizedBoatId.isNotEmpty) {
+        print(
+          '[DEBUG] PackageScreenStep2: Edit mode for boat ID: $normalizedBoatId',
+        );
+        fetchBoatDetailsForEdit(normalizedBoatId);
+      } else {
+        print('[DEBUG] PackageScreenStep2: Create mode - clearing form');
+        clearAllControllers();
+        isEditMode.value = false;
+      }
+    });
+  }
+
+  void resetStep2EntryState() {
+    _step2EntryKey = null;
+  }
+
+  void scheduleSellPackageScreenEntryCheck() {
+    if (_sellPackageScreenEntryHandled) return;
+    _sellPackageScreenEntryHandled = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (StorageService.hasToken()) {
+        Get.offNamed('/sellPackageScreen');
+      }
+    });
+  }
+
+  void resetPaymentSection() {
+    showPaymentSection.value = false;
+  }
+
+  String getSelectedPlanPrice() {
+    try {
+      final selectedId = selectedPackageId.value;
+      if (selectedId.isEmpty) return '-';
+
+      final package = packages.firstWhereOrNull((pkg) => pkg.id == selectedId);
+      return package != null ? '\$${package.price.toStringAsFixed(2)}' : '-';
+    } catch (e) {
+      return '-';
+    }
+  }
+
+  Future<void> continueToPaymentSection() async {
+    if (setupIntentClientSecret.value.isNotEmpty) {
+      showPaymentSection.value = true;
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      await fetchSetupIntentForPayment();
+      if (setupIntentClientSecret.value.isNotEmpty) {
+        showPaymentSection.value = true;
+      } else {
+        Get.snackbar(
+          'Payment Setup Failed',
+          'Could not initialize payment. Please try again.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Payment Setup Failed',
+        'Error: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void navigateToStep4() {
+    resetPaymentSection();
+    Get.toNamed('/packageScreenStep4');
+  }
+
   // Engine
   var selectedEngineFuelType = RxnString();
   var selectedPropellerType = RxnString();
@@ -552,6 +675,8 @@ class SellPackageController extends GetxController {
     existingCoverImages.clear();
     existingGalleryImages.clear();
     imagesToDelete.clear();
+    showPaymentSection.value = false;
+    _sellPackageScreenEntryHandled = false;
 
     // Clear equipment lists
     boatElectronics.clear();
@@ -1160,7 +1285,7 @@ class SellPackageController extends GetxController {
             // Go to payment if user is new or doesn't have subscription
             if (!isLoggedIn || useOnboardingEndpoint) {
               print('[DEBUG] User needs payment setup. Going to Step 4...');
-              Get.toNamed('/packageScreenStep4');
+              navigateToStep4();
             } else {
               // User has active subscription - go to home
               print('[DEBUG] User has subscription. Going to home...');
@@ -1267,7 +1392,7 @@ class SellPackageController extends GetxController {
 
           // Navigate to Step 4 (payment section)
           Future.delayed(Duration(seconds: 1), () {
-            Get.toNamed('/packageScreenStep4');
+            navigateToStep4();
           });
         } else {
           // For logged-in users, check if they need to set up payment
@@ -1283,7 +1408,7 @@ class SellPackageController extends GetxController {
             }
 
             Future.delayed(Duration(seconds: 1), () {
-              Get.toNamed('/packageScreenStep4');
+              navigateToStep4();
             });
           } else {
             // Has active subscription - go to home
@@ -1416,7 +1541,7 @@ class SellPackageController extends GetxController {
 
         // Navigate to next screen after successful login
         print('[DEBUG] loginAndNavigate: Navigating to packageScreenStep4');
-        Get.toNamed('/packageScreenStep4');
+        navigateToStep4();
       } else {
         errorMessage.value =
             response['message'] ?? 'Login failed. Please try again.';

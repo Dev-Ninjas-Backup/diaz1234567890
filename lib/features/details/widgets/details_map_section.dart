@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/features/details/controller/details_controller.dart';
+import 'package:latlong2/latlong.dart';
 
 class DetailsMapSection extends StatelessWidget {
   const DetailsMapSection({super.key});
@@ -42,19 +44,67 @@ class DetailsMapSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Container(
-            height: 200,
-            margin: const EdgeInsets.symmetric(horizontal: 26),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                b != null
-                    ? '${b.city ?? ''}, ${b.state ?? ''}'
-                    : 'Map Placeholder',
-              ),
+          // Map area: show FlutterMap when we have a geocoded location
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 26),
+            child: SizedBox(
+              height: 200,
+              child: Obx(() {
+                final loc = controller.location.value;
+                if (loc == null) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
+                      child: Text(
+                        b != null
+                            ? '${b.city ?? ''}, ${b.state ?? ''}'
+                            : 'Map Placeholder',
+                      ),
+                    ),
+                  );
+                }
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: loc,
+                      initialZoom: 12.0,
+                      cameraConstraint: CameraConstraint.contain(
+                        bounds: LatLngBounds(
+                          LatLng(-85.0, -180.0),
+                          LatLng(85.0, 180.0),
+                        ),
+                      ),
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: ['a', 'b', 'c'],
+                        userAgentPackageName: 'com.softvence.diaz1234567890',
+                      ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            width: 40,
+                            height: 40,
+                            point: loc,
+                            child: const Icon(
+                              Icons.location_on,
+                              color: Colors.red,
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ),
           ),
           const SizedBox(height: 16),
