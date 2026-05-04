@@ -1,7 +1,6 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
-import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/auth/login_screen/controller/login_controller.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
@@ -22,9 +21,53 @@ class ProfileScreen extends StatelessWidget {
     return Obx(() {
       if (loginController.isGuest.value) {
         return Scaffold(
-          appBar: CustomAppBar(title: "Profile"),
-          body: Center(
-            child: Padding(
+          body: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 128,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(0.54, 1.00),
+                    end: Alignment(0.54, -0.00),
+                    colors: [Color(0xFF00CABE), Color(0xFF006EF0)],
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(width: 16),
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          "Profile",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            height: 1.20,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -94,15 +137,64 @@ class ProfileScreen extends StatelessWidget {
                   // ),
                 ],
               ),
-            ),
+                ),
+              ),
+              ),
+            ],
+          
+     
           ),
         );
       }
 
       // ── Authenticated User View (Original Profile) ─────────────────────
       return Scaffold(
-        appBar: CustomAppBar(title: "Profile"),
-        body: SingleChildScrollView(
+        body: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 128,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment(0.54, 1.00),
+                  end: Alignment(0.54, -0.00),
+                  colors: [Color(0xFF00CABE), Color(0xFF006EF0)],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      const Text(
+                        "Profile",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 30, 24, 30),
             child: Align(
@@ -417,7 +509,10 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+              ),
+            ),
+            ),
+          ]
         ),
       );
     });
