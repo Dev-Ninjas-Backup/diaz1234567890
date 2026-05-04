@@ -4,6 +4,7 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
 import 'package:diaz1234567890/features/home/screen/listing_page.dart';
+import 'package:diaz1234567890/features/home/widget/filter_bottom_sheet.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
@@ -26,8 +27,6 @@ class _YachtHomePageState extends State<YachtHomePage> {
   late TextEditingController _searchController;
   late YachtListingController _homeController;
   late YachtSearchListingController _searchController_;
-  double _limit = 10;
-  bool _showLimitSlider = false;
 
   @override
   void initState() {
@@ -75,7 +74,8 @@ class _YachtHomePageState extends State<YachtHomePage> {
       final response = await ApiService.aiSearch(
         //userId: userId,
         query: query,
-        limit: _limit.toInt(),
+        // limit: _limit.toInt(),
+        limit: 20, // Temporarily hardcode to 20 until we can optimize the search results parsing
       );
 
       if (response['error'] != null) {
@@ -156,9 +156,15 @@ class _YachtHomePageState extends State<YachtHomePage> {
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () => setState(
-                            () => _showLimitSlider = !_showLimitSlider,
-                          ),
+                          onTap: () {
+                            Get.bottomSheet(
+                              FilterBottomSheet(
+                                searchControllerTag: 'home_search',
+                              ),
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                            );
+                          },
                           child: Image.asset(
                             Iconpath.customTune,
                             width: 25,
@@ -240,46 +246,6 @@ class _YachtHomePageState extends State<YachtHomePage> {
               ],
             ),
 
-            // Limit Slider
-            if (_showLimitSlider)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
-                ),
-                child: Row(
-                  children: [
-                    const Text(
-                      'Limit:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Expanded(
-                      child: Slider(
-                        value: _limit,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        activeColor: const Color(0xFF00A3AC),
-                        label: _limit.toInt().toString(),
-                        onChanged: (value) => setState(() => _limit = value),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 36,
-                      child: Text(
-                        _limit.toInt().toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             SizedBox(height: 20),
             Obx(
               () => Column(
