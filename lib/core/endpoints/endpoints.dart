@@ -43,4 +43,5 @@ class Endpoints {
   static String ApplyPromo = '$baseUrl/api/subscription/promo/validate';
   static String privacyPolicy = '$baseUrl/api/privacy-policy?site=FLORIDA';
   static String termsAndConditions = '$baseUrl/api/terms-of-service?site=FLORIDA';
+  static String faq = '$baseUrl/api/faq?site=FLORIDA';
 }

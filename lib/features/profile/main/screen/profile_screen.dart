@@ -277,6 +277,14 @@ class ProfileScreen extends StatelessWidget {
                       Get.toNamed(AppRoute.termsConditionScreen);
                     },
                   ),
+                  SettingsButton(
+                    icon: Icons.help_outline_outlined,
+                    title: 'FAQ',
+                    subtitle: 'Frequently Asked Questions',
+                    onTap: () {
+                      Get.toNamed(AppRoute.faqScreen);
+                    },
+                  ),
                   SizedBox(height: 23),
                   GestureDetector(
                     onTap: () {},
