@@ -25,30 +25,30 @@ class DetailsDescription extends StatelessWidget {
             Text(
               b?.description.isNotEmpty == true
                   ? b!.description
-                  : 'Note: ONLY 1600 HOURS WITH EXTENDED WARRANTY UNTIL MAY 2025 OR 2700 HOURS',
+                  : 'No description provided.',
               style: const TextStyle(
                 fontWeight: FontWeight.normal,
                 fontSize: 13,
               ),
             ),
             const SizedBox(height: 6),
-            if (b?.extraDetails.isNotEmpty == true) ...[
-              const SizedBox(height: 8),
-              for (final d in b!.extraDetails)
-                ExpansionTile(
-                  title: Text(d.title),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 8.0,
-                      ),
-                      child: Text(d.description),
-                    ),
-                  ],
-                ),
-            ],
-            const SizedBox(height: 8),
+            // if (b?.extraDetails.isNotEmpty == true) ...[
+            //   const SizedBox(height: 8),
+            //   for (final d in b!.extraDetails)
+            //     ExpansionTile(
+            //       title: Text(d.title),
+            //       children: [
+            //         Padding(
+            //           padding: const EdgeInsets.symmetric(
+            //             horizontal: 12.0,
+            //             vertical: 8.0,
+            //           ),
+            //           child: Text(d.description),
+            //         ),
+            //       ],
+            //     ),
+            // ],
+            // const SizedBox(height: 8),
             const DetailsExpansionTileList(),
           ],
         ),
