@@ -35,7 +35,7 @@ class DetailsHeaderInfo extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Price: \$${boat != null ? boat.price.toString() : '1,195,000'}',
+                      'Price: \$${boat != null ? boat.price.toString() : '--'}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.blue,
@@ -46,7 +46,7 @@ class DetailsHeaderInfo extends StatelessWidget {
                     Text(
                       boat != null
                           ? '${boat.city ?? ''}, ${boat.state ?? ''}'
-                          : 'Montauk, NY',
+                          : 'Location not available',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.black,
