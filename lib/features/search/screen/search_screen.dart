@@ -2,123 +2,33 @@ import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
+import 'package:diaz1234567890/features/search/controller/yacht_search_page_controller.dart';
 import 'package:diaz1234567890/features/search/widget/search_filter_bottom_sheet.dart';
-import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
-import 'package:diaz1234567890/core/services/api_service.dart';
-import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
-import 'package:diaz1234567890/features/home/model/home_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 
-class YachtSearchPage extends StatefulWidget {
+class YachtSearchPage extends StatelessWidget {
   const YachtSearchPage({super.key});
 
-  @override
-  State<YachtSearchPage> createState() => _YachtSearchPageState();
-}
-
-class _YachtSearchPageState extends State<YachtSearchPage> {
-  late TextEditingController _searchController;
-  late YachtSearchListingController controller;
-  static const int _aiLimit = 10;
   static const String _controllerTag = 'search_main';
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-    controller = Get.put(YachtSearchListingController(), tag: _controllerTag);
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleAiSearch(String query) async {
-    if (query.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter a search query',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    try {
-      controller.isLoading.value = true;
-
-      await StorageService.init();
-      final userId = StorageService.userId;
-
-      if (userId == null || userId.isEmpty) {
-        EasyLoading.showError('User not logged in');
-        return;
-      }
-
-      final response = await ApiService.aiSearch(
-        //userId: userId,
-        query: query,
-        limit: _aiLimit,
-      );
-
-      if (response['error'] != null) {
-        EasyLoading.showError(response['error'] ?? 'Search failed');
-        return;
-      }
-
-      final data = response['data'] as List<dynamic>? ?? [];
-      final yachts = <Yacht>[];
-
-      for (final item in data) {
-        try {
-          final map = item as Map<String, dynamic>;
-          String coverImageUrl = Imagepath.singleBoat;
-          final images = map['images'];
-          if (images is Map<String, dynamic> && images['Uri'] != null) {
-            coverImageUrl = images['Uri'] as String;
-          }
-          final location = map['location'] as Map<String, dynamic>? ?? {};
-          yachts.add(
-            Yacht(
-              id: map['document_id']?.toString() ?? '',
-              title: '${map['make'] ?? ''} ${map['model'] ?? ''}'.trim(),
-              location:
-                  '${location['BoatCityName'] ?? ''}, ${location['BoatStateCode'] ?? ''}',
-              make: map['make']?.toString() ?? 'N/A',
-              model: map['model']?.toString() ?? 'N/A',
-              year: map['model_year']?.toString() ?? 'N/A',
-              price: map['price'] != null
-                  ? '\$${(map['price'] as num).toStringAsFixed(0)}'
-                  : 'Call for Price',
-              image: coverImageUrl,
-            ),
-          );
-        } catch (e) {
-          print('Error parsing result: $e');
-        }
-      }
-
-      Get.to(() => AiSearchResultsScreen(query: query, results: yachts));
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Error: ${e.toString()}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      print('AI Search Error: $e');
-    } finally {
-      controller.isLoading.value = false;
-    }
-  }
+  static const String _pageControllerTag = 'search_main_page';
 
   @override
   Widget build(BuildContext context) {
+    final listingController =
+        Get.isRegistered<YachtSearchListingController>(tag: _controllerTag)
+        ? Get.find<YachtSearchListingController>(tag: _controllerTag)
+        : Get.put(YachtSearchListingController(), tag: _controllerTag);
+
+    final pageController =
+        Get.isRegistered<YachtSearchPageController>(tag: _pageControllerTag)
+        ? Get.find<YachtSearchPageController>(tag: _pageControllerTag)
+        : Get.put(
+            YachtSearchPageController(listingControllerTag: _controllerTag),
+            tag: _pageControllerTag,
+          );
+
     return Scaffold(
       backgroundColor: Color(0xFFF5FEFF),
       body: SingleChildScrollView(
@@ -167,10 +77,10 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
-                            controller: _searchController,
+                            controller: pageController.searchController,
                             onSubmitted: (value) {
                               if (value.isNotEmpty) {
-                                controller.naturalLanguageSearch(value);
+                                listingController.naturalLanguageSearch(value);
                               }
                             },
                             decoration: InputDecoration(
@@ -186,9 +96,11 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                         ),
                         Obx(
                           () => TextButton(
-                            onPressed: controller.isLoading.value
+                            onPressed: listingController.isLoading.value
                                 ? null
-                                : () => _handleAiSearch(_searchController.text),
+                                : () => pageController.handleAiSearch(
+                                    pageController.searchController.text,
+                                  ),
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 10,
@@ -200,7 +112,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                               ),
                               foregroundColor: Colors.black,
                             ),
-                            child: controller.isLoading.value
+                            child: listingController.isLoading.value
                                 ? SizedBox(
                                     width: 18,
                                     height: 18,
@@ -262,10 +174,10 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
               child: Obx(
                 () => TextButton(
                   onPressed:
-                      controller.isLoadingMore.value ||
-                          !controller.hasMore.value
+                      listingController.isLoadingMore.value ||
+                          !listingController.hasMore.value
                       ? null
-                      : controller.fetchNextPage,
+                      : listingController.fetchNextPage,
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF00A3AC),
                     padding: const EdgeInsets.symmetric(
@@ -276,7 +188,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: controller.isLoadingMore.value
+                  child: listingController.isLoadingMore.value
                       ? const SizedBox(
                           width: 18,
                           height: 18,
@@ -288,7 +200,9 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                           ),
                         )
                       : Text(
-                          controller.hasMore.value ? "Show More" : "No more",
+                          listingController.hasMore.value
+                              ? "Show More"
+                              : "No more",
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
