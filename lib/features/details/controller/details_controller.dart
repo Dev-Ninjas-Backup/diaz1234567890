@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
 import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'dart:convert';
@@ -128,5 +129,69 @@ class DetailsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<bool> contactOwner({
+    required String listingId,
+    String? name,
+    String? email,
+    String? phone,
+    String? message,
+  }) async {
+    try {
+      EasyLoading.show(status: 'Sending...');
+
+      final uri = Uri.parse(Endpoints.contactOwner);
+      final payload = <String, dynamic>{
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'message': message,
+        'source': 'FLORIDA',
+        'type': 'INDIVIDUAL_LISTING',
+        'listingId': listingId,
+        'listingSource': null,
+        'status': null,
+      };
+
+      if (kDebugMode) {
+        print('POST $uri');
+        print('Body: ${jsonEncode(payload)}');
+      }
+
+      final response = await http.post(
+        uri,
+        headers: const {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (kDebugMode) {
+        print('Contact owner status: ${response.statusCode}');
+        print('Contact owner body: ${response.body}');
+      }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.dismiss();
+        EasyLoading.showSuccess('Message sent');
+        return true;
+      }
+
+      try {
+        final jsonBody = jsonDecode(response.body);
+        final msg = (jsonBody is Map ? jsonBody['message'] : null)?.toString();
+        EasyLoading.dismiss();
+        EasyLoading.showError(msg ?? 'Failed (${response.statusCode})');
+      } catch (_) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Failed (${response.statusCode})');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Network error: $e');
+    }
+    return false;
   }
 }

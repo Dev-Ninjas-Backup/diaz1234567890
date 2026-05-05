@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:diaz1234567890/core/common/widget/custom_button.dart';
 import '../controller/details_controller.dart';
+import 'contact_owner_dialog.dart';
 
 class DetailsHeaderInfo extends StatelessWidget {
   const DetailsHeaderInfo({super.key});
@@ -56,33 +58,20 @@ class DetailsHeaderInfo extends StatelessWidget {
                   ],
                 ),
                 const Spacer(),
-                SizedBox(
-                  height: 30,
-                  width: 80,
-                  child: TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFE1E7FF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.star, size: 14, color: Colors.blue),
-                        SizedBox(width: 4),
-                        Text(
-                          'Ask Ai',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                CustomButton(
+                  label: 'Contact Owner',
+                  width: 130,
+                  height: 34,
+                  borderRadius: 8,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  onPressed: () {
+                    final listingId = boat?.id ?? '';
+                    showDialog(
+                      context: context,
+                      builder: (_) => ContactOwnerDialog(listingId: listingId),
+                    );
+                  },
                 ),
               ],
             ),
