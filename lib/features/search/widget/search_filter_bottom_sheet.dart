@@ -14,37 +14,32 @@ class SearchFilterBottomSheet extends StatelessWidget {
       tag: 'search_filter_$searchControllerTag',
     );
 
+    final mediaQuery = MediaQuery.of(context);
+    final sheetWidth = (mediaQuery.size.width - 32).clamp(0.0, 340.0);
+
     return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Container(
-              width: 340,
+      child: Padding(
+        padding: EdgeInsets.only(bottom: mediaQuery.viewInsets.bottom),
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: mediaQuery.size.height * 0.78),
+            child: Container(
+              width: sheetWidth,
               decoration: const BoxDecoration(
                 color: Color(0xFFF5FEF5),
                 borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
                           onTap: () => Get.back(),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                          ),
+                          child: const Icon(Icons.arrow_back, color: Colors.black),
                         ),
                         const Text(
                           'Filter',
@@ -68,108 +63,147 @@ class SearchFilterBottomSheet extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _sectionTitle('Price Range'),
-                        const SizedBox(height: 12),
-                        _priceRange(controller),
-                        const SizedBox(height: 20),
-                        _sectionTitle('Make'),
-                        const SizedBox(height: 10),
-                        _dropdown(
-                          value: controller.selectedMake,
-                          items: controller.makes,
-                          hint: 'Select Make',
-                        ),
-                        const SizedBox(height: 20),
-                        _sectionTitle('Model'),
-                        const SizedBox(height: 10),
-                        _dropdown(
-                          value: controller.selectedModel,
-                          items: controller.models,
-                          hint: 'Select Model',
-                        ),
-                        const SizedBox(height: 20),
-                        _sectionTitle('Class'),
-                        const SizedBox(height: 10),
-                        _dropdown(
-                          value: controller.selectedClass,
-                          items: controller.classes,
-                          hint: 'Select Class',
-                        ),
-                        const SizedBox(height: 20),
-                        _sectionTitle('Build Year (Start / End)'),
-                        const SizedBox(height: 10),
-                        _rangeInputs(
-                          leftController: controller.buildYearStartController,
-                          rightController: controller.buildYearEndController,
-                          leftHint: 'Start',
-                          rightHint: 'End',
-                        ),
-                        const SizedBox(height: 20),
-                        _sectionTitle('Length (ft) (Start / End)'),
-                        const SizedBox(height: 10),
-                        _rangeInputs(
-                          leftController: controller.lengthStartController,
-                          rightController: controller.lengthEndController,
-                          leftHint: 'Min',
-                          rightHint: 'Max',
-                        ),
-                        const SizedBox(height: 26),
-                        Center(
-                          child: Obx(
-                            () => GestureDetector(
-                              onTap: controller.isApplyingFilters.value
-                                  ? null
-                                  : () async {
-                                      await controller.applyFilters();
-                                      Get.back();
-                                    },
-                              child: Container(
-                                width: 170,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF006EF0),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Center(
-                                  child: controller.isApplyingFilters.value
-                                      ? const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                      : const Text(
-                                          'Show Results',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
+                  const Divider(height: 1, color: Color(0xFFE0E0E0)),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _sectionTitle('Price Range'),
+                          const SizedBox(height: 12),
+                          _priceRange(controller),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Make'),
+                          const SizedBox(height: 10),
+                          _dropdown(
+                            value: controller.selectedMake,
+                            items: controller.makes,
+                            hint: 'Select Make',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Model'),
+                          const SizedBox(height: 10),
+                          _dropdown(
+                            value: controller.selectedModel,
+                            items: controller.models,
+                            hint: 'Select Model',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Class'),
+                          const SizedBox(height: 10),
+                          _dropdown(
+                            value: controller.selectedClass,
+                            items: controller.classes,
+                            hint: 'Select Class',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Build Year (Start / End)'),
+                          const SizedBox(height: 10),
+                          _rangeInputs(
+                            leftController: controller.buildYearStartController,
+                            rightController: controller.buildYearEndController,
+                            leftHint: 'Start',
+                            rightHint: 'End',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Length (ft) (Start / End)'),
+                          const SizedBox(height: 10),
+                          _rangeInputs(
+                            leftController: controller.lengthStartController,
+                            rightController: controller.lengthEndController,
+                            leftHint: 'Min',
+                            rightHint: 'Max',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Beam Size (Start / End)'),
+                          const SizedBox(height: 10),
+                          _rangeInputs(
+                            leftController: controller.beamStartController,
+                            rightController: controller.beamEndController,
+                            leftHint: 'Min',
+                            rightHint: 'Max',
+                          ),
+                          const SizedBox(height: 20),
+                          _sectionTitle('Engines / Heads / Cabins'),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _numberField(
+                                  controller: controller.enginesNumberController,
+                                  hint: 'Engines',
                                 ),
                               ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _numberField(
+                                  controller: controller.headsNumberController,
+                                  hint: 'Heads',
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: _numberField(
+                                  controller: controller.cabinsNumberController,
+                                  hint: 'Cabins',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                    child: Center(
+                      child: Obx(
+                        () => GestureDetector(
+                          onTap: controller.isApplyingFilters.value
+                              ? null
+                              : () async {
+                                  await controller.applyFilters();
+                                  Get.back();
+                                },
+                          child: Container(
+                            width: 170,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF006EF0),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: controller.isApplyingFilters.value
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Show Results',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                      ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-          ],
+          ),
         ),
       ),
     );
