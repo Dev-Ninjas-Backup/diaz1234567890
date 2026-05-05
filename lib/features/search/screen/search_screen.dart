@@ -1,8 +1,8 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
-import 'package:diaz1234567890/features/search/widget/filter_bar.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
+import 'package:diaz1234567890/features/search/widget/search_filter_bottom_sheet.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:diaz1234567890/core/services/api_service.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
@@ -22,14 +22,14 @@ class YachtSearchPage extends StatefulWidget {
 class _YachtSearchPageState extends State<YachtSearchPage> {
   late TextEditingController _searchController;
   late YachtSearchListingController controller;
-  double _limit = 10;
-  bool _showLimitSlider = false;
+  static const int _aiLimit = 10;
+  static const String _controllerTag = 'search_main';
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    controller = Get.put(YachtSearchListingController());
+    controller = Get.put(YachtSearchListingController(), tag: _controllerTag);
   }
 
   @override
@@ -63,7 +63,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
       final response = await ApiService.aiSearch(
         //userId: userId,
         query: query,
-        limit: _limit.toInt(),
+        limit: _aiLimit,
       );
 
       if (response['error'] != null) {
@@ -134,6 +134,8 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                   width: double.infinity,
                   fit: BoxFit.fill,
                 ),
+
+                // Search Bar and Filter Button
                 Positioned(
                   bottom: 15,
                   left: 20,
@@ -147,9 +149,15 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () => setState(
-                            () => _showLimitSlider = !_showLimitSlider,
-                          ),
+                          onTap: () {
+                            Get.bottomSheet(
+                              const SearchFilterBottomSheet(
+                                searchControllerTag: _controllerTag,
+                              ),
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                            );
+                          },
                           child: Image.asset(
                             Iconpath.customTune,
                             width: 25,
@@ -231,83 +239,62 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
               ],
             ),
 
-            // Limit Slider
-            if (_showLimitSlider)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 4,
-                ),
-                child: Row(
-                  children: [
-                    const Text(
-                      'Limit:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Expanded(
-                      child: Slider(
-                        value: _limit,
-                        min: 0,
-                        max: 100,
-                        divisions: 100,
-                        activeColor: const Color(0xFF00A3AC),
-                        label: _limit.toInt().toString(),
-                        onChanged: (value) => setState(() => _limit = value),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 36,
-                      child: Text(
-                        _limit.toInt().toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
             SizedBox(height: 20),
 
-            Obx(
-              () => YachtFilterBar(
-                models: controller.models.toList(),
-                classes: controller.classes.toList(),
-                onModelChanged: (value) =>
-                    controller.selectedModel.value = value,
-                onClassChanged: (value) =>
-                    controller.selectedClass.value = value,
-                onYearChanged: (value) => controller.selectedYear.value = value,
-                onPriceChanged: (value) =>
-                    controller.selectedPrice.value = value,
-              ),
-            ),
-            YachtSearchListingPage(),
+            // Obx(
+            //   () => YachtFilterBar(
+            //     models: controller.models.toList(),
+            //     classes: controller.classes.toList(),
+            //     onModelChanged: (value) =>
+            //         controller.selectedModel.value = value,
+            //     onClassChanged: (value) =>
+            //         controller.selectedClass.value = value,
+            //     onYearChanged: (value) => controller.selectedYear.value = value,
+            //     onPriceChanged: (value) =>
+            //         controller.selectedPrice.value = value,
+            //   ),
+            // ),
+            YachtSearchListingPage(controllerTag: _controllerTag),
 
             SizedBox(height: 5),
 
             Center(
-              child: TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                  backgroundColor: Color(0xFF00A3AC),
-                  padding: EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Obx(
+                () => TextButton(
+                  onPressed:
+                      controller.isLoadingMore.value ||
+                          !controller.hasMore.value
+                      ? null
+                      : controller.fetchNextPage,
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF00A3AC),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                child: Text(
-                  "Show More",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+                  child: controller.isLoadingMore.value
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          controller.hasMore.value ? "Show More" : "No more",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -329,8 +316,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    // ignore: deprecated_member_use
-                    color: Colors.black.withOpacity(0.35),
+                    color: Colors.black.withValues(alpha: 0.35),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Center(
@@ -351,8 +337,7 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                           "Showcasing the finest yachts\nfrom our trusted network.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            // ignore: deprecated_member_use
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 13,
                             height: 1.4,
                           ),
@@ -361,8 +346,9 @@ class _YachtSearchPageState extends State<YachtSearchPage> {
                         ElevatedButton.icon(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            // ignore: deprecated_member_use
-                            backgroundColor: Colors.black.withOpacity(0.8),
+                            backgroundColor: Colors.black.withValues(
+                              alpha: 0.8,
+                            ),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 22,
                               vertical: 10,

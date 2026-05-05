@@ -312,6 +312,18 @@ class ProfileScreen extends StatelessWidget {
                       Get.toNamed('/myListingScreen');
                     },
                   ),
+                  SettingsButton(
+                    icon: Icons.business_center_outlined,
+                    title: 'Leads',
+                    subtitle: 'See All Leads',
+                    onTap: () {}
+                  ),
+                  SettingsButton(
+                    icon: Icons.inbox_outlined,
+                    title: 'Invoices',
+                    subtitle: 'See All Invoices',
+                    onTap: () {}
+                  ),
                   // SettingsButton(
                   //   icon: Icons.assignment_outlined,
                   //   title: 'Report',
