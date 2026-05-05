@@ -16,6 +16,15 @@ class BoatDetail {
   final String? material;
   final String? city;
   final String? state;
+  final String? zip;
+  final String? fuelType;
+  final String? engineType;
+  final String? propType;
+  final String? propMaterial;
+  final String? status;
+  final String? videoURL;
+  final BoatDimensions? boatDimensions;
+  final List<EngineItem> engines;
   final List<ImageItem> coverImages;
   final List<ImageItem> galleryImages;
   final List<ExtraDetail> extraDetails;
@@ -42,6 +51,15 @@ class BoatDetail {
     this.model,
     this.city,
     this.state,
+    this.zip,
+    this.fuelType,
+    this.engineType,
+    this.propType,
+    this.propMaterial,
+    this.status,
+    this.videoURL,
+    this.boatDimensions,
+    required this.engines,
     required this.coverImages,
     required this.galleryImages,
     required this.extraDetails,
@@ -98,6 +116,23 @@ class BoatDetail {
       coverImages: _parseImages(json['coverImages']),
       galleryImages: _parseImages(json['galleryImages']),
       extraDetails: _parseExtra(json['extraDetails']),
+      engines: (json['engines'] is List)
+          ? (json['engines'] as List)
+                .map((e) => EngineItem.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : <EngineItem>[],
+      boatDimensions: json['boatDimensions'] is Map
+          ? BoatDimensions.fromJson(
+              json['boatDimensions'] as Map<String, dynamic>,
+            )
+          : null,
+      fuelType: json['fuelType'] ?? json['fuel_type'] ?? '',
+      engineType: json['engineType'] ?? '',
+      propType: json['propType'] ?? json['propellerType'] ?? '',
+      propMaterial: json['propMaterial'] ?? json['propellerMaterial'] ?? '',
+      zip: json['zip'] ?? '',
+      status: json['status'] ?? '',
+      videoURL: json['videoURL'] ?? '',
       enginesNumber: json['enginesNumber'] is int
           ? json['enginesNumber'] as int
           : null,
@@ -144,9 +179,74 @@ class ExtraDetail {
   ExtraDetail({required this.title, required this.description});
 
   factory ExtraDetail.fromJson(Map<String, dynamic> json) {
-    return ExtraDetail(
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
+    // Support both { "title": ..., "description": ... }
+    // and older/alternate { "key": ..., "value": ... } shapes.
+    final title = json['title'] ?? json['key'] ?? '';
+    final description = json['description'] ?? json['value'] ?? '';
+    return ExtraDetail(title: title, description: description);
+  }
+}
+
+class EngineItem {
+  final String id;
+  final int? hours;
+  final int? horsepower;
+  final String? make;
+  final String? model;
+  final String? fuelType;
+  final String? propellerType;
+
+  EngineItem({
+    required this.id,
+    this.hours,
+    this.horsepower,
+    this.make,
+    this.model,
+    this.fuelType,
+    this.propellerType,
+  });
+
+  factory EngineItem.fromJson(Map<String, dynamic> json) {
+    return EngineItem(
+      id: json['id'] ?? '',
+      hours: json['hours'] is int ? json['hours'] as int : null,
+      horsepower: json['horsepower'] is num
+          ? (json['horsepower'] as num).toInt()
+          : null,
+      make: json['make'] ?? '',
+      model: json['model'] ?? '',
+      fuelType: json['fuelType'] ?? '',
+      propellerType: json['propellerType'] ?? json['propeller'] ?? '',
+    );
+  }
+}
+
+class BoatDimensions {
+  final int? lengthFeet;
+  final int? lengthInches;
+  final int? beamFeet;
+  final int? beamInches;
+  final int? draftFeet;
+  final int? draftInches;
+
+  BoatDimensions({
+    this.lengthFeet,
+    this.lengthInches,
+    this.beamFeet,
+    this.beamInches,
+    this.draftFeet,
+    this.draftInches,
+  });
+
+  factory BoatDimensions.fromJson(Map<String, dynamic> json) {
+    int? _toInt(dynamic v) => v is int ? v as int : null;
+    return BoatDimensions(
+      lengthFeet: _toInt(json['lengthFeet']),
+      lengthInches: _toInt(json['lengthInches']),
+      beamFeet: _toInt(json['beamFeet']),
+      beamInches: _toInt(json['beamInches']),
+      draftFeet: _toInt(json['draftFeet']),
+      draftInches: _toInt(json['draftInches']),
     );
   }
 }
