@@ -8,6 +8,7 @@ import 'package:diaz1234567890/features/profile/main/controller/profile_controll
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:diaz1234567890/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -205,10 +206,8 @@ class ProfileScreen extends StatelessWidget {
                           return GestureDetector(
                             onTap: () async {
                               if (!profileController.notificationToggle.value) {
-                                Get.snackbar(
-                                  'Notifications disabled',
-                                  'Enable notifications to view them',
-                                  snackPosition: SnackPosition.BOTTOM,
+                                EasyLoading.showInfo(
+                                  'Notifications disabled\nEnable notifications to view them',
                                 );
                                 return;
                               }
@@ -312,6 +311,18 @@ class ProfileScreen extends StatelessWidget {
                           onTap: () {
                             Get.toNamed('/myListingScreen');
                           },
+                        ),
+                        SettingsButton(
+                          icon: Icons.business_center_outlined,
+                          title: 'Leads',
+                          subtitle: 'See All Leads',
+                          onTap: () {},
+                        ),
+                        SettingsButton(
+                          icon: Icons.inbox_outlined,
+                          title: 'Invoices',
+                          subtitle: 'See All Invoices',
+                          onTap: () {},
                         ),
                         // SettingsButton(
                         //   icon: Icons.assignment_outlined,
@@ -456,51 +467,68 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 20),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    IconButton(
-                                      onPressed: () async {
+                                    // Logout Button
+                                    GestureDetector(
+                                      onTap: () async {
                                         // Remove stored token and user id, update reactive
                                         // state, then navigate to login screen.
                                         await StorageService.logoutUser();
                                         loginController.isGuest.value = true;
                                         Get.offAll(LoginScreen());
                                       },
-                                      icon: Icon(
-                                        Icons.logout,
-                                        color: Colors.blue,
-                                        size: 20,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.logout,
+                                            color: Colors.blue,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ), // Space between icon and text
+                                          Text(
+                                            'Logout',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 10,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Text(
-                                      'Logout',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 10,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(width: 14),
-                                    IconButton(
-                                      onPressed: () {
-                                        Get.snackbar(
-                                          'Delete',
-                                          'Account delete successfully',
+
+                                    SizedBox(width: 50,),                                 
+                                    // Space between the two buttons
+                                    // Delete Account Button
+                                    GestureDetector(
+                                      onTap: () {
+                                        EasyLoading.showInfo(
+                                          'Account delete successfully\nApi Not Impletented',
                                         );
                                         Get.offAll(LoginScreen());
                                       },
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                        size: 20,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Delete Account',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 10,
-                                        color: Colors.red,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.red,
+                                            size: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ), // Space between icon and text
+                                          Text(
+                                            'Delete Account',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 10,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],

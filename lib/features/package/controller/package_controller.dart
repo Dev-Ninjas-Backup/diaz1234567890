@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -399,24 +400,12 @@ class SellPackageController extends GetxController {
 
   void handleStep1Next() {
     if (selectedPackage.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a package first',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Please select a package first');
       return;
     }
 
     if (promoCodeInput.text.isNotEmpty && !isPromoValid.value) {
-      Get.snackbar(
-        'Error',
-        'Please apply a valid promo code or clear the field',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Please apply a valid promo code or clear the field');
       return;
     }
 
@@ -492,20 +481,12 @@ class SellPackageController extends GetxController {
       if (setupIntentClientSecret.value.isNotEmpty) {
         showPaymentSection.value = true;
       } else {
-        Get.snackbar(
-          'Payment Setup Failed',
-          'Could not initialize payment. Please try again.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        EasyLoading.showError(
+          'Payment Setup Failed: Could not initialize payment. Please try again.',
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Payment Setup Failed',
-        'Error: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Payment Setup Failed: Error: $e');
     } finally {
       isLoading.value = false;
     }
@@ -536,11 +517,7 @@ class SellPackageController extends GetxController {
         coverImage.value = image;
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Failed to pick image: $e');
     }
   }
 
@@ -551,11 +528,7 @@ class SellPackageController extends GetxController {
         galleryImages.addAll(images);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick images: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Failed to pick images: $e');
     }
   }
 
@@ -770,13 +743,7 @@ class SellPackageController extends GetxController {
             '[DEBUG] Promo code valid: $code, Free days: ${promoFreeDays.value}',
           );
 
-          Get.snackbar(
-            'Success',
-            'Promo code applied successfully!',
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-          );
+          EasyLoading.showSuccess('Promo code applied successfully!');
         } else {
           promoErrorMessage.value = 'Promo code is not valid';
           isPromoValid.value = false;
@@ -792,13 +759,7 @@ class SellPackageController extends GetxController {
 
       print('[DEBUG] Promo validation error: $e');
 
-      Get.snackbar(
-        'Error',
-        promoErrorMessage.value,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError(promoErrorMessage.value);
     } finally {
       isLoading.value = false;
     }
@@ -868,14 +829,7 @@ class SellPackageController extends GetxController {
         print('[DEBUG] Seller registration successful: $sellerEmail');
         print('[DEBUG] Performing hidden login with email: $sellerEmail');
 
-        // Show success message
-        Get.snackbar(
-          'Success',
-          'Seller account created successfully!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: Duration(seconds: 2),
-        );
+        EasyLoading.showSuccess('Seller account created successfully!');
 
         // Wait a moment for the snackbar to show
         await Future.delayed(Duration(milliseconds: 500));
@@ -929,20 +883,10 @@ class SellPackageController extends GetxController {
         );
       }
     } on SocketException catch (e) {
-      Get.snackbar(
-        'Network Error',
-        'Check your internet connection: ${e.message}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Check your internet connection: ${e.message}');
       print('[DEBUG] Network error: $e');
     } catch (e) {
-      Get.snackbar(
-        'Registration Error',
-        e.toString().replaceFirst('Exception: ', ''),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError(e.toString().replaceFirst('Exception: ', ''));
       print('[DEBUG] Registration error: $e');
     } finally {
       isLoading.value = false;
@@ -1005,12 +949,7 @@ class SellPackageController extends GetxController {
 
       // Cover image is required
       if (coverImage.value == null && existingCoverImages.isEmpty) {
-        Get.snackbar(
-          'Validation Error',
-          'Cover image is required',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError('Cover image is required');
         return;
       }
 
@@ -1231,13 +1170,8 @@ class SellPackageController extends GetxController {
             print('====================================\n');
           }
 
-          Get.snackbar(
-            'Success',
+          EasyLoading.showSuccess(
             'Boat listing created successfully! Listing ID: ${listingId.value}',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 3),
           );
 
           // Only perform hidden login if user is NOT already logged in
@@ -1259,23 +1193,14 @@ class SellPackageController extends GetxController {
               print(
                 '[DEBUG] User already has active subscription - skipping payment',
               );
-              Get.snackbar(
-                'Info',
+              EasyLoading.showInfo(
                 'You already have an active subscription. Your listing is now live!',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.blue,
-                colorText: Colors.white,
-                duration: const Duration(seconds: 4),
               );
             } else {
               print('[DEBUG] Setup intent error: $setupIntentError');
               // Show error but still navigate - user can retry payment later
-              Get.snackbar(
-                'Payment Note',
-                'Listing created but payment couldn\'t be initialized. Please try again.',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: Colors.orange,
-                colorText: Colors.white,
+              EasyLoading.showInfo(
+                "Listing created but payment couldn't be initialized. Please try again.",
               );
             }
           }
@@ -1297,13 +1222,7 @@ class SellPackageController extends GetxController {
         } else {
           errorMessage.value =
               response['message'] ?? 'Failed to create listing';
-          Get.snackbar(
-            'Error',
-            errorMessage.value,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          EasyLoading.showError(errorMessage.value);
           return;
         }
       } catch (e) {
@@ -1314,12 +1233,8 @@ class SellPackageController extends GetxController {
 
         // Don't try multipart if simple JSON succeeded with payment intent
         if (paymentIntentId.value.isNotEmpty) {
-          Get.snackbar(
-            'Note',
+          EasyLoading.showInfo(
             'Listing created but images need to be uploaded separately',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
           );
           return;
         }
@@ -1370,13 +1285,8 @@ class SellPackageController extends GetxController {
           print('====================================\n');
         }
 
-        Get.snackbar(
-          'Success',
+        EasyLoading.showSuccess(
           'Boat listing created successfully! Listing ID: ${listingId.value}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
         );
 
         // Only perform hidden login if user is NOT already logged in
@@ -1420,25 +1330,12 @@ class SellPackageController extends GetxController {
         }
       } else {
         errorMessage.value = response['message'] ?? 'Failed to create listing';
-        Get.snackbar(
-          'Error',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = 'Error submitting boat listing: $e';
       print('[DEBUG] submitBoatOnboarding: Error - $e');
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-      );
+      EasyLoading.showError(errorMessage.value);
     } finally {
       isLoading.value = false;
       print('[DEBUG] submitBoatOnboarding: Completed, isLoading = false');
@@ -1498,24 +1395,12 @@ class SellPackageController extends GetxController {
     try {
       // Validate login fields
       if (sellerEmailController.text.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Email is required for login',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError('Email is required for login');
         return;
       }
 
       if (sellerPasswordController.text.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Password is required for login',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError('Password is required for login');
         return;
       }
 
@@ -1531,13 +1416,7 @@ class SellPackageController extends GetxController {
 
       if (response['success'] == true) {
         print('[DEBUG] loginAndNavigate: Login successful');
-        Get.snackbar(
-          'Success',
-          'Login successful!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        EasyLoading.showSuccess('Login successful!');
 
         // Navigate to next screen after successful login
         print('[DEBUG] loginAndNavigate: Navigating to packageScreenStep4');
@@ -1545,23 +1424,11 @@ class SellPackageController extends GetxController {
       } else {
         errorMessage.value =
             response['message'] ?? 'Login failed. Please try again.';
-        Get.snackbar(
-          'Error',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = 'Login error: $e';
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError(errorMessage.value);
       print('[DEBUG] loginAndNavigate: Login error - $e');
     } finally {
       isLoading.value = false;
@@ -1618,13 +1485,8 @@ class SellPackageController extends GetxController {
 
       if (stripeSuccess) {
         print('\n✅ SETUP INTENT CONFIRMED WITH STRIPE SUCCESSFULLY\n');
-        Get.snackbar(
-          'Success',
+        EasyLoading.showSuccess(
           'Payment processed! Your subscription is now being activated.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
         );
 
         // Clear card fields after successful payment
@@ -1644,25 +1506,13 @@ class SellPackageController extends GetxController {
         errorMessage.value =
             'Setup intent confirmation failed. Please try again.';
         print('\n❌ Setup intent confirmation failed: ${errorMessage.value}\n');
-        Get.snackbar(
-          'Error',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-        );
+        EasyLoading.showError(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = '$e';
       print('\n❌ Payment error: $e\n');
-      Get.snackbar(
-        'Error',
+      EasyLoading.showError(
         errorMessage.value.isNotEmpty ? errorMessage.value : 'Payment failed',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 4),
       );
     } finally {
       isLoading.value = false;
@@ -1694,14 +1544,7 @@ class SellPackageController extends GetxController {
       print('[DEBUG] fetchSubscriptionConfirmation: Response - $response');
 
       if (response != null && response['success'] == true) {
-        Get.snackbar(
-          'Success',
-          'Subscription activated successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
+        EasyLoading.showSuccess('Subscription activated successfully!');
 
         // Navigate to home screen after snackbar is shown
         print(
@@ -1727,26 +1570,12 @@ class SellPackageController extends GetxController {
         errorMessage.value =
             response?['message'] ?? 'Subscription not yet confirmed';
         print('[DEBUG] fetchSubscriptionConfirmation: Not confirmed yet');
-        Get.snackbar(
-          'Info',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-        );
+        EasyLoading.showInfo(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = 'Error fetching confirmation: $e';
       print('[DEBUG] fetchSubscriptionConfirmation: Error - $e');
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
+      EasyLoading.showError(errorMessage.value);
     } finally {
       isLoading.value = false;
     }
@@ -1783,34 +1612,16 @@ class SellPackageController extends GetxController {
         } else {
           errorMessage.value =
               jsonBody['message']?.toString() ?? 'Failed to load boat details';
-          Get.snackbar(
-            'Error',
-            errorMessage.value,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          EasyLoading.showError(errorMessage.value);
         }
       } else {
         errorMessage.value = 'Failed to load boat (${response.statusCode})';
-        Get.snackbar(
-          'Error',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = 'Network error: $e';
       print('[DEBUG] fetchBoatDetailsForEdit: Error - $e');
-      Get.snackbar(
-        'Error',
-        'Failed to load boat details: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Failed to load boat details: $e');
     } finally {
       isLoading.value = false;
     }
@@ -1947,13 +1758,7 @@ class SellPackageController extends GetxController {
       );
     } catch (e) {
       print('[DEBUG] Error populating form: $e');
-      Get.snackbar(
-        'Warning',
-        'Some fields could not be loaded',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      EasyLoading.showInfo('Some fields could not be loaded');
     }
   }
 
@@ -2179,14 +1984,7 @@ class SellPackageController extends GetxController {
         final jsonBody = jsonDecode(responseString);
 
         if (jsonBody['success'] == true) {
-          Get.snackbar(
-            'Success',
-            'Boat listing updated successfully!',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 3),
-          );
+          EasyLoading.showSuccess('Boat listing updated successfully!');
 
           // Navigate back to my listings
           Future.delayed(Duration(seconds: 1), () {
@@ -2195,35 +1993,16 @@ class SellPackageController extends GetxController {
         } else {
           errorMessage.value =
               jsonBody['message']?.toString() ?? 'Failed to update listing';
-          Get.snackbar(
-            'Error',
-            errorMessage.value,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          EasyLoading.showError(errorMessage.value);
         }
       } else {
         errorMessage.value = 'Failed to update boat (${response.statusCode})';
-        Get.snackbar(
-          'Error',
-          errorMessage.value,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(errorMessage.value);
       }
     } catch (e) {
       errorMessage.value = 'Error updating boat listing: $e';
       print('[DEBUG] updateBoatListing: Error - $e');
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-      );
+      EasyLoading.showError(errorMessage.value);
     } finally {
       isLoading.value = false;
     }

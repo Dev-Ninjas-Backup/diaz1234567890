@@ -9,10 +9,15 @@ import '../model/yacht_model.dart';
 import '../service/boat_search_service.dart';
 
 class YachtSearchListingController extends GetxController {
+  static const int pageSize = 10;
+
   var similarYachts = <Yacht>[].obs;
   var models = <String>[].obs;
   var classes = <String>[].obs;
   var isLoading = false.obs;
+  var currentPage = 1.obs;
+  var hasMore = true.obs;
+  var isLoadingMore = false.obs;
 
   // Filter state
   var selectedModel = RxnString();
@@ -51,10 +56,11 @@ class YachtSearchListingController extends GetxController {
             [];
         models.assignAll(modelsData);
         classes.assignAll(classesData);
-        if (kDebugMode)
+        if (kDebugMode) {
           print(
             'Filter options loaded: models=${models.length}, classes=${classes.length}',
           );
+        }
       }
     } catch (e) {
       if (kDebugMode) print('Error fetching filter options: $e');
@@ -64,7 +70,12 @@ class YachtSearchListingController extends GetxController {
   Future<void> performSearch() async {
     isLoading.value = true;
     try {
-      final params = <String, String>{'limit': '1000'};
+      currentPage.value = 1;
+      hasMore.value = true;
+      final params = <String, String>{
+        'page': '1',
+        'limit': pageSize.toString(),
+      };
       if (selectedModel.value != null && selectedModel.value!.isNotEmpty) {
         params['model'] = selectedModel.value!;
       }
@@ -78,7 +89,9 @@ class YachtSearchListingController extends GetxController {
         params['priceEnd'] = selectedPrice.value!;
       }
 
-      final uri = Uri.parse(Endpoints.allBoats).replace(queryParameters: params);
+      final uri = Uri.parse(
+        Endpoints.allBoats,
+      ).replace(queryParameters: params);
       if (kDebugMode) print('Search query: $uri');
       final response = await http.get(uri);
 
@@ -123,6 +136,9 @@ class YachtSearchListingController extends GetxController {
             }
           }
           similarYachts.assignAll(yachts);
+          if (yachts.length < pageSize) {
+            hasMore.value = false;
+          }
           if (kDebugMode) print('Search returned ${yachts.length} boats');
         }
       }
@@ -130,6 +146,89 @@ class YachtSearchListingController extends GetxController {
       if (kDebugMode) print('Error performing search: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchNextPage() async {
+    if (isLoadingMore.value || !hasMore.value) return;
+    isLoadingMore.value = true;
+    try {
+      final nextPage = currentPage.value + 1;
+
+      final params = <String, String>{
+        'page': nextPage.toString(),
+        'limit': pageSize.toString(),
+      };
+      if (selectedModel.value != null && selectedModel.value!.isNotEmpty) {
+        params['model'] = selectedModel.value!;
+      }
+      if (selectedClass.value != null && selectedClass.value!.isNotEmpty) {
+        params['class'] = selectedClass.value!;
+      }
+      if (selectedYear.value != null && selectedYear.value!.isNotEmpty) {
+        params['buildYear'] = selectedYear.value!;
+      }
+      if (selectedPrice.value != null && selectedPrice.value!.isNotEmpty) {
+        params['priceEnd'] = selectedPrice.value!;
+      }
+
+      final uri = Uri.parse(
+        Endpoints.allBoats,
+      ).replace(queryParameters: params);
+      if (kDebugMode) print('Search next page: $uri');
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        if (jsonData['success'] == true && jsonData['data'] is List) {
+          final items = jsonData['data'] as List<dynamic>;
+          final yachts = <Yacht>[];
+
+          for (final item in items) {
+            try {
+              final map = item as Map<String, dynamic>;
+              final images = map['Images'] as List<dynamic>? ?? [];
+              String coverImageUrl = Imagepath.singleBoat;
+              if (images.isNotEmpty) {
+                final first = images.firstWhere(
+                  (img) => img != null && img['Uri'] != null,
+                  orElse: () => images[0],
+                );
+                if (first != null && first['Uri'] != null) {
+                  coverImageUrl = first['Uri'] as String;
+                }
+              }
+
+              final id =
+                  (map['DocumentID'] ?? map['id'] ?? map['listingId'] ?? '')
+                      .toString();
+              final yacht = Yacht(
+                id: id,
+                title: map['ListingTitle'] ?? 'Unknown Yacht',
+                location:
+                    '${map['BoatLocation']?['BoatCityName'] ?? ''}, ${map['BoatLocation']?['BoatStateCode'] ?? ''}',
+                make: map['MakeString'] ?? 'N/A',
+                model: map['Model'] ?? 'N/A',
+                year: map['ModelYear']?.toString() ?? 'N/A',
+                price: map['Price']?.toString() ?? 'Call for Price',
+                image: coverImageUrl,
+              );
+              yachts.add(yacht);
+            } catch (e) {
+              if (kDebugMode) print('Error parsing search result: $e');
+            }
+          }
+
+          similarYachts.addAll(yachts);
+          currentPage.value = nextPage;
+          if (yachts.length < pageSize) {
+            hasMore.value = false;
+          }
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error loading next page: $e');
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
@@ -189,14 +288,16 @@ class YachtSearchListingController extends GetxController {
           );
           yachts.add(yacht);
         } catch (e) {
-          if (kDebugMode)
+          if (kDebugMode) {
             print('Error parsing natural language search result: $e');
+          }
         }
       }
 
       similarYachts.assignAll(yachts);
-      if (kDebugMode)
+      if (kDebugMode) {
         print('Natural language search returned ${yachts.length} boats');
+      }
     } catch (e) {
       if (kDebugMode) print('Error performing natural language search: $e');
     } finally {

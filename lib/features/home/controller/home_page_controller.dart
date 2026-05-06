@@ -1,49 +1,44 @@
 // ignore_for_file: avoid_print
 
-import 'dart:convert';
-
-import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/api_service.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
-import 'package:diaz1234567890/features/details/screen/details_screen.dart';
+import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
+import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
 import 'package:diaz1234567890/features/home/model/home_model.dart';
+import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
-class AiSearchController extends GetxController {
-  final String initialQuery;
-  final List<Yacht> initialResults;
+class HomePageController extends GetxController {
+  final searchTextController = TextEditingController();
 
-  AiSearchController({
-    required this.initialQuery,
-    required this.initialResults,
-  });
-
-  final searchController = TextEditingController();
-  final isLoading = false.obs;
-  final results = <Yacht>[].obs;
-  final limit = 10.0.obs;
-  final showLimitSlider = false.obs;
+  late final YachtListingController listingController;
+  late final YachtSearchListingController aiSearchController;
 
   @override
   void onInit() {
     super.onInit();
-    searchController.text = initialQuery;
-    results.addAll(initialResults);
+    listingController = Get.put(YachtListingController());
+    aiSearchController = Get.put(
+      YachtSearchListingController(),
+      tag: 'home_search',
+    );
+
+    // Set FLORIDA as default site
+    listingController.selectedFeaturedSite.value = 'FLORIDA';
   }
 
   @override
   void onClose() {
-    searchController.dispose();
+    searchTextController.dispose();
     super.onClose();
   }
 
-  void toggleLimitSlider() => showLimitSlider.value = !showLimitSlider.value;
-
-  void setLimit(double value) => limit.value = value;
+  void openFilterSheet() {
+    // This is wired in the view to avoid circular imports (widget depends on FilterBottomSheet).
+  }
 
   Future<void> handleAiSearch(String query) async {
     if (query.trim().isEmpty) {
@@ -52,20 +47,19 @@ class AiSearchController extends GetxController {
     }
 
     try {
-      isLoading.value = true;
+      aiSearchController.isLoading.value = true;
 
       await StorageService.init();
       final userId = StorageService.userId;
-
       if (userId == null || userId.isEmpty) {
         EasyLoading.showError('User not logged in');
         return;
       }
 
       final response = await ApiService.aiSearch(
-        //userId: userId,
         query: query,
-        limit: limit.value.toInt(),
+        // Keep it small to avoid heavy parsing on home.
+        limit: 20,
       );
 
       if (response['error'] != null) {
@@ -79,11 +73,13 @@ class AiSearchController extends GetxController {
       for (final item in data) {
         try {
           final map = item as Map<String, dynamic>;
-          String coverImageUrl = Imagepath.singleBoat;
+
+          var coverImageUrl = Imagepath.singleBoat;
           final images = map['images'];
           if (images is Map<String, dynamic> && images['Uri'] != null) {
             coverImageUrl = images['Uri'] as String;
           }
+
           final location = map['location'] as Map<String, dynamic>? ?? {};
           yachts.add(
             Yacht(
@@ -105,35 +101,12 @@ class AiSearchController extends GetxController {
         }
       }
 
-      results.assignAll(yachts);
+      Get.to(() => AiSearchResultsScreen(query: query, results: yachts));
     } catch (e) {
-      EasyLoading.showError('Error: ${e.toString()}');
+      EasyLoading.showError('Search failed: $e');
       print('AI Search Error: $e');
     } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> navigateToDetails(String id) async {
-    try {
-      EasyLoading.show(status: 'Loading...');
-      final response = await http.get(
-        Uri.parse(Endpoints.getBoatById(id)),
-        headers: {'Content-Type': 'application/json'},
-      );
-      final jsonBody = jsonDecode(response.body) as Map<String, dynamic>;
-      EasyLoading.dismiss();
-
-      if (response.statusCode == 200 && jsonBody['success'] == true) {
-        Get.to(() => const DetailsScreen(), arguments: id);
-      } else {
-        final message =
-            jsonBody['message']?.toString() ?? 'Failed to load boat details';
-        EasyLoading.showError(message);
-      }
-    } catch (e) {
-      EasyLoading.dismiss();
-      EasyLoading.showError('Could not load boat details: $e');
+      aiSearchController.isLoading.value = false;
     }
   }
 }

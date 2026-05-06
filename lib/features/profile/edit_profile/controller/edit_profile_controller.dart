@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -38,7 +39,7 @@ class EditProfileController extends GetxController {
         selectedImage.value = File(pickedFile.path);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image: $e');
+      EasyLoading.showError('Failed to pick image: $e');
     }
   }
 
@@ -104,7 +105,7 @@ class EditProfileController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) print('EditProfile: error fetching profile: $e');
-      Get.snackbar('Error', 'Failed to load profile: $e');
+      EasyLoading.showError('Failed to load profile: $e');
     } finally {
       isLoading.value = false;
     }
@@ -121,12 +122,11 @@ class EditProfileController extends GetxController {
       final confirmPass = confirmPasswordController.text.trim();
       if (oldPass.isNotEmpty || newPass.isNotEmpty || confirmPass.isNotEmpty) {
         if (oldPass.isEmpty || newPass.isEmpty) {
-          Get.snackbar('Error', 'Please provide current and new password');
+          EasyLoading.showError('Please provide current and new password');
           return false;
         }
         if (newPass != confirmPass) {
-          Get.snackbar(
-            'Error',
+          EasyLoading.showError(
             'New password and confirm password do not match',
           );
           return false;
@@ -176,20 +176,20 @@ class EditProfileController extends GetxController {
         final message = jb['message'] ?? 'Profile updated';
         Get.back();
         if (success) {
-          Get.snackbar('Success', message);
+          EasyLoading.showSuccess(message.toString());
           await fetchProfile();
           return true;
         } else {
-          Get.snackbar('Error', message.toString());
+          EasyLoading.showError(message.toString());
           return false;
         }
       } else {
-        Get.snackbar('Error', 'Update failed: HTTP ${resp.statusCode}');
+        EasyLoading.showError('Update failed: HTTP ${resp.statusCode}');
         return false;
       }
     } catch (e) {
       if (kDebugMode) print('EditProfile: error saving profile: $e');
-      Get.snackbar('Error', 'Failed to save changes: $e');
+      EasyLoading.showError('Failed to save changes: $e');
       return false;
     } finally {
       isLoading.value = false;
@@ -232,19 +232,18 @@ class EditProfileController extends GetxController {
           confirmPasswordController.clear();
           return true;
         } else {
-          Get.snackbar('Error', message.toString());
+          EasyLoading.showError(message.toString());
           return false;
         }
       } else {
-        Get.snackbar(
-          'Error',
+        EasyLoading.showError(
           'Password change failed: HTTP ${resp.statusCode}',
         );
         return false;
       }
     } catch (e) {
       if (kDebugMode) print('EditProfile: changePassword error: $e');
-      Get.snackbar('Error', 'Failed to change password: $e');
+      EasyLoading.showError('Failed to change password: $e');
       return false;
     }
   }

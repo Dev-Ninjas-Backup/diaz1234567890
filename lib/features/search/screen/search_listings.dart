@@ -6,9 +6,13 @@ import '../controller/yacht_controller.dart';
 import '../model/yacht_model.dart';
 
 class YachtSearchListingPage extends StatelessWidget {
-  final YachtSearchListingController controller = Get.find();
+  const YachtSearchListingPage({super.key, this.controllerTag});
 
-  YachtSearchListingPage({super.key});
+  final String? controllerTag;
+
+  YachtSearchListingController get controller => controllerTag == null
+      ? Get.find<YachtSearchListingController>()
+      : Get.find<YachtSearchListingController>(tag: controllerTag);
 
   Widget _buildDetail(String label, String value) {
     return Column(

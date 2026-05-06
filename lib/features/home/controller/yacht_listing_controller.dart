@@ -7,6 +7,9 @@ import '../../../core/endpoints/endpoints.dart';
 import '../model/home_model.dart';
 
 class YachtListingController extends GetxController {
+  static const String _defaultPage = '1';
+  static const String _defaultLimit = '10';
+
   var featuredYachts = <Yacht>[].obs;
   var premiumDeals = <Yacht>[].obs;
   var isLoading = true.obs;
@@ -64,7 +67,9 @@ class YachtListingController extends GetxController {
   // Fetch boats.
   Future<void> fetchAllBoats() async {
     try {
-      final uri = Uri.parse(Endpoints.allBoats).replace(queryParameters: {'limit': '1000'});
+      final uri = Uri.parse(Endpoints.allBoats).replace(
+        queryParameters: const {'page': _defaultPage, 'limit': _defaultLimit},
+      );
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -193,7 +198,9 @@ class YachtListingController extends GetxController {
   Future<void> fetchPremiumDeals() async {
     isLoading.value = true;
     try {
-      final uri = Uri.parse(Endpoints.premiumDeals).replace(queryParameters: {'limit': '1000'});
+      final uri = Uri.parse(Endpoints.premiumDeals).replace(
+        queryParameters: const {'page': _defaultPage, 'limit': _defaultLimit},
+      );
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);

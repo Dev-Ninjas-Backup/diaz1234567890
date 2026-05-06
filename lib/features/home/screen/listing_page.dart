@@ -1,6 +1,5 @@
-import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
-import 'package:diaz1234567890/routes/app_routes.dart';
+import 'package:diaz1234567890/features/home/widget/sell_banner_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/home_model.dart';
@@ -218,81 +217,9 @@ class YachtListingPage extends StatelessWidget {
         children: [
           if (yachts.isNotEmpty) buildSection(title, yachts),
           const SizedBox(height: 20),
-          // Your banner remains unchanged
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              height: 190,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                image: DecorationImage(
-                  image: AssetImage(Imagepath.homeBoat),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  // ignore: deprecated_member_use
-                  color: Colors.black.withOpacity(0.35),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Looking to Sell Your Boat?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        "Showcasing the finest yachts from our trusted network.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          // ignore: deprecated_member_use
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 13,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Get.toNamed(AppRoute.sellScreen);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          // ignore: deprecated_member_use
-                          backgroundColor: Colors.black.withOpacity(0.8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 22,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        label: const Text(
-                          "List Your Yacht",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+
+          // Banner Section
+          const SellBannerSection(),
           const SizedBox(height: 20),
         ],
       );

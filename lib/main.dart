@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables from lib/.env (declared in pubspec assets)
+  // Load environment variables from .env (declared in pubspec assets)
   try {
     await dotenv.load(fileName: '.env');
   } catch (_) {

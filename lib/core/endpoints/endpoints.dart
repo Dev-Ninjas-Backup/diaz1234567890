@@ -14,6 +14,7 @@ class Endpoints {
   static const String userMe = '$baseUrl/api/auth/profile';
   static const String changePassword = '$baseUrl/api/auth/change-password';
   static const String filters = '$baseUrl/api/boats/filter-options';
+  static const String contactOwner = '$baseUrl/api/contact';
 
   // AI Chat endpoints live on a different host
   static const String aiBaseUrl = 'https://ai.jupitermarinesales.com/api';

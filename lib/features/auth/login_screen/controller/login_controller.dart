@@ -2,6 +2,7 @@ import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -59,13 +60,7 @@ class LoginController extends GetxController {
       if (kDebugMode) {
         print('Validation Failed: Empty fields');
       }
-      Get.snackbar(
-        "Error",
-        "Please fill all fields",
-        // ignore: deprecated_member_use
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Please fill all fields');
       return;
     }
 
@@ -123,13 +118,7 @@ class LoginController extends GetxController {
           Get.offAllNamed('/bottomNavBar');
         } else {
           final message = jsonResponse['message'] ?? "Login failed";
-          Get.snackbar(
-            "Error",
-            message,
-            // ignore: deprecated_member_use
-            backgroundColor: Colors.red.withOpacity(0.8),
-            colorText: Colors.white,
-          );
+          EasyLoading.showError(message.toString());
         }
       } else {
         // Non-201 status code
@@ -142,13 +131,7 @@ class LoginController extends GetxController {
             print('Could not parse error response body (possibly not JSON)');
           }
         }
-        Get.snackbar(
-          "Error",
-          message,
-          // ignore: deprecated_member_use
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(message.toString());
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) {
@@ -158,13 +141,7 @@ class LoginController extends GetxController {
         }
       }
 
-      Get.snackbar(
-        "Error",
-        "Network error. Please check your connection.",
-        // ignore: deprecated_member_use
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Network error. Please check your connection.');
     }
   }
 
