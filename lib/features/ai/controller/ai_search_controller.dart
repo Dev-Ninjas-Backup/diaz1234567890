@@ -47,12 +47,7 @@ class AiSearchController extends GetxController {
 
   Future<void> handleAiSearch(String query) async {
     if (query.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter a search query',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Please enter a search query');
       return;
     }
 
@@ -112,12 +107,7 @@ class AiSearchController extends GetxController {
 
       results.assignAll(yachts);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Error: ${e.toString()}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Error: ${e.toString()}');
       print('AI Search Error: $e');
     } finally {
       isLoading.value = false;
@@ -139,21 +129,11 @@ class AiSearchController extends GetxController {
       } else {
         final message =
             jsonBody['message']?.toString() ?? 'Failed to load boat details';
-        Get.snackbar(
-          'Error',
-          message,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        EasyLoading.showError(message);
       }
     } catch (e) {
       EasyLoading.dismiss();
-      Get.snackbar(
-        'Error',
-        'Could not load boat details: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Could not load boat details: $e');
     }
   }
 }

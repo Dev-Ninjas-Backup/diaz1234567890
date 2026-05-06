@@ -42,12 +42,7 @@ class HomePageController extends GetxController {
 
   Future<void> handleAiSearch(String query) async {
     if (query.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter a search query',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Please enter a search query');
       return;
     }
 

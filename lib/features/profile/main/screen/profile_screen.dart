@@ -8,6 +8,7 @@ import 'package:diaz1234567890/features/profile/main/controller/profile_controll
 import 'package:diaz1234567890/features/profile/main/widgets/settings_button.dart';
 import 'package:diaz1234567890/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -205,10 +206,8 @@ class ProfileScreen extends StatelessWidget {
                           return GestureDetector(
                             onTap: () async {
                               if (!profileController.notificationToggle.value) {
-                                Get.snackbar(
-                                  'Notifications disabled',
-                                  'Enable notifications to view them',
-                                  snackPosition: SnackPosition.BOTTOM,
+                                EasyLoading.showInfo(
+                                  'Notifications disabled\nEnable notifications to view them',
                                 );
                                 return;
                               }
@@ -504,9 +503,8 @@ class ProfileScreen extends StatelessWidget {
                                     // Delete Account Button
                                     GestureDetector(
                                       onTap: () {
-                                        Get.snackbar(
-                                          'Account delete successfully',
-                                          'Api Not Impletented',
+                                        EasyLoading.showInfo(
+                                          'Account delete successfully\nApi Not Impletented',
                                         );
                                         Get.offAll(LoginScreen());
                                       },

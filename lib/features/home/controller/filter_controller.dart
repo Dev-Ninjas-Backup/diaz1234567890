@@ -9,6 +9,7 @@ import 'package:diaz1234567890/features/search/model/yacht_model.dart'
     as search_model;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -138,7 +139,7 @@ class FilterController extends GetxController {
       );
     } catch (e) {
       if (kDebugMode) print('❌ Error applying filters: $e');
-      Get.snackbar('Error', 'Failed to apply filters');
+      EasyLoading.showError('Failed to apply filters');
       rethrow;
     } finally {
       searchController.isLoading.value = false;

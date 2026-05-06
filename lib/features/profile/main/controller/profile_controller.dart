@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:diaz1234567890/core/endpoints/endpoints.dart';
@@ -59,13 +60,8 @@ class ProfileController extends GetxController {
         final title = notif['title']?.toString() ?? 'Notification';
         final message = notif['message']?.toString() ?? '';
 
-        // Show a lightweight in-app alert while app is active
-        Get.snackbar(
-          title,
-          message,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 4),
-        );
+        final text = message.trim().isEmpty ? title : '$title\n$message';
+        EasyLoading.showInfo(text);
 
         // Optionally refresh server-side list (non-blocking)
         try {

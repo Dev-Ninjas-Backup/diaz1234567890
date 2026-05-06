@@ -150,7 +150,7 @@ class DetailsController extends GetxController {
         'source': 'FLORIDA',
         'type': 'INDIVIDUAL_LISTING',
         'listingId': listingId,
-        'listingSource': null,
+        'listingSource': "custom",
         'status': null,
       };
 
@@ -167,6 +167,7 @@ class DetailsController extends GetxController {
         },
         body: jsonEncode(payload),
       );
+      debugPrint('Contact owner request body: ${jsonEncode(payload)}');
 
       if (kDebugMode) {
         print('Contact owner status: ${response.statusCode}');

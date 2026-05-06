@@ -34,12 +34,7 @@ class YachtSearchPageController extends GetxController {
 
   Future<void> handleAiSearch(String query) async {
     if (query.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please enter a search query',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Please enter a search query');
       return;
     }
 
@@ -93,12 +88,7 @@ class YachtSearchPageController extends GetxController {
 
       Get.to(() => AiSearchResultsScreen(query: query, results: yachts));
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Error: ${e.toString()}',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError('Error: ${e.toString()}');
     } finally {
       listingController.isLoading.value = false;
     }
