@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
+import 'package:diaz1234567890/features/blog/screen/blog_screen.dart';
 import 'package:diaz1234567890/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:diaz1234567890/features/home/screen/home.dart';
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
@@ -17,6 +18,7 @@ class BottomNavbarScreen extends StatelessWidget {
   final List<Widget> screens = [
     YachtHomePage(),
     YachtSearchPage(),
+    BlogScreen(),
     SellScreen(),
     ProfileScreen(),
   ];
@@ -24,6 +26,7 @@ class BottomNavbarScreen extends StatelessWidget {
   final List<String> activeIcons = [
     Iconpath.activeHome,
     Iconpath.activeSearch,
+    Iconpath.activeBlog,
     Iconpath.activeSellYacht,
     Iconpath.activeProfile,
   ];
@@ -31,11 +34,12 @@ class BottomNavbarScreen extends StatelessWidget {
   final List<String> inactiveIcons = [
     Iconpath.inactiveHome,
     Iconpath.inactiveSearch,
+    Iconpath.inactiveBlog,
     Iconpath.inactiveSellYacht,
     Iconpath.inactiveProfile,
   ];
 
-  final List<String> labels = ['Home', 'Search', 'Sell', 'Profile'];
+  final List<String> labels = ['Home', 'Search', 'Blog', 'Sell', 'Profile'];
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +67,7 @@ class BottomNavbarScreen extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(40, 14, 40, 25),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(4, (index) {
+              children: List.generate(5, (index) {
                 final isSelected = controller.selectedIndex.value == index;
                 return GestureDetector(
                   onTap: () {
