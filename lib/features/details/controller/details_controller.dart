@@ -150,8 +150,9 @@ class DetailsController extends GetxController {
         'source': 'FLORIDA',
         'type': 'INDIVIDUAL_LISTING',
         'listingId': listingId,
-        'listingSource': "custom",
-        'status': null,
+        // Prisma schema requires these non-null; keep them as empty strings.
+        'listingSource': 'custom',
+        'status': '',
       };
 
       if (kDebugMode) {
