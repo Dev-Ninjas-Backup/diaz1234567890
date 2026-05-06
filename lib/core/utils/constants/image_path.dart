@@ -12,4 +12,5 @@ class Imagepath {
   static const String seeAllButton = 'assets/images/seeAllButton.png';
   static const String detailsTable = 'assets/images/detailsTable.png';
   static const String fullDetailsFrame = 'assets/images/fullDetailsFrame.png';
+  static const String coverImage = 'assets/images/cover_image.jpg';
 }

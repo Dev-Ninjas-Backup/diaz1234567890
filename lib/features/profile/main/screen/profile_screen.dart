@@ -391,7 +391,9 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 23),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Get.toNamed(AppRoute.needHelpScreen);
+                          },
                           child: Container(
                             padding: EdgeInsets.all(16),
                             margin: EdgeInsets.only(bottom: 20),

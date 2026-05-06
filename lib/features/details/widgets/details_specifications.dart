@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/features/details/controller/details_controller.dart';
+import 'package:diaz1234567890/features/details/model/boat_detail.dart';
 
 class DetailsSpecifications extends StatelessWidget {
   const DetailsSpecifications({super.key});
@@ -36,42 +37,80 @@ class DetailsSpecifications extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
                 child: Column(
                   children: [
+                    _buildDetailRow('Listing ID', b?.listingId ?? ''),
                     _buildDetailRow('Brand Make', b?.make ?? ''),
                     _buildDetailRow('Model', b?.model ?? ''),
+                    _buildDetailRow('Year', b?.buildYear?.toString() ?? ''),
+                    _buildDetailRow('Class', b?.cLass ?? ''),
+                    // Dimensions: prefer boatDimensions when available
                     _buildDetailRow(
-                      'Built Year',
-                      b?.buildYear?.toString() ?? '',
+                      'Length',
+                      b?.boatDimensions != null
+                          ? '${b!.boatDimensions!.lengthFeet ?? ''}\' ${b.boatDimensions!.lengthInches ?? ''}"'
+                          : (b?.length?.toString() ?? ''),
                     ),
-                    _buildDetailRow('Length', b?.length?.toString() ?? ''),
+                    _buildDetailRow('Beam', b?.beam?.toString() ?? ''),
+                    _buildDetailRow('Draft', b?.draft?.toString() ?? ''),
+                    _buildDetailRow('Hull Material', b?.material ?? ''),
+                    _buildDetailRow('Fuel Type', b?.fuelType ?? ''),
+                    _buildDetailRow('Engine Type', b?.engineType ?? ''),
+                    _buildDetailRow('Propeller Type', b?.propType ?? ''),
                     _buildDetailRow(
-                      'Number of Engine',
+                      'Propeller Material',
+                      b?.propMaterial ?? '',
+                    ),
+                    _buildDetailRow(
+                      'Number Of Engines',
                       b?.enginesNumber?.toString() ?? '',
                     ),
-                    _buildDetailRow('Class', b?.cLass ?? ''),
-                    _buildDetailRow('Material', b?.material ?? ''),
                     _buildDetailRow(
-                      'Number of Cabin',
-                      b?.cabinsNumber?.toString() ?? '02',
+                      'Number Of Cabins',
+                      b?.cabinsNumber?.toString() ?? '',
                     ),
                     _buildDetailRow(
-                      'Number of Heads',
+                      'Number Of Heads',
                       b?.headsNumber?.toString() ?? '',
                     ),
-                    _buildDetailRow('Beam Size', b?.beam?.toString() ?? ''),
-                    _buildDetailRow('Fuel Type', b?.make ?? ''),
-                    _buildDetailRow(
-                      'Max Draft',
-                      b?.draft?.toString() ?? '5 ft',
-                    ),
-                    _buildDetailRow('Name', b?.name ?? ''),
                     _buildDetailRow(
                       'Location',
-                      b != null ? '${b.city ?? ''}, ${b.state ?? ''}' : '',
+                      b != null
+                          ? '${b.city ?? ''}, ${b.state ?? ''} ${b.zip ?? ''}'
+                          : '',
                     ),
+                    // Per-engine details
+                    if (b != null && b.engines.isNotEmpty) ...[
+                      for (var i = 0; i < b.engines.length; i++) ...[
+                        _buildDetailRow(
+                          'Engine ${i + 1} Make',
+                          b.engines[i].make ?? '',
+                        ),
+                        _buildDetailRow(
+                          'Engine ${i + 1} Model',
+                          b.engines[i].model ?? '',
+                        ),
+                        _buildDetailRow(
+                          'Engine ${i + 1} Horsepower',
+                          b.engines[i].horsepower?.toString() ?? '',
+                        ),
+                        _buildDetailRow(
+                          'Engine ${i + 1} Hours',
+                          b.engines[i].hours?.toString() ?? '',
+                        ),
+                        _buildDetailRow(
+                          'Engine ${i + 1} Fuel Type',
+                          b.engines[i].fuelType ?? '',
+                        ),
+                        _buildDetailRow(
+                          'Engine ${i + 1} Propeller',
+                          b.engines[i].propellerType ?? '',
+                        ),
+                      ],
+                    ],
+                    _buildDetailRow('Name', b?.name ?? ''),
                     _buildDetailRow('Condition', b?.condition ?? ''),
                     _buildDetailRow(
                       'Price',
-                      b != null ? '\$${b.price.toString()}' : '\$6,250,000',
+                      b != null ? '\$${b.price.toString()}' : '',
                       isLast: true,
                     ),
                   ],
