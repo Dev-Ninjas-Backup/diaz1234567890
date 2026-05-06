@@ -8,6 +8,8 @@ class Iconpath {
   static const String inactiveSellYacht = 'assets/icons/inactiveSellYacht.png';
   static const String activeProfile = 'assets/icons/activeProfile.png';
   static const String inactiveProfile = 'assets/icons/inactiveProfile.png';
+  static const String activeBlog = 'assets/icons/blog.png';
+  static const String inactiveBlog = 'assets/icons/blog2.png';
   static const String askAi = 'assets/icons/askai_icon.png';
   static const String customTune = 'assets/icons/customTune.png';
   static const String noListIcon = 'assets/icons/noList.png';
