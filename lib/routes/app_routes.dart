@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/features/auth/login_screen/screen/login_screen.dart';
 import 'package:diaz1234567890/features/blog/screen/blog_screen.dart';
+import 'package:diaz1234567890/features/blog_details/screen/blog_details_screen.dart';
 import 'package:diaz1234567890/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:diaz1234567890/features/details/screen/details_screen.dart';
 import 'package:diaz1234567890/features/faq/screen/faq_screen.dart';
@@ -35,6 +36,8 @@ class AppRoute {
   static String faqScreen = "/faqScreen";
   static String needHelpScreen = "/needHelpScreen";
   static String blogScreen = "/blogScreen";
+  static String blogDetailsScreen = "/blogDetailsScreen";
+
 
 
 
@@ -56,6 +59,8 @@ class AppRoute {
   static String getFaqScreen() => faqScreen;
   static String getNeedHelpScreen() => needHelpScreen;
   static String getBlogScreen() => blogScreen;
+  static String getBlogDetailsScreen() => blogDetailsScreen;
+
 
 
 
@@ -77,5 +82,6 @@ class AppRoute {
     GetPage(name: faqScreen, page: () => FaqScreen()),
     GetPage(name: needHelpScreen, page: () => NeedHelpScreen()),
     GetPage(name: blogScreen, page: () => BlogScreen()),
+    GetPage(name: blogDetailsScreen, page: () => BlogDetailsScreen()),
   ];
 }

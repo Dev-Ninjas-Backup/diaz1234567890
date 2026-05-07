@@ -18,28 +18,28 @@ class BottomNavbarScreen extends StatelessWidget {
   final List<Widget> screens = [
     YachtHomePage(),
     YachtSearchPage(),
-    BlogScreen(),
     SellScreen(),
+    BlogScreen(),
     ProfileScreen(),
   ];
 
   final List<String> activeIcons = [
     Iconpath.activeHome,
     Iconpath.activeSearch,
-    Iconpath.activeBlog,
     Iconpath.activeSellYacht,
+    Iconpath.activeBlog,
     Iconpath.activeProfile,
   ];
 
   final List<String> inactiveIcons = [
     Iconpath.inactiveHome,
     Iconpath.inactiveSearch,
-    Iconpath.inactiveBlog,
     Iconpath.inactiveSellYacht,
+    Iconpath.inactiveBlog,
     Iconpath.inactiveProfile,
   ];
 
-  final List<String> labels = ['Home', 'Search', 'Blog', 'Sell', 'Profile'];
+  final List<String> labels = ['Home', 'Search', 'Sell', 'Blog', 'Profile'];
 
   @override
   Widget build(BuildContext context) {
