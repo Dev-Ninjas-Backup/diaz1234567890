@@ -13,4 +13,6 @@ class Imagepath {
   static const String detailsTable = 'assets/images/detailsTable.png';
   static const String fullDetailsFrame = 'assets/images/fullDetailsFrame.png';
   static const String coverImage = 'assets/images/cover_image.jpg';
+  static String blogImage1 = 'assets/images/blog_image_1.png';
+  static String bottomImage = 'assets/images/bottom_image.png';
 }

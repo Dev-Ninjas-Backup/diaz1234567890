@@ -48,4 +48,7 @@ class Endpoints {
   static String faq = '$baseUrl/api/faq?site=FLORIDA';
   static const String needHelp =
       '$baseUrl/api/contact/contact-info?site=FLORIDA';
+  static const String blogPosts = '$baseUrl/api/blogs';
+    static String blogDetails(String documentId) =>
+      '$baseUrl/api/blogs/$documentId';
 }
