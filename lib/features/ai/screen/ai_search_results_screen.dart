@@ -287,8 +287,9 @@ class AiSearchResultsScreen extends StatelessWidget {
                                       fit: BoxFit.cover,
                                       loadingBuilder:
                                           (context, child, loadingProgress) {
-                                            if (loadingProgress == null)
+                                            if (loadingProgress == null) {
                                               return child;
+                                            }
                                             return Container(
                                               width: 120,
                                               height: 120,

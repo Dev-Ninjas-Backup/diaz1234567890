@@ -49,12 +49,12 @@ class HomePageController extends GetxController {
     try {
       aiSearchController.isLoading.value = true;
 
-      await StorageService.init();
-      final userId = StorageService.userId;
-      if (userId == null || userId.isEmpty) {
-        EasyLoading.showError('User not logged in');
-        return;
-      }
+      // await StorageService.init();
+      // final userId = StorageService.userId;
+      // if (userId == null || userId.isEmpty) {
+      //   EasyLoading.showError('User not logged in');
+      //   return;
+      // }
 
       final response = await ApiService.aiSearch(
         query: query,

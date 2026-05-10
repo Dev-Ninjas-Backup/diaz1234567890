@@ -97,7 +97,8 @@ class BoatDetail {
       id: json['id'] ?? '',
       listingId: json['listingId'] ?? '',
       userId: json['userId'] ?? '',
-      name: json['name'] ?? '',
+      name:
+          '${json['buildYear'] ?? ''} ${json['make'] ?? ''} ${json['model'] ?? ''}',
       material: json['material'] ?? '',
       cLass: json['class'] ?? '',
       condition: json['condition'] ?? '',
@@ -239,14 +240,14 @@ class BoatDimensions {
   });
 
   factory BoatDimensions.fromJson(Map<String, dynamic> json) {
-    int? _toInt(dynamic v) => v is int ? v as int : null;
+    int? toInt(dynamic v) => v is int ? v : null;
     return BoatDimensions(
-      lengthFeet: _toInt(json['lengthFeet']),
-      lengthInches: _toInt(json['lengthInches']),
-      beamFeet: _toInt(json['beamFeet']),
-      beamInches: _toInt(json['beamInches']),
-      draftFeet: _toInt(json['draftFeet']),
-      draftInches: _toInt(json['draftInches']),
+      lengthFeet: toInt(json['lengthFeet']),
+      lengthInches: toInt(json['lengthInches']),
+      beamFeet: toInt(json['beamFeet']),
+      beamInches: toInt(json['beamInches']),
+      draftFeet: toInt(json['draftFeet']),
+      draftInches: toInt(json['draftInches']),
     );
   }
 }

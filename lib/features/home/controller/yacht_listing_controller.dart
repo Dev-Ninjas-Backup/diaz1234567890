@@ -96,7 +96,12 @@ class YachtListingController extends GetxController {
               final id = (map['id'] ?? map['DocumentID'] ?? '').toString();
               final yacht = Yacht(
                 id: id,
-                title: map['ListingTitle'] ?? 'Unknown Yacht',
+                title:
+                    map['ModelYear'] != null &&
+                        map['MakeString'] != null &&
+                        map['Model'] != null
+                    ? '${map['ModelYear']} ${map['MakeString']} ${map['Model']}'
+                    : 'Unknown Yacht',
                 location:
                     '${map['BoatLocation']?['BoatCityName'] ?? ''}, ${map['BoatLocation']?['BoatStateCode'] ?? ''}',
                 make: map['MakeString'] ?? 'N/A',
@@ -165,7 +170,15 @@ class YachtListingController extends GetxController {
           final yacht = Yacht(
             id: id,
             title:
-                boatData['name'] ?? boatData['ListingTitle'] ?? 'Unknown Yacht',
+                boatData['buildYear'] != null &&
+                    boatData['make'] != null &&
+                    boatData['model'] != null
+                ? '${boatData['buildYear']} ${boatData['make']} ${boatData['model']}'
+                : boatData['ModelYear'] != null &&
+                      boatData['MakeString'] != null &&
+                      boatData['Model'] != null
+                ? '${boatData['ModelYear']} ${boatData['MakeString']} ${boatData['Model']}'
+                : 'Unknown Yacht',
             location:
                 '${boatData['city'] ?? boatData['BoatLocation']?['BoatCityName'] ?? ''}, ${boatData['state'] ?? boatData['BoatLocation']?['BoatStateCode'] ?? ''}',
             make: boatData['make'] ?? boatData['MakeString'] ?? 'N/A',
@@ -225,7 +238,12 @@ class YachtListingController extends GetxController {
               final id = (map['DocumentID'] ?? '').toString();
               final yacht = Yacht(
                 id: id,
-                title: map['ListingTitle'] ?? 'Unknown Yacht',
+                title:
+                    map['ModelYear'] != null &&
+                        map['MakeString'] != null &&
+                        map['Model'] != null
+                    ? '${map['ModelYear']} ${map['MakeString']} ${map['Model']}'
+                    : 'Unknown Yacht',
                 location:
                     '${map['BoatLocation']?['BoatCityName'] ?? ''}, ${map['BoatLocation']?['BoatStateCode'] ?? ''}',
                 make: map['MakeString'] ?? 'N/A',
