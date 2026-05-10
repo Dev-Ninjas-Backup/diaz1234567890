@@ -65,7 +65,7 @@ class DetailsThumbnailGallery extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
                         height: 20,
-                        width: 80,
+                        width: 85,
                         child: TextButton(
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.white,

@@ -41,13 +41,13 @@ class YachtSearchPageController extends GetxController {
     try {
       listingController.isLoading.value = true;
 
-      await StorageService.init();
-      final userId = StorageService.userId;
+      // await StorageService.init();
+      // final userId = StorageService.userId;
 
-      if (userId == null || userId.isEmpty) {
-        EasyLoading.showError('User not logged in');
-        return;
-      }
+      // if (userId == null || userId.isEmpty) {
+      //   EasyLoading.showError('User not logged in');
+      //   return;
+      // }
 
       final response = await ApiService.aiSearch(query: query, limit: aiLimit);
 

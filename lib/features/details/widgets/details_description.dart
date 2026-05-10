@@ -13,7 +13,7 @@ class DetailsDescription extends StatelessWidget {
     return Obx(() {
       final b = controller.boat.value;
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

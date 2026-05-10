@@ -17,7 +17,7 @@ class DetailsHeaderInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Text(
               boat?.name ?? '',
               style: const TextStyle(
@@ -28,7 +28,7 @@ class DetailsHeaderInfo extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -60,7 +60,7 @@ class DetailsHeaderInfo extends StatelessWidget {
                 const Spacer(),
                 CustomButton(
                   label: 'Contact Owner',
-                  width: 130,
+                  width: 135,
                   height: 34,
                   borderRadius: 8,
                   fontSize: 11,

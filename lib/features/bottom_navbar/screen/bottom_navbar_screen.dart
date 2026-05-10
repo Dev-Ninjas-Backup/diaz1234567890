@@ -64,7 +64,7 @@ class BottomNavbarScreen extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: EdgeInsets.fromLTRB(40, 14, 40, 25),
+            padding: EdgeInsets.fromLTRB(20, 14, 20, 25),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(5, (index) {

@@ -10,11 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 class BlogDetailsScreen extends StatelessWidget {
   BlogDetailsScreen({super.key});

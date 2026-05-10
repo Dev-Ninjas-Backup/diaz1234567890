@@ -18,7 +18,7 @@ class DetailsMapSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               "Location in Map",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

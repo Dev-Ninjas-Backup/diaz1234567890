@@ -16,7 +16,7 @@ class DetailsSpecifications extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 26, vertical: 16),
+            padding: EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16),
             child: Text(
               'Specifications',
               style: TextStyle(
@@ -27,7 +27,7 @@ class DetailsSpecifications extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
