@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/features/details/controller/details_controller.dart';
+import 'package:diaz1234567890/features/details/widgets/fullscreen_gallery.dart';
 
 class DetailsThumbnailGallery extends StatelessWidget {
   const DetailsThumbnailGallery({super.key});
@@ -24,41 +25,62 @@ class DetailsThumbnailGallery extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                imgs[0],
-                height: 152,
-                width: 185,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            GestureDetector(
+              onTap: () => Get.to(
+                () => FullScreenGallery(images: imgs, initialIndex: 0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  imgs[0],
+                  height: 152,
+                  width: 185,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
               ),
             ),
             const SizedBox(width: 10),
             Column(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    imgs.length > 1 ? imgs[1] : imgs[0],
-                    height: 71,
-                    width: 128,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                GestureDetector(
+                  onTap: () => Get.to(
+                    () => FullScreenGallery(
+                      images: imgs,
+                      initialIndex: imgs.length > 1 ? 1 : 0,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      imgs.length > 1 ? imgs[1] : imgs[0],
+                      height: 71,
+                      width: 128,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
                 Stack(
                   alignment: Alignment.bottomRight,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        imgs.length > 2 ? imgs[2] : imgs[0],
-                        height: 71,
-                        width: 128,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    GestureDetector(
+                      onTap: () => Get.to(
+                        () => FullScreenGallery(
+                          images: imgs,
+                          initialIndex: imgs.length > 2 ? 2 : 0,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          imgs.length > 2 ? imgs[2] : imgs[0],
+                          height: 71,
+                          width: 128,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                     Padding(
@@ -74,7 +96,15 @@ class DetailsThumbnailGallery extends StatelessWidget {
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            final startIndex = 0;
+                            Get.to(
+                              () => FullScreenGallery(
+                                images: imgs,
+                                initialIndex: startIndex,
+                              ),
+                            );
+                          },
                           child: const Text(
                             'See All Photo',
                             style: TextStyle(
