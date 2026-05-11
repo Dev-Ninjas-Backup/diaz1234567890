@@ -51,6 +51,21 @@ class DetailsImageSlider extends StatelessWidget {
           }),
         ),
         Positioned(
+          top: 56,
+          left: 16,
+          child: GestureDetector(
+            onTap: () => Get.back(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.arrow_back, color: Colors.white),
+            ),
+          ),
+        ),
+        Positioned(
           bottom: 12,
           child: Obx(() {
             return Row(
