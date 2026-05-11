@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/features/details/controller/details_controller.dart';
-import 'package:diaz1234567890/features/details/model/boat_detail.dart';
 
 class DetailsSpecifications extends StatelessWidget {
   const DetailsSpecifications({super.key});
