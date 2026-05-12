@@ -1,8 +1,9 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
-import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/ai/controller/ai_search_controller.dart';
 import 'package:diaz1234567890/features/home/model/home_model.dart';
+import 'package:diaz1234567890/features/home/widget/sell_banner_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,20 +17,32 @@ class AiSearchResultsScreen extends StatelessWidget {
     required this.results,
   });
 
-  static Widget _buildDetail(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value.substring(0, value.length > 10 ? 10 : value.length),
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-        ),
-      ],
+  static Widget _buildDetailCard(String label, String value) {
+    final safeValue = value.isEmpty ? 'N/A' : value;
+    final shortValue = safeValue.substring(
+      0,
+      safeValue.length > 10 ? 10 : safeValue.length,
+    );
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            shortValue,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -44,7 +57,6 @@ class AiSearchResultsScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Top Stack Section (Search Bar)
             Stack(
               children: [
                 Image.asset(
@@ -54,103 +66,27 @@ class AiSearchResultsScreen extends StatelessWidget {
                   fit: BoxFit.fill,
                 ),
                 Positioned(
-                  bottom: 15,
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: controller.toggleLimitSlider,
-                          child: Image.asset(
-                            Iconpath.customTune,
-                            width: 25,
-                            height: 25,
-                          ),
+                  top: 12,
+                  left: 12,
+                  child: SafeArea(
+                    child: CircleAvatar(
+                      backgroundColor: Colors.black45,
+                      radius: 18,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 18,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: controller.searchController,
-                            onSubmitted: controller.handleAiSearch,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText:
-                                  "Find me a Viking for sale from 2005 to 2008",
-                              hintStyle: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Obx(
-                          () => TextButton(
-                            onPressed: controller.isLoading.value
-                                ? null
-                                : () => controller.handleAiSearch(
-                                    controller.searchController.text,
-                                  ),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 8,
-                              ),
-                              backgroundColor: Colors.grey[200],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              foregroundColor: Colors.black,
-                              elevation: 0,
-                            ),
-                            child: controller.isLoading.value
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Row(
-                                    children: [
-                                      Image.asset(
-                                        Iconpath.askAi,
-                                        width: 18,
-                                        height: 18,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 2,
-                                        ),
-                                        child: Text(
-                                          "Ask AI",
-                                          style: getTextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                        ),
-                      ],
+                        onPressed: () => Get.back(),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
 
-            // Limit Slider
             Obx(
               () => controller.showLimitSlider.value
                   ? Padding(
@@ -227,7 +163,6 @@ class AiSearchResultsScreen extends StatelessWidget {
               ),
             ),
 
-            // Results List
             Obx(
               () => controller.results.isEmpty
                   ? Padding(
@@ -248,51 +183,52 @@ class AiSearchResultsScreen extends StatelessWidget {
                         ],
                       ),
                     )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                  : SizedBox(
+                      height: 340,
                       child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(left: 16),
+                        scrollDirection: Axis.horizontal,
                         itemCount: controller.results.length,
                         itemBuilder: (context, index) {
                           final yacht = controller.results[index];
                           return GestureDetector(
                             onTap: () => controller.navigateToDetails(yacht.id),
                             child: Container(
-                              margin: const EdgeInsets.only(bottom: 12),
+                              width: 230,
+                              margin: const EdgeInsets.only(
+                                right: 12,
+                                bottom: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
-                                boxShadow: const [
+                                boxShadow: [
                                   BoxShadow(
                                     color: Colors.black12,
                                     blurRadius: 5,
-                                    offset: Offset(0, 3),
+                                    offset: const Offset(0, 3),
                                   ),
                                 ],
                               ),
-                              child: Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  // Image on top
                                   ClipRRect(
-                                    borderRadius: const BorderRadius.horizontal(
-                                      left: Radius.circular(12),
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(12),
                                     ),
                                     child: Image.network(
                                       yacht.image,
-                                      width: 120,
-                                      height: 120,
+                                      height: 150,
+                                      width: double.infinity,
                                       fit: BoxFit.cover,
                                       loadingBuilder:
                                           (context, child, loadingProgress) {
-                                            if (loadingProgress == null) {
+                                            if (loadingProgress == null)
                                               return child;
-                                            }
                                             return Container(
-                                              width: 120,
-                                              height: 120,
+                                              height: 150,
                                               color: Colors.grey[200],
                                               child: const Center(
                                                 child:
@@ -304,11 +240,13 @@ class AiSearchResultsScreen extends StatelessWidget {
                                           },
                                       errorBuilder:
                                           (context, error, stackTrace) {
-                                            return Center(
-                                              child: Icon(
+                                            return Container(
+                                              height: 150,
+                                              width: double.infinity,
+                                              color: Colors.grey[200],
+                                              child: const Icon(
                                                 Icons.broken_image,
-                                                size: 50,
-                                                color: Colors.grey[400],
+                                                color: Colors.grey,
                                               ),
                                             );
                                           },
@@ -321,54 +259,61 @@ class AiSearchResultsScreen extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            yacht.title,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 14,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
                                           Row(
                                             children: [
                                               const Icon(
                                                 Icons.location_on,
-                                                size: 12,
+                                                size: 14,
                                                 color: Colors.grey,
                                               ),
-                                              const SizedBox(width: 2),
-                                              Expanded(
-                                                child: Text(
-                                                  yacht.location,
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                yacht.location,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
                                                 ),
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 6),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              _buildDetail("Make", yacht.make),
-                                              _buildDetail("Year", yacht.year),
-                                            ],
+                                          Text(
+                                            yacht.title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                            ),
                                           ),
                                           const SizedBox(height: 6),
+                                          const Divider(height: 8),
+                                          Row(
+                                            children: [
+                                              _buildDetailCard(
+                                                "Make",
+                                                yacht.make,
+                                              ),
+                                              _buildDetailCard(
+                                                "Model",
+                                                yacht.model,
+                                              ),
+                                              _buildDetailCard(
+                                                "Year",
+                                                yacht.year,
+                                              ),
+                                            ],
+                                          ),
+                                          const Divider(),
+                                          const Spacer(),
                                           Text(
                                             "Price: ${yacht.price}",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               color: Color(0xFF00A3AC),
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 13,
+                                              fontSize: 16,
                                             ),
                                           ),
                                         ],
@@ -385,9 +330,208 @@ class AiSearchResultsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
+
+            Center(
+              child: Obx(
+                () => controller.isFromFilters.value
+                    ? GestureDetector(
+                        onTap: () async {
+                          await controller.fetchMoreResults(
+                            controller.limit.value.toInt(),
+                          );
+                        },
+                        child: Obx(
+                          () => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.appPrimaryColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: controller.isLoadingMore.value
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    'Show more (${controller.results.length}/${controller.totalResults.value})',
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ).copyWith(color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          _showLimitSliderModal(context, controller);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00A3AC),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Obx(
+                            () => controller.isLoadingMore.value
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(
+                                    'Show more',
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ).copyWith(color: Colors.white),
+                                  ),
+                          ),
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Banner Section
+            const SellBannerSection(),
+
+            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
+}
+
+void _showLimitSliderModal(
+  BuildContext context,
+  AiSearchController controller,
+) {
+  final sliderValue = 10.0.obs;
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
+    ),
+    builder: (BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Number of Results',
+              style: getTextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ).copyWith(color: Colors.black),
+            ),
+            const SizedBox(height: 24),
+            Obx(
+              () => Column(
+                children: [
+                  Slider(
+                    value: sliderValue.value,
+                    min: 10,
+                    max: 100,
+                    divisions: 9,
+                    activeColor: AppColors.appPrimaryColor,
+                    inactiveColor: Colors.grey.shade300,
+                    label: sliderValue.value.toStringAsFixed(0),
+                    onChanged: (value) {
+                      sliderValue.value = value;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Limit: ${sliderValue.value.toStringAsFixed(0)}',
+                    style: getTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ).copyWith(color: AppColors.appPrimaryColor),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ).copyWith(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      Get.back();
+                      await controller.fetchMoreResults(
+                        sliderValue.value.toInt(),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: AppColors.appPrimaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Apply',
+                          style: getTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ).copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      );
+    },
+  );
 }
