@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:diaz1234567890/core/services/api_service.dart';
-import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:diaz1234567890/features/home/controller/yacht_listing_controller.dart';
