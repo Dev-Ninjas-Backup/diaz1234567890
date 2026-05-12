@@ -1,5 +1,4 @@
 import 'package:diaz1234567890/core/services/api_service.dart';
-import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_search_results_screen.dart';
 import 'package:diaz1234567890/features/home/model/home_model.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
