@@ -457,7 +457,7 @@ void _showLimitSliderModal(
                     min: 10,
                     max: 100,
                     divisions: 9,
-                    activeColor: AppColors.appPrimaryColor,
+                    activeColor: const Color(0xFF00A3AC),
                     inactiveColor: Colors.grey.shade300,
                     label: sliderValue.value.toStringAsFixed(0),
                     onChanged: (value) {
@@ -470,7 +470,7 @@ void _showLimitSliderModal(
                     style: getTextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                    ).copyWith(color: AppColors.appPrimaryColor),
+                    ).copyWith(color: const Color(0xFF00A3AC)),
                   ),
                 ],
               ),
@@ -511,7 +511,7 @@ void _showLimitSliderModal(
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: AppColors.appPrimaryColor,
+                        color: const Color(0xFF00A3AC),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
