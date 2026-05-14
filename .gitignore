@@ -46,3 +46,4 @@ temp_interactive_push.bat
 .gitignore
 .env
 pubspec.lock
+branch_structure.json
