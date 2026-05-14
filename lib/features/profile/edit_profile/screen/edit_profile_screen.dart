@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/controller/edit_profile_controller.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
@@ -15,6 +16,7 @@ class EditProfileScreen extends StatelessWidget {
     final EditProfileController controller = Get.put(EditProfileController());
 
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: CustomAppBar(title: 'Edit Profile'),
       body: SingleChildScrollView(
         child: Padding(
