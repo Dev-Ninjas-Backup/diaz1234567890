@@ -12,6 +12,8 @@ class AiChatController extends GetxController {
   // Use Rx observable for reactive updates
   var userId = ''.obs;
   var isUserLoggedIn = false.obs;
+  var isAnonymousChat = false.obs;
+  var isUserInitialized = false.obs;
 
   @override
   void onInit() {
@@ -31,6 +33,7 @@ class AiChatController extends GetxController {
 
     userId.value = storedUserId;
     isUserLoggedIn.value = storedUserId.isNotEmpty && hasToken;
+    isAnonymousChat.value = false;
 
     if (kDebugMode) {
       print('AiChatController: User ID = ${userId.value}');
@@ -41,6 +44,8 @@ class AiChatController extends GetxController {
     if (isUserLoggedIn.value) {
       await _loadChatHistory();
     }
+
+    isUserInitialized.value = true;
   }
 
   Future<void> _loadChatHistory() async {
@@ -74,11 +79,6 @@ class AiChatController extends GetxController {
   }
 
   Future<void> sendMessage(String text) async {
-    if (!isUserLoggedIn.value) {
-      errorMessage.value = 'Please login to use AI Chat';
-      return;
-    }
-
     final trimmedText = text.trim();
     if (trimmedText.isEmpty) return;
 
@@ -138,5 +138,12 @@ class AiChatController extends GetxController {
 
   void clearChat() {
     messages.clear();
+  }
+
+  void continueAnonymously() {
+    userId.value = '';
+    isUserLoggedIn.value = false;
+    isAnonymousChat.value = true;
+    errorMessage.value = null;
   }
 }
