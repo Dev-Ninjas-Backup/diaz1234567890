@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:diaz1234567890/features/profile/main/controller/profile_controller.dart';
@@ -11,7 +12,9 @@ class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
+        backgroundColor: AppColors.appBackgroundColor,
         title: Text('Notifications', style: getTextStyle(fontSize: 16)),
         actions: [
           IconButton(
