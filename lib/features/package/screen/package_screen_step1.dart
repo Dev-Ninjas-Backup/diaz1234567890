@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,7 +15,7 @@ class PackageScreenStep1 extends StatelessWidget {
     final controller = Get.put(SellPackageController(), permanent: false);
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5FEFF),
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: AppBar(
         backgroundColor: Color(0xFF006EF0),
         toolbarHeight: 80,
