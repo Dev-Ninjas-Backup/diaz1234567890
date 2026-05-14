@@ -9,4 +9,5 @@ class AppColors {
   static const appSecondaryColor = Color(0xFFF0F4FA);
   static const appBodyColor = Color(0xFF2D4059);
   static const remindColor = Color(0xFFCC7B34);
+  static const appBackgroundColor = Color(0xFFF5FEFF);
 }
