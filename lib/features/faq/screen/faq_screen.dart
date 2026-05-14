@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/faq_controller.dart';
@@ -9,7 +10,7 @@ class FaqScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final FaqController controller = Get.put(FaqController());
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
