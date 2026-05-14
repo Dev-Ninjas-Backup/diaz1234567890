@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/search/screen/search_listings.dart';
 import 'package:diaz1234567890/features/search/controller/yacht_controller.dart';
@@ -30,7 +31,7 @@ class YachtSearchPage extends StatelessWidget {
           );
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5FEFF),
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: Column(
