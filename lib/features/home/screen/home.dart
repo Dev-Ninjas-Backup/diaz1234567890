@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/core/common/style/global_text_style.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
 import 'package:diaz1234567890/features/ai/screen/ai_chat_screen.dart';
@@ -17,7 +18,7 @@ class YachtHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FEFF),
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
