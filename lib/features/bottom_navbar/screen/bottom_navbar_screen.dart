@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/services/firebase/storage_service.dart';
 import 'package:diaz1234567890/features/blog/screen/blog_screen.dart';
@@ -44,7 +45,7 @@ class BottomNavbarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       body: Obx(() => screens[controller.selectedIndex.value]),
       bottomNavigationBar: Obx(
         () => Container(
