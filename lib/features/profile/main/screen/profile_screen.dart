@@ -148,6 +148,7 @@ class ProfileScreen extends StatelessWidget {
 
       // ── Authenticated User View (Original Profile) ─────────────────────
       return Scaffold(
+        backgroundColor: AppColors.appBackgroundColor,
         body: Column(
           children: [
             Container(
@@ -312,18 +313,18 @@ class ProfileScreen extends StatelessWidget {
                             Get.toNamed('/myListingScreen');
                           },
                         ),
-                        SettingsButton(
-                          icon: Icons.business_center_outlined,
-                          title: 'Leads',
-                          subtitle: 'See All Leads',
-                          onTap: () {},
-                        ),
-                        SettingsButton(
-                          icon: Icons.inbox_outlined,
-                          title: 'Invoices',
-                          subtitle: 'See All Invoices',
-                          onTap: () {},
-                        ),
+                        // SettingsButton(
+                        //   icon: Icons.business_center_outlined,
+                        //   title: 'Leads',
+                        //   subtitle: 'See All Leads',
+                        //   onTap: () {},
+                        // ),
+                        // SettingsButton(
+                        //   icon: Icons.inbox_outlined,
+                        //   title: 'Invoices',
+                        //   subtitle: 'See All Invoices',
+                        //   onTap: () {},
+                        // ),
                         // SettingsButton(
                         //   icon: Icons.assignment_outlined,
                         //   title: 'Report',
@@ -363,6 +364,14 @@ class ProfileScreen extends StatelessWidget {
                           onTap: () async {
                             await profileController.loadNotifications();
                             //Get.toNamed(AppRoute.notificationsScreen);
+                          },
+                        ),
+                        SettingsButton(
+                          icon: Icons.info_outline,
+                          title: 'About Us',
+                          subtitle: 'Learn more about us',
+                          onTap: () {
+                            Get.toNamed(AppRoute.aboutUsScreen);
                           },
                         ),
                         SettingsButton(
@@ -500,7 +509,7 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                     ),
 
-                                    SizedBox(width: 50,),                                 
+                                    SizedBox(width: 50),
                                     // Space between the two buttons
                                     // Delete Account Button
                                     GestureDetector(
