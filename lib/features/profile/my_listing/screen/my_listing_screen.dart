@@ -1,4 +1,5 @@
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/profile/my_listing/widget/my_listing_container.dart';
 import 'package:diaz1234567890/features/profile/my_listing/controller/my_listing_controller.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class MyListingScreen extends StatelessWidget {
     final MyListingController controller = Get.put(MyListingController());
 
     return Scaffold(
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: CustomAppBar(title: 'My Listing'),
       body: Obx(() {
         if (controller.isLoading.value) {
