@@ -51,4 +51,12 @@ class Endpoints {
   static const String blogPosts = '$baseUrl/api/blogs';
     static String blogDetails(String documentId) =>
       '$baseUrl/api/blogs/$documentId';
+  static String missionVision =
+      '$baseUrl/api/aboutus/mission-vision?site=FLORIDA';
+  static String contactInfo = '$baseUrl/api/contact/contact-info?site=FLORIDA';
+  static String aboutUs = '$baseUrl/api/about-us?site=FLORIDA';
+  static String whyUs = '$baseUrl/api/why-us?site=FLORIDA';
+  static String ourStory = '$baseUrl/api/aboutus/our-story?site=FLORIDA';
+  static String whatSetsUsApart =
+      '$baseUrl/api/aboutus/what-sets-us-apart?site=FLORIDA';
 }
