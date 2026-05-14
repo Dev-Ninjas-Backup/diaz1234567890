@@ -10,7 +10,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class BlogDetailsScreen extends StatelessWidget {
   BlogDetailsScreen({super.key});
   final BlogController controller = Get.put(BlogController());
@@ -173,25 +172,47 @@ class BlogDetailsScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Obx(
-                      () => Text(
-                        detailsController.title.isEmpty
-                            ? 'Blog Details'
-                            : detailsController.title,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          height: 1.20,
+                  Row(
+                    children: [
+                      SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Obx(
+                          () => Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: Text(
+                              detailsController.title.isEmpty
+                                  ? 'Blog Details'
+                                  : detailsController.title,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w600,
+                                height: 1.20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                 ],
