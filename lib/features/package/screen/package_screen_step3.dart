@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
 import 'package:diaz1234567890/features/profile/edit_profile/widget/edit_fields_widget.dart';
@@ -14,7 +15,7 @@ class SellPackageScreen extends StatelessWidget {
     final controller = Get.find<SellPackageController>();
     controller.scheduleSellPackageScreenEntryCheck();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       appBar: CustomAppBar(title: 'Register Your Boat'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
