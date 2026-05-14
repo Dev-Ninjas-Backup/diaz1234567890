@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/profile/privacy_policy/controllers/privacy_policy_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -11,7 +12,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     final controller = Get.put(PrivacyController());
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
