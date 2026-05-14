@@ -4,6 +4,7 @@ import 'package:diaz1234567890/core/endpoints/endpoints.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
+import 'package:diaz1234567890/features/about_us/model/contact_info_model.dart';
 
 class NeedHelpController extends GetxController {
   // Form Controllers
@@ -21,8 +22,8 @@ class NeedHelpController extends GetxController {
   final contactEmail = ''.obs;
   final contactPhone = ''.obs;
   final headerImageUrl = ''.obs;
-  final workingHours = <dynamic>[].obs;
-  final socialMedia = <String, dynamic>{}.obs;
+  final workingHours = <WorkingHour>[].obs;
+  final socialMedia = <String, String>{}.obs;
 
   @override
   void onInit() {
@@ -62,14 +63,39 @@ class NeedHelpController extends GetxController {
 
         // Handle working hours
         if (data['workingHours'] != null) {
-          workingHours.assignAll(data['workingHours']);
-          print('Working Hours: ${workingHours.value}');
+          final raw = data['workingHours'];
+          if (raw is List) {
+            final parsed = raw.map<WorkingHour>((item) {
+              if (item is Map) {
+                final day = item['day']?.toString() ?? '';
+                final hours = item['hours']?.toString() ?? '';
+                return WorkingHour(day: day, hours: hours);
+              } else if (item is String) {
+                final parts = item.split(':');
+                if (parts.length >= 2) {
+                  return WorkingHour(day: parts[0].trim(), hours: parts.sublist(1).join(':').trim());
+                }
+                return WorkingHour(day: '', hours: item);
+              }
+              return WorkingHour(day: '', hours: item.toString());
+            }).toList();
+
+            workingHours.assignAll(parsed);
+            print('Working Hours: ${workingHours.value}');
+          }
         }
 
         // Handle social media
         if (data['socialMedia'] != null) {
-          socialMedia.assignAll(Map<String, dynamic>.from(data['socialMedia']));
-          print('Social Media: ${socialMedia.value}');
+          final raw = data['socialMedia'];
+          if (raw is Map) {
+            final converted = <String, String>{};
+            raw.forEach((k, v) {
+              converted[k.toString()] = v?.toString() ?? '';
+            });
+            socialMedia.assignAll(converted);
+            print('Social Media: ${socialMedia.value}');
+          }
         }
 
         print('=== DATA LOADED SUCCESSFULLY ===');
