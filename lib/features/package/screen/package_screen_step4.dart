@@ -1,5 +1,6 @@
 import 'package:diaz1234567890/core/common/widget/custom_app_bar.dart';
 import 'package:diaz1234567890/core/common/widget/custom_button.dart';
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/listing_preview_card.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class PackageScreenStep4 extends StatelessWidget {
 
     return Obx(
       () => Scaffold(
+        backgroundColor: AppColors.appBackgroundColor,
         appBar: CustomAppBar(title: 'Register Your Boat'),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
