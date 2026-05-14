@@ -16,6 +16,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   late AiChatController _controller;
+  bool _isAuthChoiceDialogShowing = false;
 
   @override
   void initState() {
@@ -28,6 +29,39 @@ class _AiChatScreenState extends State<AiChatScreen> {
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _showAuthChoiceDialog() {
+    if (_isAuthChoiceDialogShowing) return;
+
+    _isAuthChoiceDialogShowing = true;
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Start AI Chat'),
+        content: const Text(
+          'Login to save your chat history, or continue anonymously.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+              _isAuthChoiceDialogShowing = false;
+              Get.offAll(() => LoginScreen());
+            },
+            child: const Text('Login'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              _controller.continueAnonymously();
+              _isAuthChoiceDialogShowing = false;
+            },
+            child: const Text('Chat anonymously'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 
   void _sendMessage() {
@@ -76,8 +110,28 @@ class _AiChatScreenState extends State<AiChatScreen> {
       ),
       body: SafeArea(
         child: Obx(() {
-          // If user not logged in, show login prompt
-          if (!_controller.isUserLoggedIn.value) {
+          if (!_controller.isUserInitialized.value) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Starting chat...',
+                    style: getTextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (!_controller.isUserLoggedIn.value &&
+              !_controller.isAnonymousChat.value) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _showAuthChoiceDialog();
+            });
+
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -91,7 +145,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Login Required',
+                      'Choose how to start',
                       style: getTextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -100,7 +154,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Please login to access the AI Chat feature and get personalized yacht recommendations.',
+                      'Login to save your chat history, or continue anonymously.',
                       textAlign: TextAlign.center,
                       style: getTextStyle(
                         fontSize: 14,
@@ -109,21 +163,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Get.offAll(() => LoginScreen());
-                      },
-                      icon: const Icon(Icons.login),
-                      label: const Text('Go to Login'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
+                    const CircularProgressIndicator(),
                   ],
                 ),
               ),
