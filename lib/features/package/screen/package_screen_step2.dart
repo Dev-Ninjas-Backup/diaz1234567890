@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/package/controller/package_controller.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget.dart';
 import 'package:diaz1234567890/features/package/widgets/text_field_widget2.dart';
@@ -152,7 +153,7 @@ class PackageScreenStep2 extends StatelessWidget {
       () => PopScope(
         onPopInvokedWithResult: (_, __) => controller.resetStep2EntryState(),
         child: Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.appBackgroundColor,
           appBar: CustomAppBar(
             title: controller.isEditMode.value
                 ? 'Edit Boat Listing'
