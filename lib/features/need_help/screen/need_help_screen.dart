@@ -1,7 +1,8 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/core/utils/constants/icon_path.dart';
 import 'package:diaz1234567890/core/utils/constants/image_path.dart';
-import 'package:diaz1234567890/features/need_help/widgets/get_in_touch_card.dart';
-import 'package:diaz1234567890/features/need_help/widgets/working_hour_card.dart';
+import 'package:diaz1234567890/features/about_us/widgets/get_in_touch_card.dart';
+import 'package:diaz1234567890/features/about_us/widgets/working_hour_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/need_help_controller.dart';
@@ -14,7 +15,7 @@ class NeedHelpScreen extends StatelessWidget {
     final NeedHelpController controller = Get.put(NeedHelpController());
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -31,16 +32,38 @@ class NeedHelpScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  'Get in Touch with\n Florida Yacht Traders',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    height: 1.2,
-                  ),
+              child: Center(
+                child: Row(
+                  spacing: 6,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      'Get in Touch with\n Florida Yacht Traders',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(width: 50),
+                  ],
                 ),
               ),
             ),
@@ -165,15 +188,13 @@ class NeedHelpScreen extends StatelessWidget {
                       address: controller.address,
                       email: controller.contactEmail,
                       phone: controller.contactPhone,
-                      socialMedia: controller
-                          .socialMedia,
+                      socialMedia: controller.socialMedia,
                       backgroundImageUrl: controller.headerImageUrl,
                     ),
                     const SizedBox(height: 20),
                     WorkingHourCard(
                       workingHours: controller.workingHours,
-                      backgroundImageUrl:
-                          controller.headerImageUrl, 
+                      backgroundImageUrl: controller.headerImageUrl,
                     ),
                   ],
                 ),
