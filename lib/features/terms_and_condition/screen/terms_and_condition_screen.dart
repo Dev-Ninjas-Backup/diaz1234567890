@@ -1,3 +1,4 @@
+import 'package:diaz1234567890/core/utils/constants/app_colors.dart';
 import 'package:diaz1234567890/features/terms_and_condition/controller/terms_and_condition_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -13,7 +14,7 @@ class TermsConditionScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.appBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
