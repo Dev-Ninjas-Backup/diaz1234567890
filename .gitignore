@@ -44,6 +44,7 @@ app.*.map.json
 temp_auto_push.bat
 temp_interactive_push.bat
 .gitignore
-.env
 pubspec.lock
 branch_structure.json
+config.bat
+node_modules
